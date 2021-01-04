@@ -1,7 +1,10 @@
 from flask import Flask, request, send_from_directory, send_file
+import glob
+import json
 from processing_module import process
 
 app = Flask(__name__)
+layouts_location = 'dataset/layouts/'
 
 
 @app.route('/static/<path:path>')
@@ -26,5 +29,10 @@ def car_request():
     return process(begin_time, end_time)
 
 
+@app.route('/available_layouts')
+def get_available_layouts():
+    return json.dumps([i.replace(layouts_location, '') for i in glob.glob(f'{layouts_location}*.xml')])
+
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)
