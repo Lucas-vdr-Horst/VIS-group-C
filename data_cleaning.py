@@ -14,4 +14,3 @@ def fix_hashtags(filename):
         for line in lines:
             f.write(line)
 
-fix_hashtags("BOS210.csv")
