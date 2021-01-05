@@ -1,43 +1,60 @@
 let map;
+let availableLayouts;
+let layouts = {};
 
 function initMap() {
     map = new google.maps.Map(document.getElementById('map_canvas'), {
-        center: { lat: 52.1326, lng: 5.2913 },
-        zoom: 8
+        zoom: 19,
+        mapTypeId: 'satellite'
     });
 }
 
-let available_layouts
+function getAvailableLayouts(doneFunc) {
+    $.ajax({
+        type: 'GET',
+        url: '/available_layouts',
+        dataType: 'json',
+        success: (data) => {
+            availableLayouts = data;
+            doneFunc();
+        }
+    });
+}
 
-$.ajax({
-    type: 'GET',
-    url: '/available_layouts',
-    dataType: 'json',
-    success: (data) => {available_layouts = data;
-        loadLayout(available_layouts[0]); //tmp for testing
-    }
-})
-
-let x;
-
-function loadLayout(layoutName) {
+function loadLayout(layoutName, doneFunc) {
     $.ajax({
         type: 'GET',
         url: '/layout/'+layoutName,
         success: (data) => {
-            x = data;
-
-            const laneSetPath = ['topology', 'mapData', 'intersections', 'intersectionGeometry', 'laneSet']
-            for (const lane of exs(data, laneSetPath).children) {
-                for (const nodeXY of exs(lane, ['nodes']).children) {
-                    const lat = exs(nodeXY, ['node-LatLon', 'lat']).innerHTML /10000000;
-                    const lon = exs(nodeXY, ['node-LatLon', 'lon']).innerHTML /10000000;
-                    const marker = new google.maps.Marker({
-                        position: new google.maps.LatLng(lat, lon),
-                        map: map
-                    });
-                }
-            }
+            layouts[layoutName] = data;
+            const refpoint = exs(data, ['topology', 'mapData', 'intersections', 'intersectionGeometry', 'refPoint']);
+            map.setCenter({
+                lat: exs(refpoint, ['lat']).innerHTML /10000000,
+                lng: exs(refpoint, ['long']).innerHTML /10000000
+            })
+            doneFunc();
         }
     })
 }
+
+function drawLaneNodes(layout) {
+    const laneSetPath = ['topology', 'mapData', 'intersections', 'intersectionGeometry', 'laneSet']
+    for (const lane of exs(layout, laneSetPath).children) {
+        for (const nodeXY of exs(lane, ['nodes']).children) {
+            const lat = exs(nodeXY, ['node-LatLon', 'lat']).innerHTML /10000000;
+            const lon = exs(nodeXY, ['node-LatLon', 'lon']).innerHTML /10000000;
+            const marker = new google.maps.Marker({
+                position: new google.maps.LatLng(lat, lon),
+                map: map,
+                //visible: false
+            });
+        }
+    }
+}
+
+getAvailableLayouts(() => {
+    const layoutName = availableLayouts[0];
+    loadLayout(layoutName, () => {
+        drawLaneNodes(layouts[layoutName]);
+    });
+});
