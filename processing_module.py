@@ -17,8 +17,8 @@ def process(begin_time, end_time):
     df_sensor = pd.read_csv("./dataset/sensor_data/new_BOS210.csv", delimiter=";", low_memory=False)
     data = df_sensor.iloc[begin_time:end_time]
 
-
-process(554, 556)
+if __name__ == "__main__":
+    process(554, 556)
 
 # [     long       lat         long     lat       long      lat
 #   [[378328794, 4893289004], [893924, 483724], [48328094, 38492043]],  auto1

@@ -2,9 +2,10 @@ from flask import Flask, request, send_from_directory, send_file
 import glob
 import json
 from processing_module import process
+import os
 
 app = Flask(__name__)
-layouts_location = 'dataset/layouts/'
+layouts_location = os.path.join('dataset', 'layouts')
 
 
 @app.route('/static/<path:path>')
@@ -14,7 +15,7 @@ def send_static(path):
 
 @app.route('/layout/<path:path>')
 def send_layout(path):
-    return send_from_directory('dataset/layouts', path)
+    return send_from_directory(layouts_location, path)
 
 
 @app.route('/')
@@ -31,7 +32,7 @@ def car_request():
 
 @app.route('/available_layouts')
 def get_available_layouts():
-    return json.dumps([i.replace(layouts_location, '') for i in glob.glob(f'{layouts_location}*.xml')])
+    return json.dumps([i.replace(layouts_location, '') for i in glob.glob(os.path.join(layouts_location, '*.xml'))])
 
 
 if __name__ == "__main__":
