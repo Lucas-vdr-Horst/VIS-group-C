@@ -1,6 +1,7 @@
 import pandas as pd
 from pathlib import Path
 from data_cleaning import fix_hashtags
+import xml.etree.ElementTree as ET
 
 
 def process(begin_time, end_time):
@@ -19,7 +20,16 @@ def process(begin_time, end_time):
     df_sensor = df_sensor.set_index('time') # set index to time
     data = df_sensor.loc[begin_time:end_time] # filter to begin and end time
 
+    tree = ET.parse('./dataset/layouts/79190154_BOS210_ITF_COMPLETE.xml')
+    root = tree.getroot()
 
+    
+    for i in root[2][1][0][6]: # for item in 
+        for node in i.iter('nodes'): # for lane in Laneset
+            for n in node[0].iter('node-LatLon'):
+                lat = n.findall('lat')#.text
+                lon = n.findall('lon')#.text
+                print(id(lat), id(lon))
 if __name__ == "__main__":
     process("02-11-2020 00:00:00.0","02-11-2020 00:00:00.6")
 
