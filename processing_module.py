@@ -1,6 +1,6 @@
 import pandas as pd
 from pathlib import Path
-from data_cleaning import fix_hashtags
+#from data_cleaning import fix_hashtags
 
 def process(begin_time, end_time):
     """

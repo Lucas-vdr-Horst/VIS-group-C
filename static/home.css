@@ -10,12 +10,12 @@ body, html, #map_canvas, #timeline {
 
 #map_canvas {
     position: relative;
-    height: 80%;
+    height: 90%;
     width: 100%;
 }
 
 #timeline {
-    height: 20%;
+    height: 10%;
     width: 100%;
     overflow: hidden;
 }
