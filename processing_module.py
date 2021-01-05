@@ -1,6 +1,7 @@
 import pandas as pd
 from pathlib import Path
-#from data_cleaning import fix_hashtags
+from data_cleaning import fix_hashtags
+
 
 def process(begin_time, end_time):
     """
@@ -17,11 +18,12 @@ def process(begin_time, end_time):
     df_sensor = pd.read_csv("./dataset/sensor_data/new_BOS210.csv", delimiter=";", low_memory=False)
     data = df_sensor.iloc[begin_time:end_time]
 
-if __name__ == "__main__":
-    process(554, 556)
-
 # [     long       lat         long     lat       long      lat
 #   [[378328794, 4893289004], [893924, 483724], [48328094, 38492043]],  auto1
 #   [[378328794, 4893289004], [893924, 483724], [48328094, 38492043]],  auto2
 #   [[378328794, 4893289004], [893924, 483724], [48328094, 38492043]]   auto3
-# ]                    
+# ]
+
+
+if __name__ == "__main__":
+    process(554, 556)
