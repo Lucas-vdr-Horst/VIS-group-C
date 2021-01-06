@@ -9,12 +9,15 @@ All files relevant of the intersection should be in that folder.
 For example: 
 ```
 dataset
+├── Original
+│   ├── BOS211.csv
+│   └── BOS210.csv
 ├── BOS210
 │   ├── 79190154_BOS210_ITF_COMPLETE.xml
-│   └── BOS210.csv
+│   └── new_BOS210.csv
 └── BOS211
     ├── 7919015E_BOS211_ITF_COMPLETE.xml
-    └── BOS211.csv
+    └── new_BOS211.csv
 ```
 
 ### Dependencies

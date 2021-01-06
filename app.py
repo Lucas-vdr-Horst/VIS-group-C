@@ -3,9 +3,11 @@ import glob
 import json
 from processing_module import process
 import os
+from datetime import datetime
+
 
 app = Flask(__name__)
-dataset_location = os.path.join('dataset/')
+dataset_location = os.path.join('dataset','')
 
 
 @app.route('/static/<path:path>')
@@ -51,8 +53,19 @@ def get_amount_csv(intersection_name):
 
 @app.route('/available_times/<intersection_name>')
 def get_available_times(intersection_name):
-    # TODO
-    return  # The timeframes available of the intersection
+    # TODO get begin en eind tijd van 1 dag uit de csv.
+    csvs = glob.glob(os.path.join(dataset_location, intersection_name, '*.csv'))
+    lst = []
+    for csv in csvs:
+        with open(csv) as file:
+            lines = file.readlines()
+            start_time = lines[1][0:21]
+            start_time = datetime.strptime(start_time, '%d-%m-%Y %H:%M:%S.%f')
+            end_time = lines[-2][0:21]
+            end_time = datetime.strptime(end_time, '%d-%m-%Y %H:%M:%S.%f')
+            lst.append([start_time, end_time])
+
+    return json.dumps(lst, default=str)  # The timeframes available of the intersection
 
 
 @app.route('/car_request')
@@ -63,4 +76,5 @@ def car_request():
 
 
 if __name__ == "__main__":
+    get_available_times("BOS210")
     app.run(host='localhost', debug=True)
