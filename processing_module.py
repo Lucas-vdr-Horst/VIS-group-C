@@ -14,22 +14,24 @@ def process(begin_time, end_time):
     :param end_time: als 554. Dit betekend 00 uur 00 min 55 sec .4 milisec
     :type str"""
 
-    if not Path("./dataset/sensor_data/new_BOS210.csv").is_file():
-        fix_hashtags("BOS210.csv")
-    df_sensor = pd.read_csv("./dataset/sensor_data/new_BOS210.csv", delimiter=";", low_memory=False)
-    df_sensor = df_sensor.set_index('time') # set index to time
-    data = df_sensor.loc[begin_time:end_time] # filter to begin and end time
+    # if not Path("./dataset/sensor_data/new_BOS210.csv").is_file():
+    #     fix_hashtags("BOS210.csv")
+    # df_sensor = pd.read_csv("./dataset/sensor_data/new_BOS210.csv", delimiter=";", low_memory=False)
+    # df_sensor = df_sensor.set_index('time') # set index to time
+    # data = df_sensor.loc[begin_time:end_time] # filter to begin and end time
 
     tree = ET.parse('./dataset/layouts/79190154_BOS210_ITF_COMPLETE.xml')
     root = tree.getroot()
 
-    
+    coordinaten = []
     for i in root[2][1][0][6]: # for item in 
         for node in i.iter('nodes'): # for lane in Laneset
             for n in node[0].iter('node-LatLon'):
-                lat = n.findall('lat')#.text
-                lon = n.findall('lon')#.text
-                print(id(lat), id(lon))
+                lon = int(n.findall('lon')[0].text)
+                lat = int(n.findall('lat')[0].text)
+                coordinaten.append([lon, lat])
+                print(lon, lat)
+    print(coordinaten)
 if __name__ == "__main__":
     process("02-11-2020 00:00:00.0","02-11-2020 00:00:00.6")
 
