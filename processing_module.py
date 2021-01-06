@@ -23,15 +23,20 @@ def process(begin_time, end_time):
     tree = ET.parse('./dataset/layouts/79190154_BOS210_ITF_COMPLETE.xml')
     root = tree.getroot()
 
-    coordinaten = []
-    for i in root[2][1][0][6]: # for item in 
-        for node in i.iter('nodes'): # for lane in Laneset
-            for n in node[0].iter('node-LatLon'):
+    dict_with_coords = {}
+    for genericlane in root[2][1][0][6]: # i == generic lane
+        laneId = int(genericlane.find('laneID').text) # haal uit laneId
+        coordinaten = [] 
+        # Haal alle longitude en latitude uit nodes-La
+        for node in genericlane.iter('nodes'): # i.iter('nodes') == nodes
+
+            for n in node.iter('node-LatLon'): # node.iter('node-LatLon') == node-latlon
                 lon = int(n.findall('lon')[0].text)
                 lat = int(n.findall('lat')[0].text)
                 coordinaten.append([lon, lat])
-                print(lon, lat)
-    print(coordinaten)
+        dict_with_coords[laneId] = coordinaten
+    return dict_with_coords
+    
 if __name__ == "__main__":
     process("02-11-2020 00:00:00.0","02-11-2020 00:00:00.6")
 
