@@ -2,6 +2,10 @@ let map;
 let availableLayouts;
 let layouts = {};
 let sensors = [];
+const intersectionSelect = document.createElement('select');
+intersectionSelect.classList.add('mapsControl');
+intersectionSelect.onchange = function() {focusLoadIntersection(this.value)}
+
 
 function initMap() {
     // Initialize the google map
@@ -9,6 +13,8 @@ function initMap() {
         zoom: 19,
         mapTypeId: 'satellite'
     });
+
+    map.controls[google.maps.ControlPosition.TOP_CENTER].push(intersectionSelect);
 }
 
 function getAvailableLayouts(doneFunc) {
@@ -16,14 +22,14 @@ function getAvailableLayouts(doneFunc) {
     // This is done asynchronous, so give a doneFunc to execute when done
     $.ajax({
         type: 'GET',
-        url: '/available_layouts',
+        url: '/available_intersections',
         dataType: 'json',
         success: (data) => {
             availableLayouts = data;
             for (const name of data) {
                 let intersection = document.createElement('option')
                 intersection.text = name;
-                document.getElementById('intersectionSelect').add(intersection)
+                intersectionSelect.add(intersection)
             }
             doneFunc();
         }

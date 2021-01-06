@@ -3,7 +3,7 @@ body, html {
     width: 100%;
 }
 
-body, html, #map_canvas, #timeline {
+body, html, #map_canvas {
     margin: 0;
     padding: 0;
 }
@@ -14,8 +14,60 @@ body, html, #map_canvas, #timeline {
     width: 100%;
 }
 
+.mapsControl {
+    background: rgb(255, 255, 255) none repeat scroll 0% 0% padding-box;
+    display: table-cell;
+    border: 0px none;
+    padding: 0px 17px;
+    text-transform: none;
+    appearance: none;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    direction: ltr;
+    overflow: hidden;
+    text-align: center;
+    height: 40px;
+    vertical-align: middle;
+    color: rgb(86, 86, 86);
+    font-family: Roboto, Arial, sans-serif;
+    font-size: 18px;
+    border-radius: 2px;
+    box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px;
+    min-width: 35px;
+    margin: 10px 0px 0px;
+}
+
+.mapsControl:hover {
+    background-color: #EBEBEB;
+    color: #000000
+}
+
 #timeline {
+    overflow: hidden;
+    position: relative;
     height: 10%;
     width: 100%;
-    overflow: hidden;
+    cursor: grab
+}
+
+.td {
+    position: absolute;
+    margin: 0;
+    top: 35%;
+
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+.vl {
+    border-left: 6px solid #555555;
+    height: 100%;
+    position: absolute;
+    left: 50%;
 }
