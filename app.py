@@ -4,7 +4,7 @@ import json
 from processing_module import process
 import os
 from datetime import datetime
-from common import read_csvs
+from common import read_csvs, to_datetime
 
 
 app = Flask(__name__)
@@ -60,9 +60,9 @@ def get_available_times(intersection_name):
         with open(csv) as file:
             lines = file.readlines()
             start_time = lines[1][0:21]
-            start_time = datetime.strptime(start_time, '%d-%m-%Y %H:%M:%S.%f')
+            start_time = to_datetime(start_time)
             end_time = lines[-2][0:21]
-            end_time = datetime.strptime(end_time, '%d-%m-%Y %H:%M:%S.%f')
+            end_time = to_datetime(start_time)
             lst.append([start_time, end_time])
 
     return json.dumps(lst, default=str)
