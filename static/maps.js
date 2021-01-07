@@ -4,7 +4,7 @@ let layouts = {};
 let sensors = {};
 const intersectionSelect = document.createElement('select');
 intersectionSelect.classList.add('mapsControl');
-intersectionSelect.onchange = function() {focusLoadIntersection(this.value)}
+intersectionSelect.onchange = function() {focus(this.value)}
 
 
 function initMap() {
@@ -60,7 +60,7 @@ function loadLayout(layoutName, doneFunc) {
 function createLaneNodeMarkers(layout) {
     // Creates a marker for each node of each lane in this layout
     // This serves no purpose so far, just a jumping off point for later when the lanes should be drawn
-    const laneSetPath = ['topology', 'mapData', 'dataset', 'intersectionGeometry', 'laneSet']
+    const laneSetPath = ['topology', 'mapData', 'intersections', 'intersectionGeometry', 'laneSet']
     for (const lane of exs(layout, laneSetPath).children) {
         for (const nodeXY of exs(lane, ['nodes']).children) {
             const lat = exs(nodeXY, ['node-LatLon', 'lat']).innerHTML /10000000;
@@ -129,7 +129,7 @@ function createSensors(layout) {
 
 function focusIntersection(layoutName) {
     // Move the camera to center on this layout
-    const refpoint = exs(layouts[layoutName], ['topology', 'mapData', 'dataset', 'intersectionGeometry', 'refPoint']);
+    const refpoint = exs(layouts[layoutName], ['topology', 'mapData', 'intersections', 'intersectionGeometry', 'refPoint']);
     map.setCenter({
         lat: exs(refpoint, ['lat']).innerHTML /10000000,
         lng: exs(refpoint, ['long']).innerHTML /10000000

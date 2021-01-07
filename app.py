@@ -7,7 +7,7 @@ from datetime import datetime
 
 
 app = Flask(__name__)
-intersection_data_location = os.path.join('datase', '')
+intersection_data_location = os.path.join('intersections', '')
 
 
 @app.route('/static/<path:path>')
@@ -75,5 +75,4 @@ def car_request():
 
 
 if __name__ == "__main__":
-    get_available_times("BOS210")
     app.run(host='localhost', debug=True)
