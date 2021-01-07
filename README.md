@@ -4,14 +4,11 @@ __Vialis Intersection Simulation__
 ## Setup
 
 ### Dataset
-Create in `intersections/` a foler for each intersection with the name of the intersection,  
+Create in `intersections/` a folder for each intersection with the name of the intersection,  
 All files relevant of the intersection should be in that folder.  
 For example: 
 ```
 intersections
-├── Original
-│   ├── BOS211.csv
-│   └── BOS210.csv
 ├── BOS210
 │   ├── 79190154_BOS210_ITF_COMPLETE.xml
 │   └── new_BOS210.csv
