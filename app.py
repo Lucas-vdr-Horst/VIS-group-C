@@ -4,6 +4,7 @@ import json
 from processing_module import process
 import os
 from datetime import datetime
+from common import read_csvs
 
 
 app = Flask(__name__)
@@ -42,18 +43,18 @@ def send_layout(intersection_name):
 @app.route('/sensor_data/<intersection_name>')
 @app.route('/sensor_data/<intersection_name>/<index>')
 def get_sensor_data(intersection_name, index=0):
-    csvs = glob.glob(os.path.join(intersection_data_location, intersection_name, '*.csv'))
+    csvs = read_csvs(intersection_name)
     return send_file(csvs[index])
 
 
 @app.route('/amount_sensor_data/<intersection_name>')
 def get_amount_csv(intersection_name):
-    return str(len(glob.glob(os.path.join(intersection_data_location, intersection_name, '*.csv'))))
+    return str(len(read_csvs(intersection_name)))
 
 
 @app.route('/available_times/<intersection_name>')
 def get_available_times(intersection_name):
-    csvs = glob.glob(os.path.join(intersection_data_location, intersection_name, '*.csv'))
+    csvs = read_csvs(intersection_name)
     lst = []
     for csv in csvs:
         with open(csv) as file:
