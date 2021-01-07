@@ -4,14 +4,59 @@ from data_cleaning import fix_hashtags
 import xml.etree.ElementTree as ET
 import json
 import os
+from math import *
 
 
 #intersection_data_location = os.path.join('..','intersections', '')
+def calculate_trajectory(lon1, lat1, lon2, lat2):
+    # zet de coordinaten om naar radialen
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+    # haversine formula 
+    dlon = lon2 - lon1 
+    dlat = lat2 - lat1 
+    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+    c = 2 * asin(sqrt(a)) 
+    r = 6371 # Radius of earth in kilometers. Use 3956 for miles
+    distance = c *r
+
+    #calculate the bearing
+    bearing = atan2(cos(lat1)*sin(lat2) - sin(lat1)*cos(lat2)*cos(lon2-lon1), sin(lon2-lon1)*cos(lat2))
+    return distance, bearing
+
+def deg2rad(angle):
+    return angle*pi/180
+
+
+def rad2deg(angle):
+    return angle*180/pi
+
+def pointRadialDistance(lat1, lon1, bearing, distance):
+    """
+    Return final coordinates (lat2,lon2) [in degrees] given initial coordinates
+    (lat1,lon1) [in degrees] and a bearing [in degrees] and distance [in km]
+    """
+    rEarth = 6371.01 # Earth's average radius in km
+    epsilon = 0.000001 # threshold for floating-point equality
+    rlat1 = deg2rad(lat1)
+    rlon1 = deg2rad(lon1)
+    rbearing = deg2rad(bearing)
+    rdistance = distance / rEarth # normalize linear distance to radian angle
+
+    rlat = asin( sin(rlat1) * cos(rdistance) + cos(rlat1) * sin(rdistance) * cos(rbearing) )
+
+    if cos(rlat) == 0 or abs(cos(rlat)) < epsilon: # Endpoint a pole
+        rlon=rlon1
+    else:
+        rlon = ( (rlon1 - asin( sin(rbearing)* sin(rdistance) / cos(rlat) ) + pi ) % (2*pi) ) - pi
+
+    lat = rad2deg(rlat)
+    lon = rad2deg(rlon)
+    return (lat, lon)
 
 
 def load_sensor_data(begin_time, end_time):
     #df_sensor = pd.read_csv(os.path.join(intersection_data_location, intersection_name, '*.csv'), delimiter=";", low_memory=False)
-    df_sensor = pd.read_csv("intersections/BOS210/BOS210.csv", delimiter=";", low_memory=False)
+    df_sensor = pd.read_csv("intersections/BOS210/BOS210.csv", delimiter=";", dtype=str)
     df_sensor = df_sensor.set_index('time') # set index to time
     data_sensor_specific_time = df_sensor.loc[begin_time:end_time] # filter to begin and end time
     return data_sensor_specific_time
@@ -48,6 +93,24 @@ def json_file_all_lanes_coordinates(tree):
         
         # Haal uit de coordinaten van de gekoppelde egresslane uit de dictionary  en voeg het toe in dict_with_coords[laneId]
         coordinaten_lane_out = get_coordinates_lane(connected_to_lane)
+        lon1, lat1 = [i/10000000 for i in coordinaten_lane_in[0]] # pakt de eerste coordinaten van de ingress lane
+        lon2, lat2 = [i/10000000 for i in coordinaten_lane_out[0]] # pakt de eerste coordinaten van de egress lane
+
+        distance, bearing = calculate_trajectory(lon1, lat1, lon2, lat2)
+
+        # print("Distance: {}, bearing:{}".format(distance*1000, bearing))
+        # print("lon1: {}, lat1: {}, lon2:{}, lat2:{}".format(lon1, lat1, lon2, lat2))
+        # print("Calculated lon and lat: {}".format(pointRadialDistance(lat1, lon1, bearing, distance)))
+        # print("\n")
+
+        trajectory_coordinates = []
+        for i  in range(5):
+            pointRadialDistance(distance/5, bearing/5)
+            trajectory_coordinates.append([distance/5, bearing/5])
+        print(trajectory_coordinates)
+
+        dict_with_coords[laneId] = coordinaten_lane_in + coordinaten_lane_out 
+
         dict_with_coords[laneId] = coordinaten_lane_in + coordinaten_lane_out
     # TODO de trajectory berekenen van een lane 
     json_file = json.dumps(dict_with_coords)
