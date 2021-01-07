@@ -35,17 +35,15 @@ def sensor_timeframe():
             df = df.replace(np.nan, '', regex=True)
             df['time'] = df['time'].apply(to_ms_since_1970)
             sensors = list(df.columns)[1:]
-
             df2 = df.set_index('time')
+            df2 = df2.transpose()
+            temp_dict = df2.to_dict()
             with alive_bar(len(df)) as bar:
                 for time_frame in df['time']:
-                    temp_dict = {}
-                    for sensor in sensors:
-                        temp_dict[sensor] = df2.loc[time_frame][sensor]
                     if time_frame in sensor_dict:
-                        sensor_dict[time_frame].update({intersection_name : temp_dict})
+                        sensor_dict[time_frame].update({intersection_name : temp_dict[time_frame]})
                     else:
-                        sensor_dict[time_frame] = {intersection_name : temp_dict}
+                        sensor_dict[time_frame] = {intersection_name : temp_dict[time_frame]}
                     bar()
 
 
