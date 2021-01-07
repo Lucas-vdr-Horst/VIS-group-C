@@ -136,3 +136,7 @@ dmypy.json
 intersections/*
 !intersections/.keep
 
+# preprocessed
+preprocessed/*
+!preprocessed/.keep
+

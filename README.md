@@ -25,5 +25,10 @@ intersections
 pip install -r requirements.txt
 ```
 
+### Preprocess
+```bash
+python preprocess.py
+```
+
 ## Run
 Run `app.py`
