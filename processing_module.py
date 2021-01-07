@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np 
 from pathlib import Path
 from data_cleaning import fix_hashtags
 import xml.etree.ElementTree as ET
@@ -30,7 +31,7 @@ def deg2rad(angle):
 def rad2deg(angle):
     return angle*180/pi
 
-def pointRadialDistance(lat1, lon1, bearing, distance):
+def pointRadialDistance(lon1,lat1, bearing, distance):
     """
     Return final coordinates (lat2,lon2) [in degrees] given initial coordinates
     (lat1,lon1) [in degrees] and a bearing [in degrees] and distance [in km]
@@ -51,7 +52,7 @@ def pointRadialDistance(lat1, lon1, bearing, distance):
 
     lat = rad2deg(rlat)
     lon = rad2deg(rlon)
-    return (lat, lon)
+    return lon, lat
 
 
 def load_sensor_data(begin_time, end_time):
@@ -102,12 +103,14 @@ def json_file_all_lanes_coordinates(tree):
         # print("lon1: {}, lat1: {}, lon2:{}, lat2:{}".format(lon1, lat1, lon2, lat2))
         # print("Calculated lon and lat: {}".format(pointRadialDistance(lat1, lon1, bearing, distance)))
         # print("\n")
-
-        trajectory_coordinates = []
-        for i  in range(5):
-            pointRadialDistance(distance/5, bearing/5)
-            trajectory_coordinates.append([distance/5, bearing/5])
-        print(trajectory_coordinates)
+        numsteps = 5
+        coord = np.zeros([numsteps+1, 2])
+        coord[0][0] = lon1
+        coord[0][1] = lat1
+        for step  in range(numsteps):
+            coord[step+1] = pointRadialDistance( coord[step][0], coord[step][1], distance/5, bearing/5)
+        print(coord)
+        print("\n")
 
         dict_with_coords[laneId] = coordinaten_lane_in + coordinaten_lane_out 
 
