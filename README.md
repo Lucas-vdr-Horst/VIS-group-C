@@ -1,5 +1,8 @@
 # VIS-group-C
-__Vialis Intersection Simulation__
+__Vialis Intersection Simulation__ 
+
+![](https://media1.tenor.com/images/68ea836c384a0effcae1afc8719e53c0/tenor.gif?itemid=16437355)
+
 
 ## Setup
 
