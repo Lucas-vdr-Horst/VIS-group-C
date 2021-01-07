@@ -31,7 +31,7 @@ def deg2rad(angle):
 def rad2deg(angle):
     return angle*180/pi
 
-def pointRadialDistance(lon1,lat1, bearing, distance):
+def pointRadialDistance(lat1,lon1, bearing, distance):
     """
     Return final coordinates (lat2,lon2) [in degrees] given initial coordinates
     (lat1,lon1) [in degrees] and a bearing [in degrees] and distance [in km]
@@ -99,16 +99,16 @@ def json_file_all_lanes_coordinates(tree):
 
         distance, bearing = calculate_trajectory(lon1, lat1, lon2, lat2)
 
-        # print("Distance: {}, bearing:{}".format(distance*1000, bearing))
-        # print("lon1: {}, lat1: {}, lon2:{}, lat2:{}".format(lon1, lat1, lon2, lat2))
-        # print("Calculated lon and lat: {}".format(pointRadialDistance(lat1, lon1, bearing, distance)))
-        # print("\n")
+        print("Distance: {}, bearing:{}".format(distance*1000, bearing))
+        print("Lane {} :lon1: {}, lat1: {}; Lane{} :lon2:{}, lat2:{}".format(laneId, lon1, lat1, connected_to, lon2, lat2))
+        print("Calculated lon and lat: {}".format(pointRadialDistance(lat1, lon1, bearing, distance)))
+        print("\n")
         numsteps = 5
         coord = np.zeros([numsteps+1, 2])
-        coord[0][0] = lon1
-        coord[0][1] = lat1
+        coord[0][0] = lat1
+        coord[0][1] = lon1
         for step  in range(numsteps):
-            coord[step+1] = pointRadialDistance( coord[step][0], coord[step][1], distance/5, bearing/5)
+            coord[step+1] = pointRadialDistance( coord[step][1], coord[step][0], distance/5, bearing/5)
         print(coord)
         print("\n")
 
