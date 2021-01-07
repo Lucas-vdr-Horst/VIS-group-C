@@ -6,13 +6,12 @@ import json
 import os
 
 
-intersection_data_location = os.path.join('intersections', '')
+#intersection_data_location = os.path.join('..','intersections', '')
 
 
-def load_sensor_data(begin_time, end_time, intersection_name):
-    if not Path(os.path.join(intersection_data_location, intersection_name, '*.csv')).is_file():  #TODO verwijder deze en volgende regel wanneer schone data is aangeleverd door Vialis
-         fix_hashtags("BOS210.csv")
-    df_sensor = pd.read_csv(os.path.join(intersection_data_location, intersection_name, '*.csv'), delimiter=";", low_memory=False)
+def load_sensor_data(begin_time, end_time):
+    #df_sensor = pd.read_csv(os.path.join(intersection_data_location, intersection_name, '*.csv'), delimiter=";", low_memory=False)
+    df_sensor = pd.read_csv("intersections/BOS210/BOS210.csv", delimiter=";", low_memory=False)
     df_sensor = df_sensor.set_index('time') # set index to time
     data_sensor_specific_time = df_sensor.loc[begin_time:end_time] # filter to begin and end time
     return data_sensor_specific_time
@@ -65,9 +64,9 @@ def process(begin_time, end_time):
     :param end_time: als 554. Dit betekend 00 uur 00 min 55 sec .4 milisec
     :type str"""
 
-    sensor_data = load_sensor_data(begin_time, end_time, "BOS210")
+    sensor_data = load_sensor_data(begin_time, end_time)
 
-    tree = ET.parse(os.path.join(intersection_data_location, "BOS210", '*.csv'))
+    tree = ET.parse('intersections/BOS210/79190154_BOS210_ITF_COMPLETE.xml')
     json_file = json_file_all_lanes_coordinates(tree)
 
     # TODO: voor iedere rij in sensordata check of sensor geraakt wordt. wanneer een sensor geraakt wordt zoek welke lane deze sensor zit en voeg de coordinaten voor die lane toe aan returnvalue
