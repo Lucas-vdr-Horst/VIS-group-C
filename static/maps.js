@@ -107,7 +107,10 @@ function createSensors(layout) {
             polyline.addListener('click', () => {
                 alert(sensorObject.display());
             });
-            sensorObject.polyline = polyline
+            sensorObject.polyline = polyline;
+            sensorObject.updateMap = function(state) {
+                this.polyline.setOptions({strokeColor: 'blue'})
+            }
 
         } else {
             // When no geoshape is available draw the sensor position as a marker
@@ -121,6 +124,9 @@ function createSensors(layout) {
                 alert(sensorObject.display());
             });
             sensorObject.marker = marker;
+            sensorObject.updateMap = function(state) {
+                this.marker.setOptions({icon: {url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"}})
+            }
         }
 
         sensors[sensorObject.display()] = sensorObject;

@@ -57,7 +57,7 @@ tl[0].onmousemove = function(e) {
         camera.center = camera.oldCenter + (camera.startDrag - e.clientX / window.innerWidth)*camera.zoom/amountInZoom*5;
         updateTimeline();
         datepicker.valueAsDate = new Date(camera.center + 60*60*1000);
-        updateSensors()
+        updateDynamics()
     }
 };
 

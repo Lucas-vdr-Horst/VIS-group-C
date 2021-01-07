@@ -67,6 +67,13 @@ def get_available_times(intersection_name):
     return json.dumps(lst, default=str)
 
 
+@app.route('/sensor_timeframe/<timeframe_string>')
+def sensor_timeframe(timeframe_string):
+    # TODO
+    timeframe = json.loads(timeframe_string)  # example: {'begin': 1604272907812, 'end': 1604273470312}
+    return json.dumps({1604272907812: {'05': 1, '06': 0}, 1604272907813: {'05': 0, '06': 1}})
+
+
 @app.route('/car_request')
 def car_request():
     begin_time = request.values.get('begin_time')
