@@ -7,7 +7,7 @@ from datetime import datetime
 
 
 app = Flask(__name__)
-dataset_location = os.path.join('dataset','')
+intersection_data_location = os.path.join('datase', '')
 
 
 @app.route('/static/<path:path>')
@@ -27,12 +27,12 @@ def favicon():
 
 @app.route('/available_intersections')
 def get_available_intersections():
-    return json.dumps([i.replace(dataset_location, '') for i in glob.glob(os.path.join(dataset_location, '*'))])
+    return json.dumps([i.replace(intersection_data_location, '') for i in glob.glob(os.path.join(intersection_data_location, '*'))])
 
 
 @app.route('/layout/<intersection_name>')
 def send_layout(intersection_name):
-    layouts = glob.glob(os.path.join(dataset_location, intersection_name, '*.xml'))
+    layouts = glob.glob(os.path.join(intersection_data_location, intersection_name, '*.xml'))
     if len(layouts) == 1:
         return send_file(layouts[0])
     else:
@@ -41,20 +41,19 @@ def send_layout(intersection_name):
 
 @app.route('/sensor_data/<intersection_name>')
 @app.route('/sensor_data/<intersection_name>/<index>')
-def send_sensor_data(intersection_name, index=0):
-    csvs = glob.glob(os.path.join(dataset_location, intersection_name, '*.csv'))
+def get_sensor_data(intersection_name, index=0):
+    csvs = glob.glob(os.path.join(intersection_data_location, intersection_name, '*.csv'))
     return send_file(csvs[index])
 
 
 @app.route('/amount_sensor_data/<intersection_name>')
 def get_amount_csv(intersection_name):
-    return str(len(glob.glob(os.path.join(dataset_location, intersection_name, '*.csv'))))
+    return str(len(glob.glob(os.path.join(intersection_data_location, intersection_name, '*.csv'))))
 
 
 @app.route('/available_times/<intersection_name>')
 def get_available_times(intersection_name):
-    # TODO get begin en eind tijd van 1 dag uit de csv.
-    csvs = glob.glob(os.path.join(dataset_location, intersection_name, '*.csv'))
+    csvs = glob.glob(os.path.join(intersection_data_location, intersection_name, '*.csv'))
     lst = []
     for csv in csvs:
         with open(csv) as file:
@@ -65,7 +64,7 @@ def get_available_times(intersection_name):
             end_time = datetime.strptime(end_time, '%d-%m-%Y %H:%M:%S.%f')
             lst.append([start_time, end_time])
 
-    return json.dumps(lst, default=str)  # The timeframes available of the intersection
+    return json.dumps(lst, default=str)
 
 
 @app.route('/car_request')

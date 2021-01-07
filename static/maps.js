@@ -1,7 +1,7 @@
 let map;
-let availableLayouts;
+let availableIntersections;
 let layouts = {};
-let sensors = [];
+let sensors = {};
 const intersectionSelect = document.createElement('select');
 intersectionSelect.classList.add('mapsControl');
 intersectionSelect.onchange = function() {focusLoadIntersection(this.value)}
@@ -15,6 +15,13 @@ function initMap() {
     });
 
     map.controls[google.maps.ControlPosition.TOP_CENTER].push(intersectionSelect);
+    map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(datepicker);
+
+    google.maps.event.addListenerOnce(map, 'idle', () => {
+        setTimeout(() => {
+            $("[src='https://maps.gstatic.com/mapfiles/api-3/images/google_white5.png']")[0].style.display = 'none';
+        }, 1000)
+    });
 }
 
 function getAvailableLayouts(doneFunc) {
@@ -25,12 +32,13 @@ function getAvailableLayouts(doneFunc) {
         url: '/available_intersections',
         dataType: 'json',
         success: (data) => {
-            availableLayouts = data;
+            availableIntersections = data;
             for (const name of data) {
-                let intersection = document.createElement('option')
+                let intersection = document.createElement('option');
                 intersection.text = name;
-                intersectionSelect.add(intersection)
+                intersectionSelect.add(intersection);
             }
+            loadAvailableTimes();
             doneFunc();
         }
     });
@@ -52,7 +60,7 @@ function loadLayout(layoutName, doneFunc) {
 function createLaneNodeMarkers(layout) {
     // Creates a marker for each node of each lane in this layout
     // This serves no purpose so far, just a jumping off point for later when the lanes should be drawn
-    const laneSetPath = ['topology', 'mapData', 'intersections', 'intersectionGeometry', 'laneSet']
+    const laneSetPath = ['topology', 'mapData', 'dataset', 'intersectionGeometry', 'laneSet']
     for (const lane of exs(layout, laneSetPath).children) {
         for (const nodeXY of exs(lane, ['nodes']).children) {
             const lat = exs(nodeXY, ['node-LatLon', 'lat']).innerHTML /10000000;
@@ -115,33 +123,26 @@ function createSensors(layout) {
             sensorObject.marker = marker;
         }
 
-        sensors.push(sensorObject);
+        sensors[sensorObject.display()] = sensorObject;
     }
 }
 
 function focusIntersection(layoutName) {
     // Move the camera to center on this layout
-    const refpoint = exs(layouts[layoutName], ['topology', 'mapData', 'intersections', 'intersectionGeometry', 'refPoint']);
+    const refpoint = exs(layouts[layoutName], ['topology', 'mapData', 'dataset', 'intersectionGeometry', 'refPoint']);
     map.setCenter({
         lat: exs(refpoint, ['lat']).innerHTML /10000000,
         lng: exs(refpoint, ['long']).innerHTML /10000000
     })
 }
 
-function focusLoadIntersection(layoutName) {
-    // Load the layout if not already done, and focus the camera on it
-    if (!(layoutName in layouts)) {
-        loadLayout(layoutName, () => {
-            createLaneNodeMarkers(layouts[layoutName]);
-            createSensors(layouts[layoutName]);
-            focusIntersection(layoutName)
-        });
-    } else {
-        focusIntersection(layoutName)
-    }
-}
-
-// Get available intersection and focusload the first one
+// Get available intersection, load them and focus on the first one
 getAvailableLayouts(() => {
-    focusLoadIntersection(availableLayouts[0]);
+    for (const intersection of availableIntersections) {
+        loadLayout(intersection, () => {
+            createLaneNodeMarkers(layouts[intersection]);
+            createSensors(layouts[intersection]);
+            focusIntersection(availableIntersections[0]);
+        });
+    }
 });

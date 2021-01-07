@@ -35,7 +35,7 @@ body, html, #map_canvas {
     border-radius: 2px;
     box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px;
     min-width: 35px;
-    margin: 10px 0px 0px;
+    margin: 10px 0px 20px 10px;
 }
 
 .mapsControl:hover {
@@ -54,7 +54,15 @@ body, html, #map_canvas {
 .td {
     position: absolute;
     margin: 0;
-    top: 35%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.vl {
+    height: 100%;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0);
 
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
@@ -63,11 +71,30 @@ body, html, #map_canvas {
         -ms-user-select: none; /* Internet Explorer/Edge */
             user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Edge, Opera and Firefox */
+    pointer-events: none;
 }
 
-.vl {
-    border-left: 6px solid #555555;
+.available_line {
+    background-color: rgba(0, 255, 0, 0.5);
     height: 100%;
     position: absolute;
     left: 50%;
+    width: 30%;
+    z-index: -1;
+}
+
+.ct {
+    position: absolute;
+    margin: 0;
+    left: 50%;
+    bottom: 5%;
+
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+    pointer-events: none;
 }

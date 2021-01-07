@@ -7,14 +7,17 @@
     <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
     <script src="./static/common.js"></script>
     <script src="./static/maps.js"></script>
+    <script src="./static/dynamics.js"></script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWS9dDereHaFcLyf-RtdLM9Soi_Na2b-E&callback=initMap&libraries=&v=weekly"></script>
-    <link rel="stylesheet" href="./static/home.css">
+    <link rel="stylesheet" href="./static/style.css">
 </head>
 <body>
     <div id="map_canvas"></div>
     <div id="timeline">
-        <div class="vl"></div>
+        <img class='vl' src="./static/images/verticalTextCursor.png">
+        <p id="center_time" class="ct"></p>
     </div>
+
     <script src="./static/timeline.js"></script>
 </body>
 </html>
