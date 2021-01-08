@@ -8,6 +8,21 @@ import os
 from math import *
 
 
+def calculate_markers_points(lat1: float,lon1: float, lat2 : float,lon2:float ) -> [[float,float]]:
+    """
+    Deze functie heeft 2 geo locaties nodig en geeft een lijst met geo locaties ertussen terug
+    @param lat1: Latitude van geo 1
+    @param lon1: longitude van geo 1
+    @param lat2: Latitude van geo 2
+    @param lon2: longitude van geo 2
+    @return: list van geo locations tussen 2 geolocaties
+    """
+
+    # Todo Make this function
+
+    return [[0.0, 0.0][0.1, 0.1]]
+
+
 def calculate_trajectory(lon1, lat1, lon2, lat2):
     # zet de coordinaten om naar radialen
     lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
@@ -146,4 +161,11 @@ if __name__ == "__main__":
 #   [[378328794, 4893289004], [893924, 483724], [48328094, 38492043]],  auto2
 #   [[378328794, 4893289004], [893924, 483724], [48328094, 38492043]]   auto3
 # ]
+
+# RI16E20 :=   Lane 16 -> Calculated Trajectory -> Lane 20
+# RI16E20 :=   IngressLane -> Calculated Trajectory -> Exgresslane
+# RI16E20 :=   [[float , float],[float , float]]
+#
+# R       I      E
+# Rijbaan Ingres Exgress
 
