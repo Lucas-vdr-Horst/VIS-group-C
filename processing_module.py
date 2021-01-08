@@ -83,34 +83,17 @@ def load_sensor_data(begin_time, end_time):
 
 
 def get_coordinates_lane(genericlane):
-    """
-    Extract all longitude en latitude of a specific lane
-    
-    :param genericlane: a variable what contains 1 lane
-    :type xml
-
-    :returns coordinates: all coordinates of a lane
-    :type list
-    """
-    coordinates = []
+    """Haal alle longitude en latitude uit nodes van gegeven laneID"""
+    coordinaten = []
     for node in genericlane.iter('nodes'):  # i.iter('nodes') == nodes
         for n in node.iter('node-LatLon'):  # node.iter('node-LatLon') == node-latlon
             lon = int(n.findall('lon')[0].text)
             lat = int(n.findall('lat')[0].text)
-            coordinates.append([lon, lat])
-    return coordinates
+            coordinaten.append([lon, lat])
+    return coordinaten
 
 
 def json_file_all_lanes_coordinates(tree):
-    """
-    Returns a Json file with the coordinates of all lanes.
-
-    :param tree: info about the intersections
-    :type xml
-
-    :returns: file with all coordinates from all lanes
-    :type json
-    """
     root = tree.getroot()
     dict_with_coords = {}
     laneSet = root[2][1][0][6]
@@ -156,14 +139,13 @@ def json_file_all_lanes_coordinates(tree):
 
 def process(begin_time, end_time):
     """
-    Returns a Json file.
+    Geeft json terug iets zoals hier beneden
 
-    :param begin_time: Datetime dd-mm-yyyy hh:mm:ss:m starttime
-    :type Datetime
+    :param begin_time: als 554. Dit betekend 00 uur 00 min 55 sec .4 milisec
+    :type str
 
-    :param end_time: Datetime dd-mm-yyyy hh:mm:ss:m endtime
-    :type Datetime
-    """
+    :param end_time: als 554. Dit betekend 00 uur 00 min 55 sec .4 milisec
+    :type str"""
 
     sensor_data = load_sensor_data(begin_time, end_time)
 
