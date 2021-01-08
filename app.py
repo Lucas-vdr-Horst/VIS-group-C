@@ -4,7 +4,7 @@ import json
 from processing_module import process
 import os
 from datetime import datetime
-from common import read_csvs
+from common import read_csvs, read_lines, timeframe_csv
 
 
 app = Flask(__name__)
@@ -70,9 +70,50 @@ def get_available_times(intersection_name):
 
 @app.route('/sensor_timeframe/<timeframe_string>')
 def sensor_timeframe(timeframe_string):
-    # TODO
     timeframe = json.loads(timeframe_string)  # example: {'begin': 1604272907812, 'end': 1604273470312}
-    return json.dumps({1604272907812: {'05': 1, '06': 0}, 1604272907813: {'05': 0, '06': 1}})
+    sp = json.load(open(os.path.join('preprocessed', 'sensors_preprocessed.json')))
+
+    begin_index, end_index = 0, -1
+    if int(timeframe['begin']) > int(tuple(sp.keys())[begin_index]):
+        begin_index = list(sp.keys()).index(timeframe['begin'])
+    if int(timeframe['end']) > int(tuple(sp.keys())[end_index]):
+        end_index = list(sp.keys()).index(timeframe['end'])
+
+    result = {time: states for time, states in list(sp.items())[begin_index:end_index+1]}
+
+    return json.dumps(result)
+
+
+@app.route('/header_names')
+def get_header_names():
+    intersection_headers = {}
+    for intersection in json.loads(get_available_intersections()):
+        csv_filename = read_csvs(intersection)[0]
+        intersection_headers[intersection] = read_lines(csv_filename, [0])[0].replace('time;', '').split(';')
+    return intersection_headers
+
+
+def read_block(filename: str, start_index: int, block_size: int):
+    result = []
+    for i, line in enumerate(open(filename)):
+        if i > start_index+block_size:
+            break
+        elif i > start_index:
+            result.append(line[21:-1])
+    return result
+
+
+@app.route('/sensor_block/<int:time>')
+def get_sensor_block(time):
+    intersection_block = {}
+    for intersection in json.loads(get_available_intersections()):
+        for csv_filename in read_csvs(intersection):
+            first_datetime, csv_length = timeframe_csv(csv_filename)
+            first_mili = int(first_datetime.strftime('%s')) * 1000
+            if first_mili < time < first_mili + csv_length*100:
+                start_index = (time - first_mili) / 100
+                intersection_block[intersection] = read_block(csv_filename, int(start_index), 5)
+    return json.dumps(intersection_block)
 
 
 @app.route('/car_request')

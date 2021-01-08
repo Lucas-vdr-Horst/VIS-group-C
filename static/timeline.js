@@ -1,7 +1,7 @@
 
 const camera = {
     center: new Date(2020, 1, 6, 11, 35, 32, 0).getTime(),
-    zoom: 60*60*10000
+    zoom: 1000
 }
 
 let availableLines = []
@@ -16,7 +16,6 @@ datepicker.id = 'datepicker';
 datepicker.classList.add('mapsControl');
 datepicker.onchange = function() {
     camera.center = datepicker.valueAsDate.getTime();
-    console.log(datepicker.valueAsDate)
     updateTimeline();
 }
 
@@ -57,7 +56,7 @@ tl[0].onmousemove = function(e) {
         camera.center = camera.oldCenter + (camera.startDrag - e.clientX / window.innerWidth)*camera.zoom/amountInZoom*5;
         updateTimeline();
         datepicker.valueAsDate = new Date(camera.center + 60*60*1000);
-        updateDynamics()
+        loadUpdate();
     }
 };
 

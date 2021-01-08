@@ -4,7 +4,7 @@ let layouts = {};
 let sensors = {};
 const intersectionSelect = document.createElement('select');
 intersectionSelect.classList.add('mapsControl');
-intersectionSelect.onchange = function() {focus(this.value)}
+intersectionSelect.onchange = function() {focusIntersection(this.value)}
 
 
 function initMap() {
@@ -22,6 +22,33 @@ function initMap() {
             $("[src='https://maps.gstatic.com/mapfiles/api-3/images/google_white5.png']")[0].style.display = 'none';
         }, 1000)
     });
+
+    // TMP Test
+    let coordinates = [[ 5.2938207,  51.683119  ],
+                         [ 5.29382112, 51.68125012],
+                         [ 5.29382153, 51.67938125],
+                         [ 5.29382195, 51.67751237],
+                         [ 5.29382236, 51.6756435 ],
+                         [ 5.29382278, 51.67377462]]
+    let polyline = []
+    for (const coordinate of coordinates) {
+                polyline.push({
+                    lat: coordinate[1],
+                    lng: coordinate[0]
+                });
+                new google.maps.Marker({
+                    position: new google.maps.LatLng(coordinate[1], coordinate[0]),
+                    map: map,
+                });
+            }
+    new google.maps.Polyline({
+                path: polyline,
+                geodesic: true,
+                strokeColor: "#FF8888",
+                strokeOpacity: 1.0,
+                strokeWeight: 2,
+                map: map
+            });
 }
 
 function getAvailableLayouts(doneFunc) {
@@ -74,11 +101,13 @@ function createLaneNodeMarkers(layout) {
     }
 }
 
-function createSensors(layout) {
+function createSensors(layoutName) {
     // Create a sensor object for each sensor in the layout
 
+    const layout = layouts[layoutName]
     // CIpath = ControlledIntersection Path
     const CIpath = ['topology', 'controlData', 'controller', 'controlUnits', 'controlUnit', 'controlledIntersections']
+    let layoutSensors = {};
     for (const sensor of exs(layout, CIpath.concat(['sensors'])).children) {
         let sensorObject = {
             display: function() {
@@ -99,7 +128,7 @@ function createSensors(layout) {
             const polyline = new google.maps.Polyline({
                 path: geoshapeCoordinates,
                 geodesic: true,
-                strokeColor: "#FF0000",
+                strokeColor: "blue",
                 strokeOpacity: 1.0,
                 strokeWeight: 2,
                 map: map
@@ -109,7 +138,13 @@ function createSensors(layout) {
             });
             sensorObject.polyline = polyline;
             sensorObject.updateMap = function(state) {
-                this.polyline.setOptions({strokeColor: 'blue'})
+                let color;
+                if (state === '|') {
+                    color = 'green';
+                } else {
+                    color = 'red';
+                }
+                this.polyline.setOptions({strokeColor: color})
             }
 
         } else {
@@ -119,18 +154,29 @@ function createSensors(layout) {
             const marker = new google.maps.Marker({
                     position: new google.maps.LatLng(lat, lon),
                     map: map,
+                    title: sensorObject.display(),
+                    icon: {
+                        url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+                    }
                 });
             marker.addListener('click', () => {
-                alert(sensorObject.display());
+                alert(sensorObject.display())
             });
             sensorObject.marker = marker;
             sensorObject.updateMap = function(state) {
-                this.marker.setOptions({icon: {url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"}})
+                let color;
+                if (state === '|') {
+                    color = 'green';
+                } else {
+                    color = 'red';
+                }
+                this.marker.setOptions({icon: {url: "http://maps.google.com/mapfiles/ms/icons/"+color+"-dot.png"}})
             }
         }
 
-        sensors[sensorObject.display()] = sensorObject;
+        layoutSensors[sensorObject.display()] = sensorObject;
     }
+    sensors[layoutName] = layoutSensors;
 }
 
 function focusIntersection(layoutName) {
@@ -147,7 +193,7 @@ getAvailableLayouts(() => {
     for (const intersection of availableIntersections) {
         loadLayout(intersection, () => {
             createLaneNodeMarkers(layouts[intersection]);
-            createSensors(layouts[intersection]);
+            createSensors(intersection);
             focusIntersection(availableIntersections[0]);
         });
     }
