@@ -23,6 +23,14 @@ def calculate_markers_points(lat1: float, lon1: float, lat2: float, lon2: float,
     lon = np.linspace(lon1, lon2, num=marker_count)
     #coordinates = list(zip(lat, lon))
     coordinates = list(map(list, zip(lat, lon)))
+    distance, bearing = calculate_trajectory(lon1, lat1, lon2, lat2)
+
+    angle = bearing - 90
+    if angle < 0 :
+        angle +=  360
+    elif angle > 360:
+        angle -= 360
+    print(angle)
 
     return coordinates
 
@@ -110,8 +118,8 @@ def get_all_lanes_coordinates(tree):
 
             coordinaten_lane_in = get_coordinates_lane(genericlane) # coordinaten van de ingresslane
             coordinaten_lane_out = get_coordinates_lane(connected_to_lane) # coordinaten van de egresslane
-            lon1, lat1 = [i  for i in coordinaten_lane_in[0]]  # pakt de eerste coordinaten van de ingress lane
-            lon2, lat2 = [i  for i in coordinaten_lane_out[0]]  # pakt de eerste coordinaten van de egress lane
+            lat1, lon1 = [i  for i in coordinaten_lane_in[0]]  # pakt de eerste coordinaten van de ingress lane
+            lat2, lon2 = [i  for i in coordinaten_lane_out[0]]  # pakt de eerste coordinaten van de egress lane
 
             distance, bearing = calculate_trajectory(lon1, lat1, lon2, lat2)
 
@@ -122,9 +130,12 @@ def get_all_lanes_coordinates(tree):
             # print("\n")
 
             coordinaten_trajectory = calculate_markers_points(lat1, lon1, lat2, lon2,5)# coordinaten van de connection trajectory
-
+            #print(coordinaten_trajectory)
             # voeg coordinaten toe in dataFrame
+
+            #paden_auto = paden_auto.append({'Rijbaan' : laneId , 'ingress_coordinaten' : coordinaten_lane_in,'trajectory_coordinaten' : coordinaten_trajectory,'egress_coordinaten' : coordinaten_lane_out} , ignore_index=True)
             paden_auto = paden_auto.append({'Rijbaan' : laneId , 'ingress_coordinaten' : coordinaten_lane_in,'trajectory_coordinaten' : coordinaten_trajectory,'egress_coordinaten' : coordinaten_lane_out} , ignore_index=True)
+
     return paden_auto
 
 
@@ -142,9 +153,10 @@ def process(begin_time, end_time):
     tree = ET.parse('intersections/BOS210/79190154_BOS210_ITF_COMPLETE.xml')
     df_paden = get_all_lanes_coordinates(tree)
     df_paden.set_index('Rijbaan')
-    print(df_paden.iloc[1]['Rijbaan'])
-    #print(df_paden.iloc[1]['ingress_coordinaten'] + df_paden.iloc[1]['trajectory_coordinaten'] + df_paden.iloc[1]['egress_coordinaten'])
-    print(df_paden.iloc[1]['egress_coordinaten'])
+    #print(df_paden.iloc[1]['Rijbaan'])
+    #print(df_paden.iloc[2]['ingress_coordinaten']  + df_paden.iloc[2]['egress_coordinaten'])
+    print(df_paden.iloc[2]['ingress_coordinaten'] )
+    #print(df_paden.iloc[1]['egress_coordinaten'])
     return df_paden
     
 
