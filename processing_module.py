@@ -30,7 +30,7 @@ def deg2rad(angle):
 def rad2deg(angle):
     return angle*180/pi
 
-def pointRadialDistance(lon1,lat1, bearing, distance):
+def pointRadialDistance(lat1,lon1, bearing, distance):
     """
     Return final coordinates (lat2,lon2) [in degrees] given initial coordinates
     (lat1,lon1) [in degrees] and a bearing [in degrees] and distance [in km]
@@ -76,20 +76,17 @@ def get_coordinates_lane(genericlane):
 def json_file_all_lanes_coordinates(tree):
     root = tree.getroot()
     dict_with_coords = {}
-    
-    for genericlane in root[2][1][0][6]: # iterate through laneset
-        # Pak je de laneID van genericlane en de connected lane
+    laneSet = root[2][1][0][6]
+    for genericlane in laneSet : # iterate through laneset
         if genericlane[3][2].tag == 'vehicle' and genericlane[2].tag == 'ingressApproach': # pak de ingress lanes van  auto's 
             laneId = int(genericlane.find('laneID').text) # haal uit laneId
-            # Pak de lane id van de lane die gekoppeld is aan laneId - gekoppelde egresslane
             connected_to = genericlane[5][0][0][0].text
 
-            for lane in root[2][1][0][6]:
+            for lane in laneSet:
                 if lane[0].text == connected_to:
                     connected_to_lane = lane
 
-            #print("ingress {}, egress{}".format(laneId, connected_to))
-            # Haal uit de coordinaten van de gekoppelde egresslane uit de dictionary  en voeg het toe in dict_with_coords[laneId]
+            
             coordinaten_lane_in = get_coordinates_lane(genericlane)
             coordinaten_lane_out = get_coordinates_lane(connected_to_lane)
             lon1, lat1 = [i/10000000 for i in coordinaten_lane_in[0]] # pakt de eerste coordinaten van de ingress lane
@@ -102,19 +99,19 @@ def json_file_all_lanes_coordinates(tree):
             print("Calculated lon and lat: {}".format(pointRadialDistance(lat1, lon1, bearing, distance)))
             print("\n")
 
-            # numsteps = 5
-            # coord = np.zeros([numsteps+1, 2])
-            # coord[0][0] = lon1
-            # coord[0][1] = lat1
-            # for step  in range(numsteps):
-            #     coord[step+1] = pointRadialDistance( coord[step][0], coord[step][1], (distance*1000)/5, bearing/5)
-            # print(coord)
-            # print("\n")
+            numsteps = 5
+            coord = np.zeros([numsteps+1, 2])
+            coord[0][0] = lon1
+            coord[0][1] = lat1
+            for step  in range(numsteps):
+                coord[step+1] = pointRadialDistance( coord[step][0], coord[step][1], (distance*1000)/5, bearing/5)
+            print(coord)
+            print("\n")
 
         # dict_with_coords[laneId] = coordinaten_lane_in + coordinaten_lane_out 
 
         # dict_with_coords[laneId] = coordinaten_lane_in + coordinaten_lane_out
-    # TODO de trajectory berekenen van een lane 
+    
     #json_file = json.dumps(dict_with_coords)
     return json_file
 
