@@ -18,10 +18,13 @@ def calculate_markers_points(lat1: float, lon1: float, lat2: float, lon2: float,
     @param lon2: longitude van geo 2
     @return: list van geo locations tussen 2 geolocaties
     """
+    # Todo deze functie maakt nu alleen nog maar een rechtelijn, moet veranderd worden naar iets met een curve
+    lat = np.linspace(lat1, lat2, num=marker_count)
+    lon = np.linspace(lon1, lon2, num=marker_count)
+    #coordinates = list(zip(lat, lon))
+    coordinates = list(map(list, zip(lat, lon)))
 
-    # Todo Make this function
-
-    return [[0.0, 0.0], [0.1, 0.1]]
+    return coordinates
 
 
 def calculate_trajectory(lon1, lat1, lon2, lat2):
@@ -42,7 +45,6 @@ def calculate_trajectory(lon1, lat1, lon2, lat2):
 
 def deg2rad(angle):
     return angle * pi / 180
-
 
 def rad2deg(angle):
     return angle * 180 / pi
