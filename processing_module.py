@@ -99,20 +99,19 @@ def json_file_all_lanes_coordinates(tree):
             print("Calculated lon and lat: {}".format(pointRadialDistance(lat1, lon1, bearing, distance)))
             print("\n")
 
-            numsteps = 5
-            coord = np.zeros([numsteps+1, 2])
-            coord[0][0] = lon1
-            coord[0][1] = lat1
-            for step  in range(numsteps):
-                coord[step+1] = pointRadialDistance( coord[step][0], coord[step][1], (distance*1000)/5, bearing/5)
-            print(coord)
-            print("\n")
+            # numsteps = 5
+            # coord = np.zeros([numsteps+1, 2])
+            # coord[0][0] = lon1
+            # coord[0][1] = lat1
+            # for step  in range(numsteps):
+            #     coord[step+1] = pointRadialDistance( coord[step][0], coord[step][1], (distance*1000)/5, bearing/5)
+            # print(coord)
+            # print("\n")
 
-        # dict_with_coords[laneId] = coordinaten_lane_in + coordinaten_lane_out 
+        dict_with_coords[laneId] = coordinaten_lane_in + coordinaten_lane_out 
 
-        # dict_with_coords[laneId] = coordinaten_lane_in + coordinaten_lane_out
     
-    #json_file = json.dumps(dict_with_coords)
+    json_file = json.dumps(dict_with_coords)
     return json_file
 
 
