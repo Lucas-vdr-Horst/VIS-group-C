@@ -100,12 +100,29 @@ def get_coordinates_lane(genericlane):
     :returns coordinates: all coordinates of a lane
     :type list
     """
-    coordinaten = []
-    for node in genericlane.iter('nodes'):  # i.iter('nodes') == nodes
+    lane_coord = []
+    for node in genericlane[4]:
         for n in node.iter('node-LatLon'):  # node.iter('node-LatLon') == node-latlon
             lon = int(n.findall('lon')[0].text)
             lat = int(n.findall('lat')[0].text)
-            coordinaten.append([lat/10000000,lon/10000000])
+            lane_coord.append([lat/10000000,lon/10000000])
+    # print("Ingress Coordinates")
+    # print(lane_coord)
+
+    #[51.6841845, 5.2932479]
+    if genericlane[2].tag == 'ingressApproach':
+        trajectory_coord = []
+        for  node in genericlane[6][0][0]:
+            for n in node.iter('node-LatLon'):  # node.iter('node-LatLon') == node-latlon
+                lon = int(n.findall('lon')[0].text)
+                lat = int(n.findall('lat')[0].text)
+                trajectory_coord.append([lat/10000000,lon/10000000])
+        # print("Trajectory coordinates")
+        # print(trajectory_coord)
+        lane_coord =lane_coord[::-1]
+        coordinaten = lane_coord + trajectory_coord
+    else:
+        coordinaten = lane_coord
     return coordinaten
 
 
@@ -171,9 +188,9 @@ def process(begin_time, end_time):
     df_paden = get_all_lanes_coordinates(tree)
     df_paden.set_index('Rijbaan')
     #print(df_paden.iloc[1]['Rijbaan'])
-    #print(df_paden.iloc[2]['ingress_coordinaten']  + df_paden.iloc[2]['egress_coordinaten'])
-    print(df_paden.iloc[2]['ingress_coordinaten'] )
-    #print(df_paden.iloc[1]['egress_coordinaten'])
+    print(df_paden.iloc[2]['ingress_coordinaten']  + df_paden.iloc[2]['egress_coordinaten'])
+    #print(df_paden.iloc[2]['ingress_coordinaten'] )
+    #print(df_paden.iloc[2]['egress_coordinaten'])
     return df_paden
     
 
