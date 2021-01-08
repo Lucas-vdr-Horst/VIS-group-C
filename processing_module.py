@@ -71,7 +71,7 @@ def pointRadialDistance(lat1, lon1, bearing, distance):
 
     lat = rad2deg(rlat)
     lon = rad2deg(rlon)
-    return lon, lat
+    return lat, lon
 
 
 def load_sensor_data(begin_time, end_time):
@@ -89,11 +89,12 @@ def get_coordinates_lane(genericlane):
         for n in node.iter('node-LatLon'):  # node.iter('node-LatLon') == node-latlon
             lon = int(n.findall('lon')[0].text)
             lat = int(n.findall('lat')[0].text)
-            coordinaten.append([lon, lat])
+            coordinaten.append([lat/10000000,lon/10000000])
     return coordinaten
 
 
-def json_file_all_lanes_coordinates(tree):
+def get_all_lanes_coordinates(tree):
+    paden_auto = pd.DataFrame(columns = ['Rijbaan', 'ingress_coordinaten', 'trajectory_coordinaten', 'egress_coordinaten'])
     root = tree.getroot()
     dict_with_coords = {}
     laneSet = root[2][1][0][6]
@@ -107,34 +108,24 @@ def json_file_all_lanes_coordinates(tree):
                 if lane[0].text == connected_to:
                     connected_to_lane = lane
 
-            coordinaten_lane_in = get_coordinates_lane(genericlane)
-            coordinaten_lane_out = get_coordinates_lane(connected_to_lane)
-            lon1, lat1 = [i / 10000000 for i in
-                          coordinaten_lane_in[0]]  # pakt de eerste coordinaten van de ingress lane
-            lon2, lat2 = [i / 10000000 for i in
-                          coordinaten_lane_out[0]]  # pakt de eerste coordinaten van de egress lane
+            coordinaten_lane_in = get_coordinates_lane(genericlane) # coordinaten van de ingresslane
+            coordinaten_lane_out = get_coordinates_lane(connected_to_lane) # coordinaten van de egresslane
+            lon1, lat1 = [i  for i in coordinaten_lane_in[0]]  # pakt de eerste coordinaten van de ingress lane
+            lon2, lat2 = [i  for i in coordinaten_lane_out[0]]  # pakt de eerste coordinaten van de egress lane
 
             distance, bearing = calculate_trajectory(lon1, lat1, lon2, lat2)
 
-            print("Distance: {}, bearing:{}".format(distance * 1000, bearing))
-            print("Lane {} :lon1: {}, lat1: {}; Lane{} :lon2:{}, lat2:{}".format(laneId, lon1, lat1, connected_to, lon2,
-                                                                                 lat2))
-            print("Calculated lon and lat: {}".format(pointRadialDistance(lat1, lon1, bearing, distance)))
-            print("\n")
-
-            # numsteps = 5
-            # coord = np.zeros([numsteps+1, 2])
-            # coord[0][0] = lon1
-            # coord[0][1] = lat1
-            # for step  in range(numsteps):
-            #     coord[step+1] = pointRadialDistance( coord[step][0], coord[step][1], (distance*1000)/5, bearing/5)
-            # print(coord)
+            # print("Distance: {}, bearing:{}".format(distance * 1000, bearing))
+            # print("Lane {} :lon1: {}, lat1: {}; Lane{} :lon2:{}, lat2:{}".format(laneId, lon1, lat1, connected_to, lon2,
+            #                                                                      lat2))
+            # print("Calculated lon and lat: {}".format(pointRadialDistance(lat1, lon1, bearing, distance)))
             # print("\n")
 
-        dict_with_coords[laneId] = coordinaten_lane_in + coordinaten_lane_out
+            coordinaten_trajectory = calculate_markers_points(lat1, lon1, lat2, lon2,5)# coordinaten van de connection trajectory
 
-    json_file = json.dumps(dict_with_coords)
-    return json_file
+            # voeg coordinaten toe in dataFrame
+            paden_auto = paden_auto.append({'Rijbaan' : laneId , 'ingress_coordinaten' : coordinaten_lane_in,'trajectory_coordinaten' : coordinaten_trajectory,'egress_coordinaten' : coordinaten_lane_out} , ignore_index=True)
+    return paden_auto
 
 
 def process(begin_time, end_time):
@@ -147,16 +138,15 @@ def process(begin_time, end_time):
     :param end_time: als 554. Dit betekend 00 uur 00 min 55 sec .4 milisec
     :type str"""
 
-    sensor_data = load_sensor_data(begin_time, end_time)
 
     tree = ET.parse('intersections/BOS210/79190154_BOS210_ITF_COMPLETE.xml')
-    json_file = json_file_all_lanes_coordinates(tree)
-
-    # TODO: voor iedere rij in sensordata check of sensor geraakt wordt. wanneer een sensor geraakt wordt zoek welke lane deze sensor zit en voeg de coordinaten voor die lane toe aan returnvalue
-
-    # return een file met alle auto's die rijden op dat moment
-
-    return json_file
+    df_paden = get_all_lanes_coordinates(tree)
+    df_paden.set_index('Rijbaan')
+    print(df_paden.iloc[1]['Rijbaan'])
+    #print(df_paden.iloc[1]['ingress_coordinaten'] + df_paden.iloc[1]['trajectory_coordinaten'] + df_paden.iloc[1]['egress_coordinaten'])
+    print(df_paden.iloc[1]['egress_coordinaten'])
+    return df_paden
+    
 
 
 if __name__ == "__main__":
