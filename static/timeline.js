@@ -1,7 +1,7 @@
 
 const camera = {
     center: new Date(2020, 1, 6, 11, 35, 32, 0).getTime(),
-    zoom: 1000
+    zoom: 60*1000
 }
 
 let availableLines = []
@@ -56,7 +56,7 @@ tl[0].onmousemove = function(e) {
         camera.center = camera.oldCenter + (camera.startDrag - e.clientX / window.innerWidth)*camera.zoom/amountInZoom*5;
         updateTimeline();
         datepicker.valueAsDate = new Date(camera.center + 60*60*1000);
-        loadUpdate();
+        updateInputs();
     }
 };
 

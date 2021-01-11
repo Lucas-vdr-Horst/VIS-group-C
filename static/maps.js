@@ -1,10 +1,14 @@
 let map;
 let availableIntersections;
+let selectedIntersections;
 let layouts = {};
 let sensors = {};
+let lanes = {};
 const intersectionSelect = document.createElement('select');
 intersectionSelect.classList.add('mapsControl');
 intersectionSelect.onchange = function() {focusIntersection(this.value)}
+let lineSymbol;
+const drawOffset = [0.000013, 0.0];
 
 
 function initMap() {
@@ -22,33 +26,16 @@ function initMap() {
             $("[src='https://maps.gstatic.com/mapfiles/api-3/images/google_white5.png']")[0].style.display = 'none';
         }, 1000)
     });
+    lineSymbol = {path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW};
 
-    // TMP Test
-    let coordinates = [[ 5.2938207,  51.683119  ],
-                         [ 5.29382112, 51.68125012],
-                         [ 5.29382153, 51.67938125],
-                         [ 5.29382195, 51.67751237],
-                         [ 5.29382236, 51.6756435 ],
-                         [ 5.29382278, 51.67377462]]
-    let polyline = []
-    for (const coordinate of coordinates) {
-                polyline.push({
-                    lat: coordinate[1],
-                    lng: coordinate[0]
-                });
-                new google.maps.Marker({
-                    position: new google.maps.LatLng(coordinate[1], coordinate[0]),
-                    map: map,
-                });
-            }
-    new google.maps.Polyline({
-                path: polyline,
-                geodesic: true,
-                strokeColor: "#FF8888",
-                strokeOpacity: 1.0,
-                strokeWeight: 2,
-                map: map
-            });
+    // Drawing Manager
+    const drawingManager = new google.maps.drawing.DrawingManager({
+        markerOptions: {
+          icon:
+            "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png",
+        },
+        map: map
+    });
 }
 
 function getAvailableLayouts(doneFunc) {
@@ -89,15 +76,28 @@ function createLaneNodeMarkers(layout) {
     // This serves no purpose so far, just a jumping off point for later when the lanes should be drawn
     const laneSetPath = ['topology', 'mapData', 'intersections', 'intersectionGeometry', 'laneSet']
     for (const lane of exs(layout, laneSetPath).children) {
+        let points = []
         for (const nodeXY of exs(lane, ['nodes']).children) {
-            const lat = exs(nodeXY, ['node-LatLon', 'lat']).innerHTML /10000000;
-            const lon = exs(nodeXY, ['node-LatLon', 'lon']).innerHTML /10000000;
-            const marker = new google.maps.Marker({
-                position: new google.maps.LatLng(lat, lon),
-                map: map,
-                visible: false
-            });
+            const lat = exs(nodeXY, ['node-LatLon', 'lat']).innerHTML /10000000 + drawOffset[0];
+            const lon = exs(nodeXY, ['node-LatLon', 'lon']).innerHTML /10000000 + drawOffset[1];
+            points.push({lat:lat, lng:lon})
         }
+
+        const polyline = new google.maps.Polyline({
+                path: points,
+                icons: [{
+                    icon: lineSymbol,
+                    offset: '100%'
+                }],
+                geodesic: true,
+                strokeColor: "orange",
+                strokeOpacity: 1.0,
+                strokeWeight: 2,
+                map: map
+            });
+        polyline.addListener('click', () => {
+                console.log(new XMLSerializer().serializeToString(lane));
+            });
     }
 }
 
@@ -121,14 +121,14 @@ function createSensors(layoutName) {
             let geoshapeCoordinates = [];
             for (const indexPoint of exs(sensor, ['geoShape']).children) {
                 geoshapeCoordinates.push({
-                    lat: exs(indexPoint, ['lat']).innerHTML /10000000,
-                    lng: exs(indexPoint, ['long']).innerHTML /10000000
+                    lat: exs(indexPoint, ['lat']).innerHTML /10000000 + drawOffset[0],
+                    lng: exs(indexPoint, ['long']).innerHTML /10000000 + drawOffset[1]
                 });
             }
-            const polyline = new google.maps.Polyline({
+            const polyline = new google.maps.Polygon({
                 path: geoshapeCoordinates,
                 geodesic: true,
-                strokeColor: "blue",
+                fillColor: "blue",
                 strokeOpacity: 1.0,
                 strokeWeight: 2,
                 map: map
@@ -144,13 +144,13 @@ function createSensors(layoutName) {
                 } else {
                     color = 'red';
                 }
-                this.polyline.setOptions({strokeColor: color})
+                this.polyline.setOptions({fillColor: color})
             }
 
         } else {
             // When no geoshape is available draw the sensor position as a marker
-            const lat = exs(sensor, ['sensorPosition', 'lat']).innerHTML /10000000;
-            const lon = exs(sensor, ['sensorPosition', 'long']).innerHTML /10000000;
+            const lat = exs(sensor, ['sensorPosition', 'lat']).innerHTML /10000000 + drawOffset[0];
+            const lon = exs(sensor, ['sensorPosition', 'long']).innerHTML /10000000 + drawOffset[1];
             const marker = new google.maps.Marker({
                     position: new google.maps.LatLng(lat, lon),
                     map: map,
@@ -190,7 +190,8 @@ function focusIntersection(layoutName) {
 
 // Get available intersection, load them and focus on the first one
 getAvailableLayouts(() => {
-    for (const intersection of availableIntersections) {
+    selectedIntersections = availableIntersections;
+    for (const intersection of selectedIntersections) {
         loadLayout(intersection, () => {
             createLaneNodeMarkers(layouts[intersection]);
             createSensors(intersection);
