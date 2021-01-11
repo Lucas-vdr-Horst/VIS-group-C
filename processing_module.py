@@ -97,30 +97,29 @@ def get_coordinates_lane(genericlane):
     :param genericlane: a variable what contains 1 lane
     :type xml
 
-    :returns coordinates: all coordinates of a lane
+    :returns coordinates: all coordinates of a lane - [[lat, lon],..]
     :type list
     """
     lane_coord = []
-    for node in genericlane[4]:
-        for n in node.iter('node-LatLon'):  # node.iter('node-LatLon') == node-latlon
-            lon = int(n.findall('lon')[0].text)
-            lat = int(n.findall('lat')[0].text)
-            lane_coord.append([lat/10000000,lon/10000000])
-    # print("Ingress Coordinates")
-    # print(lane_coord)
-
-    #[51.6841845, 5.2932479]
-    if genericlane[2].tag == 'ingressApproach':
+    lane_nodes = genericlane[4] 
+    for node in lane_nodes: # Iterate through nodes of genericlane
+        for n in node.iter('node-LatLon'):  # node.iter('node-LatLon') == node-latlon # iterating through node-LatLon
+            # Convert the longitude and latitude to an integer and divided by 10000000 (deciml degrees) 
+            lon = int(n.findall('lon')[0].text)/10000000 
+            lat = int(n.findall('lat')[0].text)/10000000 
+            lane_coord.append([lat,lon])  # add coordinates to list 
+    
+    if genericlane[2].tag == 'ingressApproach': # check if lane is ingress or egress
         trajectory_coord = []
-        for  node in genericlane[6][0][0]:
+        regional = genericlane[6][0][0]
+        for  node in regional: # iterate through nodes in regional 
             for n in node.iter('node-LatLon'):  # node.iter('node-LatLon') == node-latlon
-                lon = int(n.findall('lon')[0].text)
-                lat = int(n.findall('lat')[0].text)
-                trajectory_coord.append([lat/10000000,lon/10000000])
-        # print("Trajectory coordinates")
-        # print(trajectory_coord)
-        lane_coord =lane_coord[::-1]
-        coordinaten = lane_coord + trajectory_coord
+                lon = int(n.findall('lon')[0].text)/10000000
+                lat = int(n.findall('lat')[0].text)/10000000
+                trajectory_coord.append([lat,lon])
+        # If lane is ingress, the list lane_coord has to be reversed
+        lane_coord =lane_coord[::-1] 
+        coordinaten = lane_coord + trajectory_coord # concatenate lane_coord and trajectory_coord
     else:
         coordinaten = lane_coord
     return coordinaten
@@ -128,85 +127,56 @@ def get_coordinates_lane(genericlane):
 
 def get_all_lanes_coordinates(tree):
     """
-    Returns a Json file with the coordinates of all lanes.
+    Returns a CSV file with the coordinates of all lanes.
 
     :param tree: info about the intersections
     :type xml
 
     :returns: file with all coordinates from all lanes
-    :type json
+    :type csv
     """
-    paden_auto = pd.DataFrame(columns = ['Rijbaan', 'ingress_coordinaten', 'trajectory_coordinaten', 'egress_coordinaten'])
+    paden_auto = pd.DataFrame(columns = ['Rijbaan', 'coordinaten']) #'ingress_coordinaten', 'trajectory_coordinaten', 'egress_coordinaten']) # create dataframe that wil contains the coordinates from all lanes
+    
     root = tree.getroot()
-    dict_with_coords = {}
+
     laneSet = root[2][1][0][6]
     for genericlane in laneSet:  # iterate through laneset
-        if genericlane[3][2].tag == 'vehicle' and genericlane[
-            2].tag == 'ingressApproach':  # pak de ingress lanes van  auto's
-            laneId = int(genericlane.find('laneID').text)  # haal uit laneId
-            connected_to = genericlane[5][0][0][0].text
+        if genericlane[3][2].tag == 'vehicle' and genericlane[2].tag == 'ingressApproach':  # pak de ingress lanes van  auto's
+            laneId = int(genericlane.find('laneID').text)  # haal uit laneID van de ingresslane
+            connected_to = genericlane[5][0][0][0].text   # haal uit de laneID van de gekoppelde egresslane
 
+            #Haal uit de genericlane element van de egresslane
             for lane in laneSet:
                 if lane[0].text == connected_to:
                     connected_to_lane = lane
 
             coordinaten_lane_in = get_coordinates_lane(genericlane) # coordinaten van de ingresslane
             coordinaten_lane_out = get_coordinates_lane(connected_to_lane) # coordinaten van de egresslane
-            lat1, lon1 = [i  for i in coordinaten_lane_in[0]]  # pakt de eerste coordinaten van de ingress lane
-            lat2, lon2 = [i  for i in coordinaten_lane_out[0]]  # pakt de eerste coordinaten van de egress lane
-
-            distance, bearing = calculate_trajectory(lon1, lat1, lon2, lat2)
-
-            # print("Distance: {}, bearing:{}".format(distance * 1000, bearing))
-            # print("Lane {} :lon1: {}, lat1: {}; Lane{} :lon2:{}, lat2:{}".format(laneId, lon1, lat1, connected_to, lon2,
-            #                                                                      lat2))
-            # print("Calculated lon and lat: {}".format(pointRadialDistance(lat1, lon1, bearing, distance)))
+            # print("Lane {} : {}".format(connected_to, coordinaten_lane_out))
+            # print("genericlane {}: {}".format(connected_to,connected_to_lane))
             # print("\n")
-
-            coordinaten_trajectory = calculate_markers_points(lat1, lon1, lat2, lon2,5)# coordinaten van de connection trajectory
-            #print(coordinaten_trajectory)
-            # voeg coordinaten toe in dataFrame
-
             #paden_auto = paden_auto.append({'Rijbaan' : laneId , 'ingress_coordinaten' : coordinaten_lane_in,'trajectory_coordinaten' : coordinaten_trajectory,'egress_coordinaten' : coordinaten_lane_out} , ignore_index=True)
-            paden_auto = paden_auto.append({'Rijbaan' : laneId , 'ingress_coordinaten' : coordinaten_lane_in,'trajectory_coordinaten' : coordinaten_trajectory,'egress_coordinaten' : coordinaten_lane_out} , ignore_index=True)
-
+            
+            #Voeg coordinaten toe in dataframe
+            rijbaan = 'RI{}E{}'.format(laneId, connected_to)
+            paden_auto = paden_auto.append({'Rijbaan': rijbaan , 'coordinaten' : coordinaten_lane_in +coordinaten_lane_out} , ignore_index=True)
+            
     return paden_auto
 
 
-def process(begin_time, end_time):
+def process():
     """
-    Returns a Json file.
-
-    :param begin_time: Datetime dd-mm-yyyy hh:mm:ss:m starttime
-    :type Datetime
-
-    :param end_time: Datetime dd-mm-yyyy hh:mm:ss:m endtime
-    :type Datetime
+    Returns a csv file with the coordinates of riding track for a vehicle
     """
+    tree = ET.parse('intersections/BOS210/79190154_BOS210_ITF_COMPLETE.xml') # parse given XML file
+    paden = get_all_lanes_coordinates(tree) # get dataframe with the coordinates of all lanes
+    print(paden['coordinaten'])
+    #csv_paden  = paden.to_csv('paden_autos',index=False) # convert dataframe to csv
 
-    tree = ET.parse('intersections/BOS210/79190154_BOS210_ITF_COMPLETE.xml')
-    df_paden = get_all_lanes_coordinates(tree)
-    df_paden.set_index('Rijbaan')
-    #print(df_paden.iloc[1]['Rijbaan'])
-    print(df_paden.iloc[2]['ingress_coordinaten']  + df_paden.iloc[2]['egress_coordinaten'])
-    #print(df_paden.iloc[2]['ingress_coordinaten'] )
-    #print(df_paden.iloc[2]['egress_coordinaten'])
-    return df_paden
+    return paden
     
 
 
 if __name__ == "__main__":
-    process("02-11-2020 00:00:00.0", "02-11-2020 00:00:00.6")
-
-# [     long       lat         long     lat       long      lat
-#   [[378328794, 4893289004], [893924, 483724], [48328094, 38492043]],  auto1
-#   [[378328794, 4893289004], [893924, 483724], [48328094, 38492043]],  auto2
-#   [[378328794, 4893289004], [893924, 483724], [48328094, 38492043]]   auto3
-# ]
-
-# RI16E20 :=   Lane 16 -> Calculated Trajectory -> Lane 20
-# RI16E20 :=   IngressLane -> Calculated Trajectory -> Exgresslane
-# RI16E20 :=   [[float , float],[float , float]]
-#
-# R       I      E
-# Rijbaan Ingres Exgress
+    #process("02-11-2020 00:00:00.0", "02-11-2020 00:00:00.6")
+    process()
