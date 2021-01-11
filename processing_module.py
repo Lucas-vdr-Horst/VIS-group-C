@@ -6,6 +6,7 @@ import xml.etree.ElementTree as ET
 import json
 import os
 from math import *
+from lane_technic_information import get_dict_lane_info
 
 
 def calculate_markers_points(lat1: float, lon1: float, lat2: float, lon2: float, marker_count: int) -> [[float, float]]:
@@ -152,10 +153,6 @@ def get_all_lanes_coordinates(tree):
 
             coordinaten_lane_in = get_coordinates_lane(genericlane) # coordinaten van de ingresslane
             coordinaten_lane_out = get_coordinates_lane(connected_to_lane) # coordinaten van de egresslane
-            # print("Lane {} : {}".format(connected_to, coordinaten_lane_out))
-            # print("genericlane {}: {}".format(connected_to,connected_to_lane))
-            # print("\n")
-            #paden_auto = paden_auto.append({'Rijbaan' : laneId , 'ingress_coordinaten' : coordinaten_lane_in,'trajectory_coordinaten' : coordinaten_trajectory,'egress_coordinaten' : coordinaten_lane_out} , ignore_index=True)
             
             #Voeg coordinaten toe in dataframe
             rijbaan = 'RI{}E{}'.format(laneId, connected_to)
@@ -170,13 +167,23 @@ def process():
     """
     tree = ET.parse('intersections/BOS210/79190154_BOS210_ITF_COMPLETE.xml') # parse given XML file
     paden = get_all_lanes_coordinates(tree) # get dataframe with the coordinates of all lanes
-    print(paden['coordinaten'])
-    #csv_paden  = paden.to_csv('paden_autos',index=False) # convert dataframe to csv
+    
+    csv_paden  = paden.to_csv('paden_autos.csv',index=False) # convert dataframe to csv
 
     return paden
     
 
-
+# CSV bestand per rijbaan met de volgende gegegeven :
+# Dit zal de gegevens die we nodig zal hebben om een auto te laten rijden 
+# - Runtime: dit is de state van de auto. for i in rnage(coordinaten)
+# - Geopositie: positie/coordinaat(lat, lon) van dat state - coordinaat[runtime/i]
+# - Lus a t/m ..: genereer lussen 
 if __name__ == "__main__":
     #process("02-11-2020 00:00:00.0", "02-11-2020 00:00:00.6")
     process()
+
+    tree = ET.parse('intersections/BOS210/79190154_BOS210_ITF_COMPLETE.xml') # parse given XML file
+    root = tree.getroot()
+
+    [print(" lane {}, sensor {}".format(x.find('sensorAllocations/sensorAllocation/laneID').text, x.find('sensorID').text))  for x in root[3][0][7][0][4][0][5]]
+    
