@@ -1,9 +1,7 @@
 import pandas as pd
 import numpy as np
 from pathlib import Path
-from data_cleaning import fix_hashtags
-import xml.etree.ElementTree as ET
-import json
+import xml.etree.ElementTree as ET 
 import os
 from math import *
 from lane_technic_information import get_dict_lane_info
@@ -167,17 +165,45 @@ def process():
     """
     tree = ET.parse('intersections/BOS210/79190154_BOS210_ITF_COMPLETE.xml') # parse given XML file
     paden = get_all_lanes_coordinates(tree) # get dataframe with the coordinates of all lanes
-    
+    print(paden['Rijbaan'])
     csv_paden  = paden.to_csv('paden_autos.csv',index=False) # convert dataframe to csv
 
     return paden
     
+def runtime_csv(paden, rijbaan):
+    """
+    CSV bestand genereren per rijbaan met de runtime, geoposities, lussen en stoplichten
+    """
+    #df = pd.DataFrame(columns=['Runtime', 'Geoposities']) # definieer de DataFrame
+    return csv_bestand
+
+def extract_lane_id(combined_lane_name):
+    lane1, lane2 = combined_lane_name.rpartition('')
+
+def get_geoposities(df, rijbaan):
+    """
+    Returns the coordinaten of a 'rijbaan' in df 
+
+    :params df:  DataFrame containing the coordinates of all paths in an intersection 
+    :params rijbaan: path in an intersection    
+    """
+    return [[]]
+
+
+
+
+
+
+
+
 
 # CSV bestand per rijbaan met de volgende gegegeven :
 # Dit zal de gegevens die we nodig zal hebben om een auto te laten rijden 
 # - Runtime: dit is de state van de auto. for i in rnage(coordinaten)
 # - Geopositie: positie/coordinaat(lat, lon) van dat state - coordinaat[runtime/i]
 # - Lus a t/m ..: genereer lussen 
+    
+
 if __name__ == "__main__":
     #process("02-11-2020 00:00:00.0", "02-11-2020 00:00:00.6")
     process()
@@ -185,5 +211,4 @@ if __name__ == "__main__":
     tree = ET.parse('intersections/BOS210/79190154_BOS210_ITF_COMPLETE.xml') # parse given XML file
     root = tree.getroot()
 
-    [print(" lane {}, sensor {}".format(x.find('sensorAllocations/sensorAllocation/laneID').text, x.find('sensorID').text))  for x in root[3][0][7][0][4][0][5]]
     
