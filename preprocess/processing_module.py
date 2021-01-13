@@ -4,7 +4,7 @@ from pathlib import Path
 import xml.etree.ElementTree as ET 
 import os
 from math import *
-from lane_technic_information import get_dict_lane_info
+from lane_technical_information import get_dict_lane_info
 import re
 
 
@@ -165,7 +165,7 @@ def process():
     """
     Returns a csv file with the coordinates of riding track for a vehicle
     """
-    tree = ET.parse('../intersections/BOS210/79190154_BOS210_ITF_COMPLETE.xml') # parse given XML file
+    tree = ET.parse('./intersections/BOS210/79190154_BOS210_ITF_COMPLETE.xml') # parse given XML file
     paden = get_all_lanes_coordinates(tree) # get dataframe with the coordinates of all lanes
     # for rijbaan in paden['Rijbaan']: # iterate through the Rijbaan
             #runtime(paden, rijbaan)
@@ -242,7 +242,7 @@ if __name__ == "__main__":
     #process("02-11-2020 00:00:00.0", "02-11-2020 00:00:00.6")
     process()
 
-    tree = ET.parse('../intersections/BOS210/79190154_BOS210_ITF_COMPLETE.xml') # parse given XML file
+    tree = ET.parse('./intersections/BOS210/79190154_BOS210_ITF_COMPLETE.xml') # parse given XML file
     root = tree.getroot()
     paden = get_all_lanes_coordinates(tree)
     print(runtime_csv(paden, 'RI01E26'))
