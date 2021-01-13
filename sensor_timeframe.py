@@ -21,23 +21,32 @@ def to_ms_since_1970(datetime_frame):
 
 
 def remove_json_file_if_exist(file):
-    sensor_file = os.path.join('preprocessed', 'sensor_preproces.json')  # path to json file
-    if os.path.exists(sensor_file):  # deletes json file to prevent duplicate if exist
-        os.remove(sensor_file)
+    """
+    Removes the json file if it exist to re create it afterwards in the function
+    """
+    if os.path.exists(file):  # deletes json file to prevent duplicate if exist
+        os.remove(file)
 
 
 def read_and_transepose_csv(csv):
+    """
+    Reads the csv using pandas and makes the Nan types into empty strings. Afterwards
+    the dataframe gets transposed to get the dataframe converted in the correct way.
+    """
     df = pd.read_csv(csv, sep=';', low_memory=False)
-    df = df.replace(np.nan, '', regex=True)
+    df = df.replace(np.nan, '', regex=True) # replaces Nan for an empty string
     df['time'] = df['time'].apply(to_ms_since_1970)
     df2 = df.set_index('time')
-    df2 = df2.transpose()
-    temp_dict = df2.to_dict()
+    df2 = df2.transpose()   # inverts columns and rows.
+    temp_dict = df2.to_dict() # converts dataframe to dict
     return df, temp_dict
 
 
 def sensor_timeframe():
-    # TODO
+    """
+    Writes a json file in een distinctive format with all the sensor data from all the available
+    cross roads.
+    """
     sensor_file = os.path.join('preprocessed','sensor_preproces.json')  # path to json file
     remove_json_file_if_exist(sensor_file)
     sensor_dict = {}
@@ -53,7 +62,7 @@ def sensor_timeframe():
                     else:
                         sensor_dict[time_frame] = {intersection_name : temp_dict[time_frame]}
                     bar()
-    with open(sensor_file, "w") as f:   # upload dictonary with data to json file
+    with open(sensor_file, "w") as f:   # upload dictionary with data to json file
         json.dump(sensor_dict, f, indent=2)
 
 
