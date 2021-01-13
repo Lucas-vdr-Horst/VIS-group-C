@@ -13,11 +13,23 @@ def open_xml(file_name):
 
     tree = ET.parse("intersections/{}".format(file_name))
     root = tree.getroot()
-    print(type(root))
     return root
 
+def get_length_per_lane(single_lane):
+    """
+    Get the info of a single lane.
 
-def get_lane_length(file_name):
+    :param file_name: piece of xml data from a single lane
+    :type xml
+
+    :returns: the ID and length of a lane
+    :type tuple
+    """
+    lane_id = single_lane[0].text
+    lane_length = single_lane[1].text
+    return lane_id, lane_length
+
+def get_length_all_lanes(file_name):
     """
     Dictionary with length of every lane.
 
@@ -29,7 +41,14 @@ def get_lane_length(file_name):
     """
     xml_file = open_xml(file_name)
 
+    dict_lanes = {}
+    for approachess in xml_file[3][0][7][0][4][0][4]:
+        for approach in approachess:
+            for approach_lane in approach:
+                info_lane = get_length_per_lane(approach_lane)
+                lane_id = info_lane[0]
+                dict_lanes[lane_id] = info_lane[1]
+    return dict_lanes
 
 if __name__ == "__main__":
-    get_lane_length('BOS210/79190154_BOS210_ITF_COMPLETE.xml')
-    
+    print(get_length_all_lanes('BOS210/79190154_BOS210_ITF_COMPLETE.xml'))
