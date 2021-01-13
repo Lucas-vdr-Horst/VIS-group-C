@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ET
 
+
 def open_xml(file_name):
     """
     Returns a xml out of the given directory.
@@ -15,6 +16,7 @@ def open_xml(file_name):
     root = tree.getroot()
     return root
 
+
 def get_length_per_lane(single_lane):
     """
     Get the info of a single lane.
@@ -28,6 +30,7 @@ def get_length_per_lane(single_lane):
     lane_id = single_lane[0].text
     lane_length = single_lane[1].text
     return lane_id, lane_length
+
 
 def get_length_all_lanes(file_name):
     """
@@ -49,6 +52,7 @@ def get_length_all_lanes(file_name):
                 lane_id = info_lane[0]
                 dict_lanes[lane_id] = info_lane[1]
     return dict_lanes
+
 
 if __name__ == "__main__":
     print(get_length_all_lanes('BOS210/79190154_BOS210_ITF_COMPLETE.xml'))
