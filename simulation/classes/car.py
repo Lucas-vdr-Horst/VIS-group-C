@@ -13,7 +13,7 @@ class car:
     + method(type): type
     """
 
-    def __init__(self, id: int, length: int, speed:int, start_posistion, destination):
+    def __init__(self, id: str, length: int, speed:int, start_posistion, destination):
         self.id = id
         self.length = length
         self.speed = speed
