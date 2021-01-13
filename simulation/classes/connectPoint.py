@@ -10,5 +10,10 @@ class connectPoint:
     + method(type): type
     """
 
-    def __init__(self, id: int):
+    def __init__(self, id: str, connectLocation1:[[float]], connectLocation2:[[float]]):
         self.id = id
+        self.connectLocation1 = connectLocation1
+        self.connectLocation2 = connectLocation2
+
+    def type(self):
+        return self
