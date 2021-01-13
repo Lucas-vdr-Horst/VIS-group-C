@@ -48,13 +48,15 @@ body, html, #map_canvas {
     position: relative;
     height: 10%;
     width: 100%;
-    cursor: grab
+    cursor: grab;
+    background-color: gray;
+    z-index: 0;
 }
 
 .td {
     position: absolute;
     margin: 0;
-    top: 50%;
+    top: 35%;
     transform: translate(-50%, -50%);
 }
 
@@ -63,6 +65,7 @@ body, html, #map_canvas {
     position: absolute;
     left: 50%;
     transform: translate(-50%, 0);
+    z-index: 1;
 
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
@@ -75,10 +78,12 @@ body, html, #map_canvas {
 }
 
 .available_line {
-    background-color: rgba(0, 255, 0, 0.5);
-    height: 100%;
+    background-color: white;
+    height: 90%;
     position: absolute;
+    transform: translate(0, -50%);
     left: 50%;
+    top: 50%;
     width: 30%;
     z-index: -1;
 }
@@ -88,6 +93,7 @@ body, html, #map_canvas {
     margin: 0;
     left: 50%;
     bottom: 5%;
+    z-index: 1;
 
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
@@ -97,4 +103,25 @@ body, html, #map_canvas {
             user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Edge, Opera and Firefox */
     pointer-events: none;
+}
+
+#loaded_blocks {
+    position: absolute;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    left: 50%;
+    /*background-color: rgba(100, 100, 100, 0.5);*/
+}
+
+.known_block {
+    position: absolute;
+    background-color: rgba(200, 0, 0, 0.7);
+    height: 50%;
+    top: 35%;
+    transform: translate(0, -50%);
+    margin: 0;
+    left: 10%;
+    width: 30%;
+    border-style: ridge;
 }

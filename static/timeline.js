@@ -1,14 +1,15 @@
 
 const camera = {
     center: new Date(2020, 1, 6, 11, 35, 32, 0).getTime(),
-    zoom: 60*60*10000
-}
+    zoom: 60*1000
+};
+let block_ref_time;
 
-let availableLines = []
+let availableLines = [];
 
 let tl = $('#timeline');
 let ct = $('#center_time');
-let amountInZoom = 10
+let amountInZoom = 10;
 
 const datepicker = document.createElement('input');
 datepicker.setAttribute('type', 'date');
@@ -16,9 +17,8 @@ datepicker.id = 'datepicker';
 datepicker.classList.add('mapsControl');
 datepicker.onchange = function() {
     camera.center = datepicker.valueAsDate.getTime();
-    console.log(datepicker.valueAsDate)
     updateTimeline();
-}
+};
 
 function updateTimeline() {
     let elements = tl[0].getElementsByClassName('td');
@@ -30,18 +30,19 @@ function updateTimeline() {
         const td = document.createElement('p');
         const roundMultiplier = camera.zoom/amountInZoom
         let mili = Math.round(camera.center/roundMultiplier)*roundMultiplier + i*camera.zoom/amountInZoom;
-        const formatOptions = {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minut: '2-digit'};
         td.innerText = new Date(mili).toLocaleTimeString('nl');
         //td.innerText = mili+'';
         td.classList.add('td');
-        td.style.left = ((mili-camera.center) / (camera.zoom/2) + 0.5) * 100 + '%'
+        td.style.left = ((mili-camera.center) / (camera.zoom) + 0.5) * 100 + '%';
         tl[0].appendChild(td);
     }
 
     for (let line of availableLines) {
-        line.style.left = ((line.getAttribute('beginTime')-camera.center) / (camera.zoom/2) + 0.5) * 100 + '%'
-        line.style.width = (line.getAttribute('endTime') - line.getAttribute('beginTime')) / camera.zoom*200 + '%'
+        line.style.left = ((line.getAttribute('beginTime')-camera.center) / (camera.zoom) + 0.5) * 100 + '%';
+        line.style.width = (line.getAttribute('endTime') - line.getAttribute('beginTime')) / camera.zoom*200 + '%';
     }
+
+    $('#loaded_blocks').css('left', ((block_ref_time-camera.center) / (camera.zoom) + 0.5) * 100 + '%');
 
     ct[0].innerText = new Date(camera.center).toString();
 }
@@ -54,10 +55,10 @@ tl.mousedown(function (e) {
 
 tl[0].onmousemove = function(e) {
     if (camera.startDrag !== undefined) {
-        camera.center = camera.oldCenter + (camera.startDrag - e.clientX / window.innerWidth)*camera.zoom/amountInZoom*5;
+        camera.center = camera.oldCenter + (camera.startDrag - e.clientX / window.innerWidth)*camera.zoom/amountInZoom*10;
         updateTimeline();
-        datepicker.valueAsDate = new Date(camera.center + 60*60*1000);
-        updateDynamics()
+        datepicker.valueAsDate = new Date(camera.center + 60*60*1000);  // TODO: replace `+60*60*1000` with something timezone proper
+        updateInputs();
     }
 };
 
@@ -75,7 +76,8 @@ function loadAvailableTimes() {
             url: '/available_times/'+intersection,
             dataType: 'json',
             success: (data) => {
-                const date = new Date(data[0][0])
+                console.log(data)
+                const date = new Date((new Date(data[0][0]).getTime() + new Date(data[0][1]).getTime())/2)
                 camera.center = date.getTime();
                 datepicker.valueAsDate = date;
                 for (let line of data) {
@@ -86,8 +88,9 @@ function loadAvailableTimes() {
                     tl[0].appendChild(availableLine);
                     availableLines.push(availableLine);
                 }
-                availableLines.push()
+                block_ref_time = availableLines[0].getAttribute('beginTime');
                 updateTimeline();
+                updateInputs();
             }
         })
     }

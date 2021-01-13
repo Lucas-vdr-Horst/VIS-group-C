@@ -4,11 +4,12 @@ import json
 from processing_module import process
 import os
 from datetime import datetime
-from common import read_intersection_csvs, to_datetime
+from common import get_csv_paths, read_lines, timeframe_csv, get_available_intersections
+from const import intersection_data_location
+from binary_search_load import get_inputs_block
 
 
 app = Flask(__name__)
-intersection_data_location = os.path.join('intersections', '')
 
 
 @app.route('/static/<path:path>')
@@ -27,8 +28,8 @@ def favicon():
 
 
 @app.route('/available_intersections')
-def get_available_intersections():
-    return json.dumps([i.replace(intersection_data_location, '') for i in glob.glob(os.path.join(intersection_data_location, '*'))])
+def available_intersections():
+    return json.dumps(get_available_intersections())
 
 
 @app.route('/layout/<intersection_name>')
@@ -40,21 +41,9 @@ def send_layout(intersection_name):
         return 'No or multiple .xml files', 404
 
 
-@app.route('/sensor_data/<intersection_name>')
-@app.route('/sensor_data/<intersection_name>/<index>')
-def get_sensor_data(intersection_name, index=0):
-    csvs = read_intersection_csvs(intersection_name)
-    return send_file(csvs[index])
-
-
-@app.route('/amount_sensor_data/<intersection_name>')
-def get_amount_csv(intersection_name):
-    return str(len(read_intersection_csvs(intersection_name)))
-
-
 @app.route('/available_times/<intersection_name>')
 def get_available_times(intersection_name):
-    csvs = read_intersection_csvs(intersection_name)
+    csvs = get_csv_paths(intersection_name)
     lst = []
     for csv in csvs:
         with open(csv) as file:
@@ -68,11 +57,32 @@ def get_available_times(intersection_name):
     return json.dumps(lst, default=str)
 
 
-@app.route('/sensor_timeframe/<timeframe_string>')
-def sensor_timeframe(timeframe_string):
-    # TODO
-    timeframe = json.loads(timeframe_string)  # example: {'begin': 1604272907812, 'end': 1604273470312}
-    return json.dumps({1604272907812: {'05': 1, '06': 0}, 1604272907813: {'05': 0, '06': 1}})
+@app.route('/header_names')
+def get_header_names():
+    intersection_headers = {}
+    for intersection in get_available_intersections():
+        csv_filename = get_csv_paths(intersection)[0]
+        intersection_headers[intersection] = read_lines(csv_filename, [0])[0].replace('time;', '').split(';')
+    return intersection_headers
+
+
+@app.route('/sensor_blocks')
+def get_sensor_blocks():
+    intersection, time = request.values.get('intersection'), int(request.values.get('time'))
+    block, found = get_inputs_block(time, intersection)
+    if found:
+        blocks = [{'begin': block['begin'], 'end': block['end'], 'state': block['state']}]
+        lines = open(os.path.join(intersection_data_location, intersection, 'compressed', 'compressed.csv')).read().split('\n')
+        for i in range(block['index']+1, min(block['index']+10, len(lines)-1)):
+            split = lines[i].split(';')
+            blocks.append({
+                'begin': int(split[0]),
+                'end': int(split[1]),
+                'state': ';'.join(split[2:])
+            })
+        return json.dumps(blocks)
+    else:
+        return 'Time-block not found'
 
 
 @app.route('/car_request')
@@ -83,4 +93,4 @@ def car_request():
 
 
 if __name__ == "__main__":
-    app.run(host='localhost', debug=True)
+    app.run(host='0.0.0.0', debug=False)
