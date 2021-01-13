@@ -1,8 +1,9 @@
 import xml.etree.ElementTree as ET
 
 
-def open_xml():
-    tree = ET.parse('intersections/BOS210/79190154_BOS210_ITF_COMPLETE.xml')
+def open_xml(file_name):
+    """This is the input: 'BOS210/79190154_BOS210_ITF_COMPLETE.xml' """
+    tree = ET.parse("intersections/{}".format(file_name))
     root = tree.getroot()
     return root
 
@@ -27,20 +28,23 @@ def get_trafficsignal_name(signalgroupnumber, root):
             return signalgroup[0].text
 
 
-def get_dict_lane_info():
+def get_dict_lane_info(file_name):
     """
     Makes a dict with the induction loops and trafficlights of a lane. Keys are presented in string.
+    
+    :param file_name: the locationname of the CSV put in like this -> 'BOS210/79190154_BOS210_ITF_COMPLETE.xml'
+    :type str
 
     :returns: all technical info of a lane
     :type dict
     """
 
-    xml_file = open_xml()
+    xml_file = open_xml(file_name)
     dict_info_lanes = {}
     sensors = xml_file[3][0][7][0][4][0][5] #topology/controlData/controller/controlUnits/controlUnit/controlledIntersections/controlledIntersection/sensors
     for sensor in sensors:
         try:
-            laneID = sensor[8][0][0].text
+            laneID = (sensor[8][0][0].text).zfill(2)
         except:
             continue
 
@@ -56,5 +60,5 @@ def get_dict_lane_info():
 
 
 if __name__ == "__main__":
-    dict_with_info = get_dict_lane_info()
+    dict_with_info = get_dict_lane_info('BOS210/79190154_BOS210_ITF_COMPLETE.xml')
     print(dict_with_info)

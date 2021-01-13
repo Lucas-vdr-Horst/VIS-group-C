@@ -5,6 +5,7 @@ import xml.etree.ElementTree as ET
 import os
 from math import *
 from lane_technic_information import get_dict_lane_info
+import re
 
 
 def calculate_markers_points(lat1: float, lon1: float, lat2: float, lon2: float, marker_count: int) -> [[float, float]]:
@@ -29,7 +30,7 @@ def calculate_markers_points(lat1: float, lon1: float, lat2: float, lon2: float,
         angle +=  360
     elif angle > 360:
         angle -= 360
-    print(angle)
+    # print(angle)
 
     return coordinates
 
@@ -141,7 +142,7 @@ def get_all_lanes_coordinates(tree):
     laneSet = root[2][1][0][6]
     for genericlane in laneSet:  # iterate through laneset
         if genericlane[3][2].tag == 'vehicle' and genericlane[2].tag == 'ingressApproach':  # pak de ingress lanes van  auto's
-            laneId = int(genericlane.find('laneID').text)  # haal uit laneID van de ingresslane
+            laneId = genericlane.find('laneID').text.zfill(2)  # haal uit laneID van de ingresslane
             connected_to = genericlane[5][0][0][0].text   # haal uit de laneID van de gekoppelde egresslane
 
             #Haal uit de genericlane element van de egresslane
@@ -165,8 +166,12 @@ def process():
     """
     tree = ET.parse('intersections/BOS210/79190154_BOS210_ITF_COMPLETE.xml') # parse given XML file
     paden = get_all_lanes_coordinates(tree) # get dataframe with the coordinates of all lanes
-    print(paden['Rijbaan'])
+    # for rijbaan in paden['Rijbaan']: # iterate through the Rijbaan
+            #runtime(paden, rijbaan)
+
+
     csv_paden  = paden.to_csv('paden_autos.csv',index=False) # convert dataframe to csv
+    #print(extract_lane_id(paden['Rijbaan'][0]))
 
     return paden
     
@@ -174,11 +179,39 @@ def runtime_csv(paden, rijbaan):
     """
     CSV bestand genereren per rijbaan met de runtime, geoposities, lussen en stoplichten
     """
-    #df = pd.DataFrame(columns=['Runtime', 'Geoposities']) # definieer de DataFrame
-    return csv_bestand
+    rijbaan_coord = get_geoposities(paden, rijbaan) # pakt de coordinaten uit paden 
+    runtime = [i for i in range(len(rijbaan_coord))] # bepaal de runtime 
+    # ingID, egID = extract_lane_id(rijbaan)
+    # lanes = get_dict_lane_info('BOS210/79190154_BOS210_ITF_COMPLETE.xml')
+    # #print(lanes.keys())
+    # try:
+    #     data_ingress_lane = lanes[ingID]
+    #     data_egress_lane = lanes[egID]
+    # except:
+    #     print("{} has no sensors/traffic ligths".format(egID))
+    
+    # print(data_ingress_lane['induction_loops'])
+    # print(data_ingress_lane['traffic_light'])
+    data = {'Runtime':runtime, 'Geopositie':rijbaan_coord} # 
+    
+    df = pd.DataFrame(data)
+    return df
+    
 
 def extract_lane_id(combined_lane_name):
-    lane1, lane2 = combined_lane_name.rpartition('')
+    """
+    Returns the ingress and egress laneID.
+
+    :param combined_lane_name: combination of 2 laneID name in 1
+    :type pandas DataFrame
+
+    :returns: 2 separate laneID
+    :type string
+    """
+    lanes = re.findall(r'\d{2}', combined_lane_name)
+    lane1, lane2 = lanes[0], lanes[1]
+    return lane1, lane2
+    
 
 def get_geoposities(df, rijbaan):
     """
@@ -187,7 +220,7 @@ def get_geoposities(df, rijbaan):
     :params df:  DataFrame containing the coordinates of all paths in an intersection 
     :params rijbaan: path in an intersection    
     """
-    return [[]]
+    return df['coordinaten'][df['Rijbaan'] == rijbaan][0]
 
 
 
@@ -210,5 +243,7 @@ if __name__ == "__main__":
 
     tree = ET.parse('intersections/BOS210/79190154_BOS210_ITF_COMPLETE.xml') # parse given XML file
     root = tree.getroot()
+    paden = get_all_lanes_coordinates(tree)
+    print(runtime_csv(paden, 'RI01E26'))
 
     
