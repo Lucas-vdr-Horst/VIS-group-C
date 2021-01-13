@@ -85,7 +85,7 @@ def pointRadialDistance(lat1, lon1, bearing, distance):
 
 def load_sensor_data(begin_time, end_time):
     # df_sensor = pd.read_csv(os.path.join(intersection_data_location, intersection_name, '*.csv'), delimiter=";", low_memory=False)
-    df_sensor = pd.read_csv("intersections/BOS210/BOS210.csv", delimiter=";", dtype=str)
+    df_sensor = pd.read_csv("../intersections/BOS210/BOS210.csv", delimiter=";", dtype=str)
     df_sensor = df_sensor.set_index('time')  # set index to time
     data_sensor_specific_time = df_sensor.loc[begin_time:end_time]  # filter to begin and end time
     return data_sensor_specific_time
@@ -165,7 +165,7 @@ def process():
     """
     Returns a csv file with the coordinates of riding track for a vehicle
     """
-    tree = ET.parse('intersections/BOS210/79190154_BOS210_ITF_COMPLETE.xml') # parse given XML file
+    tree = ET.parse('../intersections/BOS210/79190154_BOS210_ITF_COMPLETE.xml') # parse given XML file
     paden = get_all_lanes_coordinates(tree) # get dataframe with the coordinates of all lanes
     # for rijbaan in paden['Rijbaan']: # iterate through the Rijbaan
             #runtime(paden, rijbaan)
@@ -242,7 +242,7 @@ if __name__ == "__main__":
     #process("02-11-2020 00:00:00.0", "02-11-2020 00:00:00.6")
     process()
 
-    tree = ET.parse('intersections/BOS210/79190154_BOS210_ITF_COMPLETE.xml') # parse given XML file
+    tree = ET.parse('../intersections/BOS210/79190154_BOS210_ITF_COMPLETE.xml') # parse given XML file
     root = tree.getroot()
     paden = get_all_lanes_coordinates(tree)
     print(runtime_csv(paden, 'RI01E26'))

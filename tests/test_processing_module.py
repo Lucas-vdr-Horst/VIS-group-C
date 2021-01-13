@@ -1,5 +1,6 @@
 from unittest import TestCase
-from processing_module import calculate_markers_points, get_coordinates_lane, get_all_lanes_coordinates, process, get_geoposities, extract_lane_id
+from preprocess.processing_module import calculate_markers_points, get_coordinates_lane, get_all_lanes_coordinates, \
+    get_geoposities, extract_lane_id
 import xml.etree.ElementTree as ET
 import pandas as pd
 

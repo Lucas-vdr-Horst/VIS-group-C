@@ -8,6 +8,10 @@ def get_csv_paths(intersection_name) -> list:
     return glob.glob(os.path.join(intersection_data_location, intersection_name, '*.csv'))
 
 
+def to_datetime(time):
+    return datetime.strptime(time, '%d-%m-%Y %H:%M:%S.%f')
+
+
 def read_lines(filename: str, lines: list) -> dict:
     """Reads specific lines of a file"""
     result = {}

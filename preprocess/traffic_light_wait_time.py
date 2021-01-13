@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 
 def open_xml():
     """lees csv bestand. als sensor geraakt --> open xml --> topology/sensors/ --> zoek voor sensor met naam X --> zoek laneID --> zoek signalgroup in topology/intersections/laneset/ --> zoek een lane met zelfde laneID als gegeven --> check xml voor signalgroup --> xml topology/controldata/signalGroups --> check sg met signalgroupnumber --> geef naam terug en check verschil in csv qua tijd."""
-    tree = ET.parse('intersections/BOS210/79190154_BOS210_ITF_COMPLETE.xml')
+    tree = ET.parse('../intersections/BOS210/79190154_BOS210_ITF_COMPLETE.xml')
     root = tree.getroot()
     return root
 

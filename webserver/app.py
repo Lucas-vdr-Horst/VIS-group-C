@@ -1,10 +1,8 @@
 from flask import Flask, request, send_from_directory, send_file
 import glob
 import json
-from processing_module import process
 import os
-from datetime import datetime
-from common import get_csv_paths, read_lines, timeframe_csv, get_available_intersections
+from common import get_csv_paths, read_lines, get_available_intersections, to_datetime
 from const import intersection_data_location
 from binary_search_load import get_inputs_block
 
@@ -83,13 +81,6 @@ def get_sensor_blocks():
         return json.dumps(blocks)
     else:
         return 'Time-block not found'
-
-
-@app.route('/car_request')
-def car_request():
-    begin_time = request.values.get('begin_time')
-    end_time = request.values.get('begin_time')
-    return process(begin_time, end_time)
 
 
 if __name__ == "__main__":

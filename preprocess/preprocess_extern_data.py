@@ -4,7 +4,7 @@ import pandas as pd
 
 
 def read_csv():
-    intersection_data_location = os.path.join('extern_data', '')
+    intersection_data_location = os.path.join('../extern_data', '')
     return glob.glob(os.path.join(intersection_data_location, '*.csv'))
 
 
@@ -33,7 +33,3 @@ def read_externe_data():
 
 if __name__ == "__main__":
     read_externe_data()
-
-
-# preprocess tot dit
-example = {"1604275200000": {'lat': 52.000, 'lon': 5.00}}
