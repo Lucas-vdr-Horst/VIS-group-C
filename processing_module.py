@@ -54,6 +54,7 @@ def calculate_trajectory(lon1, lat1, lon2, lat2):
 def deg2rad(angle):
     return angle * pi / 180
 
+
 def rad2deg(angle):
     return angle * 180 / pi
 

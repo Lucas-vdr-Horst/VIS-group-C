@@ -136,11 +136,7 @@ dmypy.json
 intersections/*
 !intersections/.keep
 
-# preprocessed
-preprocessed/*
-!preprocessed/.keep
-
 # externe data
-externe_data/*
-!externe_data/.keep
+extern_data/*
+!extern_data/.keep
 
