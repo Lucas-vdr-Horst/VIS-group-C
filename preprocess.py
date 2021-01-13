@@ -1,6 +1,6 @@
 import os
 from const import intersection_data_location
-from common import get_csv_paths, get_available_intersections, get_header
+from common import get_csv_paths, get_available_intersections, get_header, timeframe_csv
 from alive_progress import alive_bar
 from datetime import datetime
 
@@ -22,28 +22,27 @@ def compress_csvs() -> None:
 
         with open(compressed_file_path, 'a') as compressed_file:
             compressed_file.write(f"start_time;end_time{get_header(get_csv_paths(intersection)[0])[4:]}\n")
+            csv_paths = get_csv_paths(intersection)
+            csv_paths.sort(key=lambda x: datetime_string_to_milli(timeframe_csv(x)[0]))
 
             working_state = None
             first_time = None
-            last_time = None
-            for uncompressed in get_csv_paths(intersection):
+            for uncompressed in csv_paths:
                 with alive_bar(len(open(uncompressed).readlines()), title=uncompressed) as bar:
                     for i, line in enumerate(open(uncompressed)):
                         if i == 1:
                             working_state = line[22:]
                             first_time = datetime_string_to_milli(line[:21])
-                            last_time = first_time
                         elif i > 0:
                             state = line[22:]
                             time = datetime_string_to_milli(line[:21])
                             if working_state != state:
-                                compressed_file.write(f"{first_time};{last_time};{working_state}")
+                                compressed_file.write(f"{first_time};{time-1};{working_state}")
                                 working_state = state
                                 first_time = time
-                            last_time = time
 
                         bar()
-                    compressed_file.write(f"{first_time};{last_time};{working_state}")
+                    compressed_file.write(f"{first_time};{time-1};{working_state}")
 
 
 if __name__ == '__main__':

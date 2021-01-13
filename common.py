@@ -22,7 +22,7 @@ def read_lines(filename: str, lines: list) -> dict:
 
 def timeframe_csv(filename: str):
     return (
-        datetime.strptime(read_lines(filename, [1])[1].split(';')[0], '%d-%m-%Y %H:%M:%S.%f'),
+        read_lines(filename, [1])[1].split(';')[0],
         len(open(filename).readlines())-1
     )
 

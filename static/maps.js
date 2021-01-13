@@ -6,7 +6,7 @@ let sensors = {};
 let lanes = {};
 const intersectionSelect = document.createElement('select');
 intersectionSelect.classList.add('mapsControl');
-intersectionSelect.onchange = function() {focusIntersection(this.value)}
+intersectionSelect.onchange = function() {focusIntersection(this.value)};
 let lineSymbol;
 const drawOffset = [0.000013, 0.0];
 
@@ -21,11 +21,11 @@ function initMap() {
     map.controls[google.maps.ControlPosition.TOP_CENTER].push(intersectionSelect);
     map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(datepicker);
 
-    google.maps.event.addListenerOnce(map, 'idle', () => {
-        setTimeout(() => {
-            $("[src='https://maps.gstatic.com/mapfiles/api-3/images/google_white5.png']")[0].style.display = 'none';
-        }, 1000)
-    });
+    // google.maps.event.addListenerOnce(map, 'idle', () => {
+    //     setTimeout(() => {
+    //         $("[src='https://maps.gstatic.com/mapfiles/api-3/images/google_white5.png']")[0].style.display = 'none';
+    //     }, 1000)
+    // });
     lineSymbol = {path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW};
 
     // Drawing Manager
@@ -51,6 +51,8 @@ function getAvailableLayouts(doneFunc) {
                 let intersection = document.createElement('option');
                 intersection.text = name;
                 intersectionSelect.add(intersection);
+
+                inputsBlocks[name] = [];
             }
             loadAvailableTimes();
             doneFunc();
@@ -197,5 +199,6 @@ getAvailableLayouts(() => {
             createSensors(intersection);
             focusIntersection(availableIntersections[0]);
         });
+        requested[intersection] = 0;
     }
 });
