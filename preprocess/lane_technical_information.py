@@ -1,11 +1,5 @@
 import xml.etree.ElementTree as ET
-
-
-def open_xml(file_name):
-    """This is the input: 'BOS210/79190154_BOS210_ITF_COMPLETE.xml' """
-    tree = ET.parse("intersections/{}".format(file_name))
-    root = tree.getroot()
-    return root
+from common import open_xml
 
 
 def get_signalGroup_from_lane(laneID, root):
@@ -60,5 +54,5 @@ def get_dict_lane_info(file_name):
 
 
 if __name__ == "__main__":
-    dict_with_info = get_dict_lane_info('BOS210/79190154_BOS210_ITF_COMPLETE.xml')
+    dict_with_info = get_dict_lane_info('BOS210')
     print(dict_with_info)
