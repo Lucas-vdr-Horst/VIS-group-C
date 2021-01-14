@@ -8,6 +8,10 @@ def get_csv_paths(intersection_name) -> list:
     return glob.glob(os.path.join(intersection_data_location, intersection_name, '*.csv'))
 
 
+def get_xml_path(intersection_name):
+    return glob.glob(os.path.join(intersection_data_location, intersection_name, '*.xml'))
+
+
 def to_datetime(time):
     return datetime.strptime(time, '%d-%m-%Y %H:%M:%S.%f')
 
