@@ -2,11 +2,14 @@ from flask import Flask, request, send_from_directory, send_file
 import glob
 import json
 import os
-from common import get_csv_paths, read_lines, get_available_intersections, to_datetime
+import sys
+
+sys.path.append('../')
+import common
 from const import intersection_data_location
-from binary_search_load import get_inputs_block
+from .binary_search_load import get_inputs_block
 
-
+parent_path = os.path.join(os.path.dirname(__file__), '..')
 app = Flask(__name__)
 
 
@@ -27,29 +30,31 @@ def favicon():
 
 @app.route('/available_intersections')
 def available_intersections():
-    return json.dumps(get_available_intersections())
+    return json.dumps(common.get_available_intersections())
 
 
 @app.route('/layout/<intersection_name>')
 def send_layout(intersection_name):
-    layouts = glob.glob(os.path.join(intersection_data_location, intersection_name, '*.xml'))
+    path = os.path.join(parent_path, intersection_data_location, intersection_name, '*.xml')
+    layouts = glob.glob(path)
     if len(layouts) == 1:
         return send_file(layouts[0])
     else:
+        print(path)
         return 'No or multiple .xml files', 404
 
 
 @app.route('/available_times/<intersection_name>')
 def get_available_times(intersection_name):
-    csvs = get_csv_paths(intersection_name)
+    csvs = common.get_csv_paths(intersection_name)
     lst = []
     for csv in csvs:
         with open(csv) as file:
             lines = file.readlines()
             start_time = lines[1][0:21]
-            start_time = to_datetime(start_time)
+            start_time = common.to_datetime(start_time)
             end_time = lines[-2][0:21]
-            end_time = to_datetime(end_time)
+            end_time = common.to_datetime(end_time)
             lst.append([start_time, end_time])
 
     return json.dumps(lst, default=str)
@@ -58,9 +63,9 @@ def get_available_times(intersection_name):
 @app.route('/header_names')
 def get_header_names():
     intersection_headers = {}
-    for intersection in get_available_intersections():
-        csv_filename = get_csv_paths(intersection)[0]
-        intersection_headers[intersection] = read_lines(csv_filename, [0])[0].replace('time;', '').split(';')
+    for intersection in common.get_available_intersections():
+        csv_filename = common.get_csv_paths(intersection)[0]
+        intersection_headers[intersection] = common.read_lines(csv_filename, [0])[0].replace('time;', '').split(';')
     return intersection_headers
 
 
@@ -70,8 +75,9 @@ def get_sensor_blocks():
     block, found = get_inputs_block(time, intersection)
     if found:
         blocks = [{'begin': block['begin'], 'end': block['end'], 'state': block['state']}]
-        lines = open(os.path.join(intersection_data_location, intersection, 'compressed', 'compressed.csv')).read().split('\n')
-        for i in range(block['index']+1, min(block['index']+10, len(lines)-1)):
+        lines = open(
+            os.path.join(parent_path, intersection_data_location, intersection, 'compressed', 'compressed.csv')).read().split('\n')
+        for i in range(block['index'] + 1, min(block['index'] + 10, len(lines) - 1)):
             split = lines[i].split(';')
             blocks.append({
                 'begin': int(split[0]),
@@ -81,7 +87,3 @@ def get_sensor_blocks():
         return json.dumps(blocks)
     else:
         return 'Time-block not found'
-
-
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', debug=False)

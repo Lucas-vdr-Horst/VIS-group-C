@@ -25,10 +25,15 @@ intersections
 pip install -r requirements.txt
 ```
 
-### Preprocess
+## Run
 ```bash
-python preprocess.py
+python main.py
 ```
 
-## Run
-Run `app.py`
+On the first time (or when something has changed), the options should be run in order:
+1. Preprocess
+2. Process simulation
+3. Start webserver
+
+The next time(s) you can just
+- Start webserver
