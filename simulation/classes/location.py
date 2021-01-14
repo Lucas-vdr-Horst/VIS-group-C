@@ -1,3 +1,7 @@
+import numpy as np
+from geopy.distance import geodesic
+
+
 class Location():
     """
     The class is a child of an object and keeps track of what the current lane is and how far it's parent is on the lane.
@@ -19,12 +23,28 @@ class Location():
         self.meters_from_intersection = 0
 
 
-    def to_geo(self):
+    def to_geo(self, car_distance):
         """
-        Returns the coordinates of current location.
+        Returns the coordinates of current location of a car.
+
+        :param car_distance: the distance between the first coordinate of a lane to the current location of the car.
+        :type str
 
         :returns: coordinates of current Location
         :type list
         """
-        """TODO Coordinaten ophalen van beginpunt lane en uitrekenen waar die coordinaten + meters van intersection op uitkomt."""
-        return self.meters_from_intersection
+        laneNodes = Lane.self.lane_id.self.Nodes
+        distance = 0
+        
+        for coordinate1, coordinate2 in zip(laneNodes, laneNodes[1:]):
+            meters = geodesic(coordinate1, coordinate2)
+            distance += meters
+            if distance > car_distance:
+                meters_to_far = distance - car_distance
+                meters_to_car = meters - meters_to_far
+
+                distance_between_coordinates = np.sqrt((coordinate2[0] - coordinate1[0]) ** 2 + (coordinate2[1] - coordinate1[1]) ** 2)
+                distance_ratio = meters_to_car / distance_between_coordinates
+                lat = coordinate1[0] + distance_ratio * (coordinate2[0] - coordinate1[0])
+                lon = coordinate1[1] + distance_ratio * (coordinate2[1] - coordinate1[1])
+                return [lat, lon]

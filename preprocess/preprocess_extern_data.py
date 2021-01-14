@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+from common import datetime_string_to_milli
 
 
 def read_csv_data(file):
@@ -32,11 +33,11 @@ def convert_to_float(item):
     return item
 
 
-def add_sec(item, i):
+def add_sec(item, starter_sec):
     if isinstance(item, str):
-        item = f"{item}:{i[0] % 60}"
-        i[0] += 1
-    return item
+        item = f"{item}:{starter_sec[0] % 60}.0"
+        starter_sec[0] += 1
+    return datetime_string_to_milli(item)
 
 
 def insert_row(dataframe, row, value):
