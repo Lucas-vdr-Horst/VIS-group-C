@@ -5,8 +5,9 @@ from common import open_xml
 import collections
 
 sys.path.append('../')
-
 from const import intersection_data_location
+from preprocess.processing_module import get_lane
+
 
 
 def get_length_per_lane(single_lane):
@@ -40,11 +41,18 @@ def get_length_all_lanes(intersection_name):
     for approachess in xml_file[3][0][7][0][4][0][4]:
         for approach in approachess:
             for approach_lane in approach:
+
                 info_lane = get_length_per_lane(approach_lane)
                 lane_id = info_lane[0]
-                dict_lanes[lane_id] = info_lane[1]
+                lane = get_lane(xml_file, lane_id)
+
+                if lane[3][2].tag == 'vehicle' :
+                    #Check whether lane is ingress, egress or an trajectory with element directionaluse (genericlane[3][2])
+                    #Content of directionaluse give a Bit 10( ingresspath)or 01 (egresspath)
+                    #AMa's comment: meer duidelijk dan ingressAproah of egressAproach vind ik , wil delete later
+                    dict_lanes[lane_id] = {'lane':lane, 'length':info_lane[1]}
     return dict_lanes
 
 
 if __name__ == "__main__":
-    print(get_length_all_lanes('BOS210'))
+    [print(i, j) for i, j in get_length_all_lanes('BOS210').items()]
