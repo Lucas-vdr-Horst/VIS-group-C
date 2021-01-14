@@ -12,16 +12,25 @@ def process_simulation():
     run_simulation()
 
 
-def start_webserver():
+def webserver_local():
+    from webserver.app import app
+    app.run(host='localhost')
+
+
+def webserver_open():
     from webserver.app import app
     app.run(host='0.0.0.0')
 
 
-menu = ConsoleMenu("Vialis Intersection Simulation", "Start Menu")
+menu = ConsoleMenu("Start Menu")
 
 menu.append_item(FunctionItem("Preprocess", preprocess))
 menu.append_item(FunctionItem("Process simulation", process_simulation))
-menu.append_item(FunctionItem("Start webserver", start_webserver))
+
+selection_webserver = ConsoleMenu('Webserver mode')
+selection_webserver.append_item(FunctionItem("Local (only accessible for you)", webserver_local))
+selection_webserver.append_item(FunctionItem("Open (accessible for everyone on the network)", webserver_open))
+menu.append_item(SubmenuItem("Start Webserver", selection_webserver, menu))
 
 if __name__ == '__main__':
     menu.show()
