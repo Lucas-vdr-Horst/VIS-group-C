@@ -82,6 +82,36 @@ def pointRadialDistance(lat1, lon1, bearing, distance):
     lon = rad2deg(rlon)
     return lat, lon
 
+# Functies om de lane nodes te halen van een ingres, egress en trajectory
+def get_nodes(nodes):
+    "get the coordinates fo a nodes element"
+    coordinates = []
+    for node in nodes:
+        for n in node.iter('node-LatLon'):  # node.iter('node-LatLon') == node-latlon # iterating through node-LatLon
+            # Convert the longitude and latitude to an integer and divided by 10000000 (deciml degrees) 
+            lon = int(n.findall('lon')[0].text)/10000000 
+            lat = int(n.findall('lat')[0].text)/10000000 
+            coordinates.append([lat,lon])  # add coordinates to list
+    return coordinates
+
+def get_coordinates(root, laneID, type_lane):
+    """
+    Return the coordinates of an lanes/trajectory
+
+    :params laneID: laneID of an ingress or egresslane
+
+    """
+    laneSet = root[2][1][0][6]
+    for lane in laneSet:
+        if lane[0].text == laneID:
+            lane = lane
+    #In order to get the coordinates of the trajectory, 
+    if type_lane == 'trajectory':
+        # get the coordinates of nodes in lane 
+        coordinates  = get_nodes(lane[6][0][0]) 
+    else: # type_lane == ingress or egress
+        coordinates  = get_nodes(lane[4]) 
+    return coordinates
 
 def load_sensor_data(begin_time, end_time):
     # df_sensor = pd.read_csv(os.path.join(intersection_data_location, intersection_name, '*.csv'), delimiter=";", low_memory=False)
