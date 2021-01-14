@@ -1,4 +1,6 @@
 import numpy as np
+from geopy.distance import geodesic
+
 
 class Location():
     """
@@ -21,9 +23,12 @@ class Location():
         self.meters_from_intersection = 0
 
 
-    def to_geo(self):
+    def to_geo(self, car_distance):
         """
-        Returns the coordinates of current location.
+        Returns the coordinates of current location of a car.
+
+        :param car_distance: the distance between the first coordinate of a lane to the current location of the car.
+        :type str
 
         :returns: coordinates of current Location
         :type list
