@@ -4,9 +4,21 @@ from pathlib import Path
 import xml.etree.ElementTree as ET 
 import os
 from math import *
-from lane_technical_information import get_dict_lane_info
+#from lane_technical_information import get_dict_lane_info
 import re
 
+
+def get_car_spawn_times(path_to_csv: str, list_of_start_induction_loops: list) -> {"": [""]}:
+    """
+    This function takes in a csv runtime file and a list of start induction loops to return a dictionary of start
+    detection on that loop
+    @param path_to_csv: file path to csv file
+    @param list_of_start_induction_loops: list of induction loops, must be column names in the csv files
+    @return: Dictionary of spawn times from csv file
+    """
+
+    times = {"12": ["02-11-2020 00:00:03.8", "02-11-2020 00:01:01.9"], "31": ["02-11-2020 00:00:03.8"]}
+    return times
 
 def calculate_markers_points(lat1: float, lon1: float, lat2: float, lon2: float, marker_count: int) -> [[float, float]]:
     """

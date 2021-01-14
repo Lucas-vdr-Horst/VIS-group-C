@@ -1,12 +1,25 @@
 from unittest import TestCase
-from preprocess.processing_module import calculate_markers_points, get_coordinates_lane, get_all_lanes_coordinates, \
-    get_geoposities, extract_lane_id
 import xml.etree.ElementTree as ET
 import pandas as pd
+import os
 
+from preprocess.processing_module import calculate_markers_points, get_coordinates_lane, get_all_lanes_coordinates, \
+    get_geoposities, extract_lane_id, get_car_spawn_times
 
 
 class Test(TestCase):
+
+    def test_get_car_spawn_times(self):
+        test_csv_path = os.path.join("tests","filetest", "testcsvfile.csv")
+        list_columns = ["03", "k103"]
+        expected_output = {"03": ["02-11-2020 00:00:00.9", "02-11-2020 00:00:07.9"],
+                           "k103": ["02-11-2020 00:00:00.3", "02-11-2020 00:00:04.2"]}
+
+        df = pd.read_csv(test_csv_path, sep = ';')
+
+        spawn_times = get_car_spawn_times(test_csv_path, list_columns)
+
+        self.assertEqual(spawn_times, expected_output)
 
     def test_calculate_markers_points(self):
         lane13 = [51.6828358, 5.2942547]
