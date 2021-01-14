@@ -1,4 +1,6 @@
 import numpy as np
+from geopy.distance import geodesic
+
 
 class Location():
     """
@@ -23,7 +25,7 @@ class Location():
 
     def to_geo(self):
         """
-        Returns the coordinates of current location.
+        Returns the coordinates of current location of a car.
 
         :returns: coordinates of current Location
         :type list
@@ -34,8 +36,8 @@ class Location():
         for coordinate1, coordinate2 in zip(laneNodes, laneNodes[1:]):
             meters = geodesic(coordinate1, coordinate2)
             distance += meters
-            if distance > car_distance:
-                meters_to_far = distance - car_distance
+            if distance > self.car_distance:
+                meters_to_far = distance - self.car_distance
                 meters_to_car = meters - meters_to_far
 
                 distance_between_coordinates = np.sqrt((coordinate2[0] - coordinate1[0]) ** 2 + (coordinate2[1] - coordinate1[1]) ** 2)

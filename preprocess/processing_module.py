@@ -6,7 +6,7 @@ import os
 from math import *
 #from lane_technical_information import get_dict_lane_info
 import re
-from common import get_csv_paths
+from common import get_csv_paths, open_xml, get_xml_path
 
 
 def get_car_spawn_times(path_to_csv: str, list_of_start_induction_loops: list) -> {"": [""]}:
@@ -86,9 +86,7 @@ def calculate_trajectory(lon1, lat1, lon2, lat2):
     r = 6371  # Radius of earth in kilometers. Use 3956 for miles
     distance = c * r
 
-    # calculate the bearing
-    bearing = atan2(cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(lon2 - lon1), sin(lon2 - lon1) * cos(lat2))
-    return distance, bearing
+    return distance
 
 
 def deg2rad(angle):
@@ -134,17 +132,22 @@ def get_nodes(nodes):
             coordinates.append([lat,lon])  # add coordinates to list
     return coordinates
 
-def get_coordinates(root, laneID, type_lane):
+def get_lane(root, laneID):
+    laneSet = root[2][1][0][6]
+    for lane in laneSet:
+        if lane[0].text == laneID:
+            lane = lane
+            break
+    return lane 
+    
+def get_coordinates(root, lane, type_lane):
     """
     Return the coordinates of an lanes/trajectory
 
     :params laneID: laneID of an ingress or egresslane
 
     """
-    laneSet = root[2][1][0][6]
-    for lane in laneSet:
-        if lane[0].text == laneID:
-            lane = lane
+    #lane = get_lane(root, laneID)
     #In order to get the coordinates of the trajectory, 
     if type_lane == 'trajectory':
         # get the coordinates of nodes in lane 
@@ -232,11 +235,12 @@ def get_all_lanes_coordinates(tree):
     return paden_auto
 
 
-def process():
+def process(file_name):
     """
     Returns a csv file with the coordinates of riding track for a vehicle
     """
-    tree = ET.parse('./intersections/BOS210/79190154_BOS210_ITF_COMPLETE.xml') # parse given XML file
+    os.chdir("..")
+    tree = ET.parse(get_xml_path(file_name)[0]) # parse given XML file
     paden = get_all_lanes_coordinates(tree) # get dataframe with the coordinates of all lanes
     # for rijbaan in paden['Rijbaan']: # iterate through the Rijbaan
             #runtime(paden, rijbaan)
@@ -311,11 +315,15 @@ def get_geoposities(df, rijbaan):
 
 if __name__ == "__main__":
     #process("02-11-2020 00:00:00.0", "02-11-2020 00:00:00.6")
-    process()
-
-    tree = ET.parse('./intersections/BOS210/79190154_BOS210_ITF_COMPLETE.xml') # parse given XML file
+    file_name = 'BOS210'
+    process(file_name)
+    os.chdir("..")
+    tree = ET.parse(get_xml_path(file_name)[0]) # parse given XML file
     root = tree.getroot()
-    paden = get_all_lanes_coordinates(tree)
-    print(runtime_csv(paden, 'RI01E26'))
+    
+    #print all vehicle lanes
+    for i in root[2][1][0][6]:
+        if i[3][2].tag == "vehicle":
+            print(i[0].text, i[3][0].text, i[2].tag)
 
     
