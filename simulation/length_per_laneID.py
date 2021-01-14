@@ -1,4 +1,10 @@
 import xml.etree.ElementTree as ET
+import os
+import sys
+
+sys.path.append('../')
+
+from const import intersection_data_location
 
 
 def open_xml(file_name):
@@ -11,8 +17,7 @@ def open_xml(file_name):
     :returns: an xml readable in python
     :type xml.Element
     """
-
-    tree = ET.parse("intersections/{}".format(file_name))
+    tree = ET.parse(os.path.join(intersection_data_location,file_name))
     root = tree.getroot()
     return root
 

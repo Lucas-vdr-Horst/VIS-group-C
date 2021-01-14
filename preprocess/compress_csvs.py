@@ -1,14 +1,7 @@
 import os
 from const import intersection_data_location
-from common import get_csv_paths, get_available_intersections, get_header, timeframe_csv
+from common import get_csv_paths, get_available_intersections, get_header, timeframe_csv, datetime_string_to_milli
 from alive_progress import alive_bar
-from datetime import datetime
-
-
-def datetime_string_to_milli(datetime_string) -> int:
-    """Datetime in string format '%d-%m-%Y %H:%M:%S.%f' to milliseconds since 1970"""
-    datetime_obj = datetime.strptime(datetime_string, '%d-%m-%Y %H:%M:%S.%f')
-    return int(int(datetime_obj.strftime('%s')) * 1000 + int(datetime_obj.strftime('%f')) / 1000)
 
 
 def compress_csvs() -> None:

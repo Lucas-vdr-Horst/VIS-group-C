@@ -37,3 +37,8 @@ def get_available_intersections() -> list:
 
 def get_header(csv_filepath: str) -> str:
     return read_lines(csv_filepath, [0])[0]
+
+
+def datetime_string_to_milli(datetime_string) -> int:
+    """Datetime in string format '%d-%m-%Y %H:%M:%S.%f' to milliseconds since 1970"""
+    return int(datetime.strptime(datetime_string, '%d-%m-%Y %H:%M:%S.%f').timestamp()*1000)
