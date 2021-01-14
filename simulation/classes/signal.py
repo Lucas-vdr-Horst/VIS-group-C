@@ -8,5 +8,13 @@ class signal:
     + method(type): type
     """
 
-    def __init__(self, id: int):
+    def __init__(self, id: int, state):
         self.id = id
+        self.state = state
+
+    def setState(self, value):
+        "Set the current state(colour) of the signal traffic light"
+        self.state = value
+    
+    def getState(self):
+        return state
