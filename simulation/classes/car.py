@@ -1,6 +1,6 @@
-import location
+import Location
 
-class car:
+class Car:
     """
     This class keeps track of properties of a car.
     it has Location as child

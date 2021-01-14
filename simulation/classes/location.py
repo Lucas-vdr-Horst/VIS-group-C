@@ -19,7 +19,7 @@ class Location():
         self.meters_from_intersection = 0
 
 
-    def to_geo():
+    def to_geo(self):
         """
         Returns the coordinates of current location.
 

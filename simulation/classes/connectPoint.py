@@ -1,4 +1,4 @@
-class connectPoint:
+class ConnectPoint:
     """
     This class keeps track of the connection points between 2 lanes
     it has Location as child
