@@ -58,9 +58,7 @@ def calculate_trajectory(lon1, lat1, lon2, lat2):
     r = 6371  # Radius of earth in kilometers. Use 3956 for miles
     distance = c * r
 
-    # calculate the bearing
-    bearing = atan2(cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(lon2 - lon1), sin(lon2 - lon1) * cos(lat2))
-    return distance, bearing
+    return distance
 
 
 def deg2rad(angle):
@@ -106,17 +104,22 @@ def get_nodes(nodes):
             coordinates.append([lat,lon])  # add coordinates to list
     return coordinates
 
-def get_coordinates(root, laneID, type_lane):
+def get_lane(root, laneID):
+    laneSet = root[2][1][0][6]
+    for lane in laneSet:
+        if lane[0].text == laneID:
+            lane = lane
+            break
+    return lane 
+    
+def get_coordinates(root, lane, type_lane):
     """
     Return the coordinates of an lanes/trajectory
 
     :params laneID: laneID of an ingress or egresslane
 
     """
-    laneSet = root[2][1][0][6]
-    for lane in laneSet:
-        if lane[0].text == laneID:
-            lane = lane
+    #lane = get_lane(root, laneID)
     #In order to get the coordinates of the trajectory, 
     if type_lane == 'trajectory':
         # get the coordinates of nodes in lane 
@@ -286,7 +289,10 @@ if __name__ == "__main__":
 
     tree = ET.parse('./intersections/BOS210/79190154_BOS210_ITF_COMPLETE.xml') # parse given XML file
     root = tree.getroot()
-    paden = get_all_lanes_coordinates(tree)
-    print(runtime_csv(paden, 'RI01E26'))
+    
+    #print all vehicle lanes
+    for i in root[2][1][0][6]:
+        if i[3][2].tag == "vehicle":
+            print(i[0].text, i[3][0].text, i[2].tag)
 
     
