@@ -20,6 +20,21 @@ def get_lane_nodes(xml_file):
     return get_lane_nodes
 
 
+def get_induction_loop_data(xml_file):
+    sensors = xml_file[3][0][7][0][4][0][5] #topology/controlData/controller/controlUnits/controlUnit/controlledIntersections/controlledIntersection/sensors
+    sensor_dict = {}
+    
+    for sensor in sensors:
+        try:
+            sensor_length = sensor.find('length').text
+            sensor_name = sensor.find('name').text
+            sensor_position = [sensor[5].find('lat').text, sensor[5].find('long').text]
+            lane_id_sensor = sensor[8][0].find('laneID').text
+            sensor_dict[sensor_name] = {'position': sensor_position, 'length': sensor_length, 'located_on_laneID': lane_id_sensor}
+        except:
+            continue
+    return sensor_dict
+
 def get_dict_sensor_info(file_name):
     """
     Makes a dict with the induction loops and trafficlights of a lane. Keys are presented in string.
@@ -35,6 +50,10 @@ def get_dict_sensor_info(file_name):
     dict_info_lanes = {}
     nodes_lanes_info = get_lane_nodes(xml_file)
 
+    sensor_information_dict = get_induction_loop_data(xml_file)
+
+
+    
 if __name__ == "__main__":
     #dict_with_info = get_dict_lane_info('BOS210')
     #print(dict_with_info)
