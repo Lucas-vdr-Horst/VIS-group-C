@@ -21,7 +21,7 @@ def get_length_per_lane(single_lane):
     :type tuple
     """
     lane_id = single_lane[0].text.zfill(2)
-    lane_length = single_lane[1].text
+    lane_length = single_lane.find('length').text
     return lane_id, lane_length
 
 
