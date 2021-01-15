@@ -19,7 +19,7 @@ class Car:
         self.speed = speed
         self.start_position = start_posistion
         self.destination = destination
-        self.location = location() # Lane toevoegen
+        self.location = Location() # Lane toevoegen
 
     def move(self):
         """
