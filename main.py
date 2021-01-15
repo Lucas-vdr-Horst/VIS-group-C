@@ -4,6 +4,8 @@ from consolemenu.items import *
 
 def preprocess():
     from preprocess.compress_csvs import compress_csvs
+    from preprocess.preprocess_extern_data import read_extern_data
+    read_extern_data('extern_data')
     compress_csvs()
 
 

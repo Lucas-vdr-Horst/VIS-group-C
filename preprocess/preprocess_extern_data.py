@@ -52,7 +52,7 @@ def insert_row(dataframe, row, value):
     return df
 
 
-def read_externe_data(filename):
+def read_extern_data(filename):
     """
     The data is loaded into a panda dataframe so all values can be converted to the right type
     afterwards the dataframe will be uploaded to an csv file. If the csv already existed it will
@@ -85,4 +85,4 @@ def read_externe_data(filename):
 
 if __name__ == "__main__":
     # test("extern_data")
-    read_externe_data("extern_data")
+    read_extern_data("extern_data")

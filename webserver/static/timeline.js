@@ -95,3 +95,11 @@ function loadAvailableTimes() {
         })
     }
 }
+
+function setCenter(time) {
+    camera.center = time;
+    updateTimeline();
+    datepicker.valueAsDate = new Date(camera.center + 60*60*1000);  // TODO: replace `+60*60*1000` with something timezone proper
+    updateInputs();
+    updateCars();
+}
