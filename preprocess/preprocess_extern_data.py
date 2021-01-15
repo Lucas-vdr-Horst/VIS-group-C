@@ -77,9 +77,10 @@ def read_externe_data(filename):
     df['Longitude'] = df['Longitude'].apply(convert_to_coordinates)
     df['Latitude'] = df['Latitude'].apply(convert_to_coordinates)
     df['Speed (km/h)'] = df['Speed (km/h)'].apply(convert_to_float)
+    df2 = df[['time', 'Latitude', 'Longitude']]
     if os.path.exists(new_file):  # deletes file to prevent duplicate if exist
         os.remove(new_file)
-    df.to_csv(new_file, index=False)
+    df2.to_csv(new_file, index=False, sep=';')
 
 
 if __name__ == "__main__":
