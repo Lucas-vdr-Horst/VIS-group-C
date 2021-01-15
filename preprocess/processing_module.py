@@ -3,6 +3,7 @@ import numpy as np
 from pathlib import Path
 import xml.etree.ElementTree as ET
 import os
+os.chdir("..")
 from math import *
 # from lane_technical_information import get_dict_lane_info
 import re
