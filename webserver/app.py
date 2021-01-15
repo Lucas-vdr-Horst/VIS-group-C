@@ -6,8 +6,9 @@ import sys
 
 sys.path.append('../')
 import common
-from const import intersection_data_location
+from const import *
 from .binary_search_load import get_inputs_block
+from .car_timeframe_load import get_cars_around_block
 
 parent_path = os.path.join(os.path.dirname(__file__), '..')
 app = Flask(__name__)
@@ -87,3 +88,13 @@ def get_sensor_blocks():
         return json.dumps(blocks)
     else:
         return 'Time-block not found'
+
+
+@app.route('/cars_around_block/<int:block>')
+def cars_around_time(block):
+    return json.dumps(get_cars_around_block(block, cars_block_size))
+
+
+@app.route('/car/<path:path>')
+def send_car(path):
+    return send_from_directory(os.path.join(parent_path, cars_data_location), path+'.csv')
