@@ -7,7 +7,7 @@ def read_csv_data(file):
     """
     Creates a path to the right file in a friendly way for both linux and windows.
     """
-    intersection_data_location = os.path.join('..','extern_data', '')
+    intersection_data_location = os.path.join('extern_data', '')
     return os.path.join(intersection_data_location, f'{file}.csv')
 
 
