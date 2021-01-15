@@ -14,7 +14,7 @@ def get_car_spawn_times(path_to_csv: str, list_of_start_induction_loops: list) -
     This function takes in a csv runtime file and a list of start induction loops to return a dictionary of start
     detection on that loop
     @param path_to_csv: file path to csv file
-    @param list_of_start_induction_loops: list of induction loops, must be column names in the csv files
+    @param list_of_start_induction_loops: list of induction loops, must be column names in the csv files; example ["02", "12"]
     @return: Dictionary of spawn times from csv file
     """
     """
