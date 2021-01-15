@@ -10,10 +10,7 @@ def get_csv_paths(intersection_name) -> list:
 
 
 def get_xml_path(intersection_name):
-    print("Enter get_xml_path with current folder: ", os.getcwd())
-    print("intersection_data_location="+intersection_data_location)
-    test = glob.glob(os.path.join(intersection_data_location, intersection_name, '*.xml'))[0]
-    return glob.glob(os.path.join(intersection_data_location, intersection_name, '*.xml'))
+    return glob.glob(os.path.join(intersection_data_location, intersection_name, '*.xml'))[0]
 
 
 def to_datetime(time):
@@ -66,10 +63,12 @@ def open_xml(file_name):
     if not(path.endswith("VIS-group-C")):
         os.chdir("..")
     file = get_xml_path(file_name)
-    tree = ET.parse(file[0])
+    
+    tree = ET.parse(file)
     root = tree.getroot()
     return root
 
-if __name__ == "__main__":
-    print(get_csv_paths('BOS210'))
-    print(get_xml_path('BOS210'))
+# if __name__ == "__main__":
+#     #print(get_csv_paths('BOS210'))
+#     print(get_xml_path('BOS210'))
+#     #print(open_xml(get_xml_path('BOS210')))
