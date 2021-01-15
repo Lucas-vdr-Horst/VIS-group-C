@@ -74,7 +74,7 @@ def read_extern_data():
         df['Speed (km/h)'] = df['Speed (km/h)'].apply(convert_to_float)
         df2 = df[['time', 'latitude', 'longitude']]
         create_csv_file(df2, new_file)
-        move_file(new_filename,)
+        
 
 
 if __name__ == "__main__":
