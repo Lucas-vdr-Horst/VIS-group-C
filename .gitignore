@@ -136,7 +136,11 @@ dmypy.json
 intersections/*
 !intersections/.keep
 
-# externe data
+# extern data
 extern_data/*
 !extern_data/.keep
+
+# cars movements
+cars_movements/*
+!cars_movements/.keep
 
