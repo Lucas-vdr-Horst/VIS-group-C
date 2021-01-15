@@ -11,7 +11,7 @@ class Test(TestCase):
 
     def test_get_car_spawn_times(self):
         test_csv_path = os.path.join("tests","filetest", "testcsvfile.csv")
-        list_columns = ["time", "03", "k103"]
+        list_columns = ["03", "k103"]
         expected_output = {"03": ["02-11-2020 00:00:00.9", "02-11-2020 00:00:07.9"],
                            "k103": ["02-11-2020 00:00:00.3", "02-11-2020 00:00:04.2"]}
 
