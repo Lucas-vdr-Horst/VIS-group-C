@@ -1,4 +1,4 @@
-class signal:
+class Signal:
     """
     This class keeps track of signal traffic lights and it's properties
     """

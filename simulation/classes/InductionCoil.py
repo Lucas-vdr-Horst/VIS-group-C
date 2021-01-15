@@ -1,4 +1,6 @@
-from location import location 
+from .Location import Location
+
+
 class InductionCoil:
     """
     This class contains the information of an induction coil it's geo positions (GeoShape)

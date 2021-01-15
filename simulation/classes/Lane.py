@@ -1,4 +1,6 @@
 from .Signal import Signal
+
+
 class Lane:
     """
     This class contains information of what nodes are pressent on that lane, what connectionpoint there are and if there are signal lights
