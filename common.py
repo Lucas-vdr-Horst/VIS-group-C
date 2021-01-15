@@ -1,18 +1,13 @@
-import os
-import glob
+import os, glob, shutil
 import xml.etree.ElementTree as ET
 from datetime import datetime
 from const import intersection_data_location
-
 
 def get_csv_paths(intersection_name) -> list:
     return glob.glob(os.path.join(intersection_data_location, intersection_name, '*.csv'))
 
 
 def get_xml_path(intersection_name):
-    print("Enter get_xml_path with current folder: ", os.getcwd())
-    print("intersection_data_location="+intersection_data_location)
-    test = glob.glob(os.path.join(intersection_data_location, intersection_name, '*.xml'))[0]
     return glob.glob(os.path.join(intersection_data_location, intersection_name, '*.xml'))
 
 
@@ -63,12 +58,35 @@ def open_xml(file_name):
     :type xml.Element
     """
     path = os.getcwd()
-    if not(path.endswith("VIS-group-C")):
-        os.chdir("..")
+    # if not(path.endswith("VIS-group-C")):
+    #     os.chdir("..")
     file = get_xml_path(file_name)
     tree = ET.parse(file[0])
     root = tree.getroot()
     return root
+
+
+def move_file(file_name, map_name_out, map_name_in):
+    """
+    Moves a single file from map_name_in to map_name_out
+    """
+    source = os.path.join('', map_name_out, file_name)
+    target = os.path.join('', map_name_in)
+    file_check = os.path.join(target, file_name)
+    if os.path.exists(file_check):
+        os.remove(file_check)
+    shutil.move(source,target)
+
+
+def create_csv_file(data, path_with_filename):
+    """
+    Create a csv file containing the giving data at the place of path_with_filename. Which contains
+    that will be given to the file.
+    """
+    if os.path.exists(path_with_filename):
+        os.remove(path_with_filename)
+    data.to_csv(path_with_filename, index=False, sep=';')
+
 
 if __name__ == "__main__":
     print(get_csv_paths('BOS210'))

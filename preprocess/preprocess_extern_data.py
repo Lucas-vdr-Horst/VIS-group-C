@@ -1,14 +1,6 @@
-import os
+import os, glob
 import pandas as pd
-from common import datetime_string_to_milli
-
-
-def read_csv_data(file):
-    """
-    Creates a path to the right file in a friendly way for both linux and windows.
-    """
-    intersection_data_location = os.path.join('extern_data', '')
-    return os.path.join(intersection_data_location, f'{file}.csv')
+from common import datetime_string_to_milli, move_file, get_csv_paths, create_csv_file
 
 
 def convert_to_coordinates(item):
@@ -52,37 +44,39 @@ def insert_row(dataframe, row, value):
     return df
 
 
-def read_extern_data(filename):
+def read_extern_data():
     """
     The data is loaded into a panda dataframe so all values can be converted to the right type
     afterwards the dataframe will be uploaded to an csv file. If the csv already existed it will
     be removed so it can be replaced by the new dataframe.
     """
-    file = read_csv_data(filename)
-    new_filename = f'new_{filename}'
-    new_file = read_csv_data(new_filename)
-    try: # if the file doesn't have the right separator
-        df = pd.read_csv(file, sep=';')
-        print(df['Longitude'].head())
-    except: # if the file has the right separator
-        df = pd.read_csv(file)
-    if filename == "extern_data":   # this is to fix only this file
-        df = df.drop(752) # removing the 61 second of 15:11 minute
-        df = insert_row(df, 556, df.loc[556])   # add a row with 0 speed to give that minute 60 sec in stead of 50
-        df = insert_row(df, 1710, df.loc[1710]) # add a row with 0 speed to give that minute 60 sec in stead of 50
-    first_min = df['time'].iloc[0]                          # to extract the amount of times the first min occurs, since
-    sec_in_min_col = df['time'].value_counts().to_frame()   # the first min doesn't start at zero.
-    value = [60 - sec_in_min_col.loc[first_min]['time']]    # The value is set in an list to create a correct variable for args
-    df['time'] = df['time'].apply(add_sec, args=([value]))
-    df['longitude'] = df['Longitude'].apply(convert_to_coordinates)
-    df['latitude'] = df['Latitude'].apply(convert_to_coordinates)
-    df['Speed (km/h)'] = df['Speed (km/h)'].apply(convert_to_float)
-    df2 = df[['time', 'latitude', 'longitude']]
-    if os.path.exists(new_file):  # deletes file to prevent duplicate if exist
-        os.remove(new_file)
-    df2.to_csv(new_file, index=False, sep=';')
+    csvs = glob.glob(os.path.join('extern_data', "*.csv"))
+
+    for csv in csvs:
+        filename = os.path.basename(csv)
+        new_filename = f'new_{filename}'
+        new_file = os.path.join('cars_movements',new_filename)
+        try: # if the file doesn't have the right separator
+            df = pd.read_csv(csv, sep=';')
+            df['Longitude'].head()
+        except: # if the file has the right separator
+            df = pd.read_csv(csv)
+        if filename == "extern_data":   # this is to fix only this file
+            df = df.drop(752) # removing the 61 second of 15:11 minute
+            df = insert_row(df, 556, df.loc[556])   # add a row with 0 speed to give that minute 60 sec in stead of 50
+            df = insert_row(df, 1710, df.loc[1710]) # add a row with 0 speed to give that minute 60 sec in stead of 50
+        first_min = df['time'].iloc[0]                          # to extract the amount of times the first min occurs, since
+        sec_in_min_col = df['time'].value_counts().to_frame()   # the first min doesn't start at zero.
+        value = [60 - sec_in_min_col.loc[first_min]['time']]    # The value is set in an list to create a correct variable for args
+        df['time'] = df['time'].apply(add_sec, args=([value]))
+        df['longitude'] = df['Longitude'].apply(convert_to_coordinates)
+        df['latitude'] = df['Latitude'].apply(convert_to_coordinates)
+        df['Speed (km/h)'] = df['Speed (km/h)'].apply(convert_to_float)
+        df2 = df[['time', 'latitude', 'longitude']]
+        create_csv_file(df2, new_file)
+        
 
 
 if __name__ == "__main__":
     # test("extern_data")
-    read_extern_data("extern_data")
+    read_extern_data()
