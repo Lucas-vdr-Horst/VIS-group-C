@@ -74,10 +74,10 @@ def read_extern_data(filename):
     sec_in_min_col = df['time'].value_counts().to_frame()   # the first min doesn't start at zero.
     value = [60 - sec_in_min_col.loc[first_min]['time']]    # The value is set in an list to create a correct variable for args
     df['time'] = df['time'].apply(add_sec, args=([value]))
-    df['Longitude'] = df['Longitude'].apply(convert_to_coordinates)
-    df['Latitude'] = df['Latitude'].apply(convert_to_coordinates)
+    df['longitude'] = df['Longitude'].apply(convert_to_coordinates)
+    df['latitude'] = df['Latitude'].apply(convert_to_coordinates)
     df['Speed (km/h)'] = df['Speed (km/h)'].apply(convert_to_float)
-    df2 = df[['time', 'Latitude', 'Longitude']]
+    df2 = df[['time', 'latitude', 'longitude']]
     if os.path.exists(new_file):  # deletes file to prevent duplicate if exist
         os.remove(new_file)
     df2.to_csv(new_file, index=False, sep=';')
