@@ -132,6 +132,7 @@ function createSensors(layoutName) {
                 geodesic: true,
                 fillColor: "blue",
                 strokeOpacity: 1.0,
+                fillOpacity: 0.9,
                 strokeWeight: 2,
                 map: map
             });

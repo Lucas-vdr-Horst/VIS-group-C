@@ -59,6 +59,7 @@ tl[0].onmousemove = function(e) {
         updateTimeline();
         datepicker.valueAsDate = new Date(camera.center + 60*60*1000);  // TODO: replace `+60*60*1000` with something timezone proper
         updateInputs();
+        updateCars();
     }
 };
 
@@ -76,7 +77,6 @@ function loadAvailableTimes() {
             url: '/available_times/'+intersection,
             dataType: 'json',
             success: (data) => {
-                console.log(data)
                 const date = new Date((new Date(data[0][0]).getTime() + new Date(data[0][1]).getTime())/2)
                 camera.center = date.getTime();
                 datepicker.valueAsDate = date;
