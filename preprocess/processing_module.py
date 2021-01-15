@@ -3,7 +3,7 @@ import numpy as np
 from pathlib import Path
 import xml.etree.ElementTree as ET
 import os
-os.chdir("..")
+#os.chdir("..")
 from math import *
 # from lane_technical_information import get_dict_lane_info
 import re
@@ -18,15 +18,19 @@ def get_car_spawn_times(path_to_csv: str, list_of_start_induction_loops: list) -
     @param list_of_start_induction_loops: list of induction loops, must be column names in the csv files; example ["02", "12"]
     @return: Dictionary of spawn times from csv file
     """
-    """
-    Cantain a bug that creates more start times then reality, to fix this, load only the given collumns, write it to a temp file and use this function again
-    """
     list_of_start_induction_loops.insert(0, "time")
 
     df = pd.read_csv(path_to_csv, sep=';')
 
+    tempfile = path_to_csv + ".temp"
+
+    tempdf = df[list_of_start_induction_loops]
+    tempdf = tempdf.set_index('time')
+    tempdf.to_csv(tempfile, sep=';')
+
     lst_data = []
-    for i, line in enumerate(open(path_to_csv)):
+
+    for i, line in enumerate(open(tempfile)):
         if i == 1:
             working_state = line[22:]
             first_time = line[:21]
@@ -39,15 +43,23 @@ def get_car_spawn_times(path_to_csv: str, list_of_start_induction_loops: list) -
                     lst_data.append(test_string.split(";"))
                 working_state = state
                 first_time = time
+    test_string = (f"{first_time};{working_state}".rstrip("\n"))
+    if "|" in test_string:
+        lst_data.append(test_string.split(";"))
 
-    df_new = pd.DataFrame(lst_data, columns=df.columns)
+    tempdf = tempdf.reset_index()
+
+    df_new = pd.DataFrame(lst_data, columns=tempdf.columns)
     df_new = df_new[list_of_start_induction_loops]
     df_new = df_new.replace("", np.nan)
     df_new = df_new.dropna(thresh=2)
 
     return_dict = {}
     for c in list_of_start_induction_loops[1:]:
-        return_dict[c] = df_new[[list_of_start_induction_loops[0], c]].loc[df_new[c] == "|"]['time'].values
+        return_dict[c] = df_new[[list_of_start_induction_loops[0], c]].loc[df_new[c] == "|"]['time'].values.tolist()
+
+    if os.path.exists(tempfile):
+        os.remove(tempfile)
 
     return return_dict
 
