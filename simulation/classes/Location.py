@@ -27,6 +27,8 @@ class Location():
         """
         Returns the coordinates of current location of a car.
 
+        source of formula = https://math.stackexchange.com/questions/2045174/how-to-find-a-point-between-two-points-with-given-distance
+
         :returns: coordinates of current Location
         :type list
         """
