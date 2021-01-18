@@ -1,5 +1,11 @@
 from consolemenu import *
 from consolemenu.items import *
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-O", "--option", help="Select a menu option")
+parser.add_argument("-b", "--begin", help="Begin time in milliseconds")
+parser.add_argument("-e", "--end", help="End time in milliseconds")
 
 
 def preprocess():
@@ -38,4 +44,10 @@ selection_webserver.append_item(FunctionItem("Open (accessible for everyone on t
 menu.append_item(SubmenuItem("Start Webserver", selection_webserver, menu))
 
 if __name__ == '__main__':
-    menu.show()
+    args = parser.parse_args()
+    if args.option is not None:
+        if args.option == 'run_simulation':
+            from simulation.run_simulation import run_simulation
+            run_simulation(args.begin, args.end)
+    else:
+        menu.show()
