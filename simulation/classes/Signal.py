@@ -17,4 +17,4 @@ class Signal:
         self.state = value
     
     def getState(self):
-        return state
+        return self.state

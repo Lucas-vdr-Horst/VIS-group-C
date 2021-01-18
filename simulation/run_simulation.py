@@ -10,8 +10,9 @@ from preprocess.lane_technical_information import get_dict_lane_info
 from simulation.length_per_laneID import get_length_all_lanes
 from common import open_xml
 
-def run_simulation(filename):
-    root = open_xml('BOS210')
+def run_simulation():
+    filename = "BOS210" #TODO: temp fix
+    root = open_xml(filename)
 
     # Get dictionary of all vehicle laneID and their lengths
     lane_indcoil_signal = get_dict_lane_info(filename)
@@ -50,8 +51,8 @@ def run_simulation(filename):
     #  get n_signals
     n_signals =[Signal(j['traffic_light'], state='rood') for i, j in  lane_indcoil_signal.items()]
     #  define a list of InductionCoils objects 
-    loc = Location('1', '13')
-    ind1 = InductionCoil( 1, loc, )
+    # loc = Location('1', '13')
+    # ind1 = InductionCoil( 1, loc, )
 
 
     # # define een World

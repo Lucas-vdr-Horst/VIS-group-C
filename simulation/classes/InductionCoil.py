@@ -36,4 +36,4 @@ class InductionCoil:
         
     
     def getState(self):
-        return state
+        return self.state

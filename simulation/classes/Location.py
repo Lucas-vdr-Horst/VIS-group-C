@@ -1,5 +1,6 @@
 import numpy as np
 from geopy.distance import geodesic
+from .Lane import Lane
 
 
 class Location():
