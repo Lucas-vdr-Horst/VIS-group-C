@@ -1,4 +1,5 @@
 from .Location import Location
+import numpy as np
 
 
 class InductionCoil:
@@ -28,7 +29,7 @@ class InductionCoil:
         #self.end_location = distance_from_stopline + length
         pass
 
-    #todo make a locationclass
+        #todo make a locationclass
 
     def setState(self, value):
         'Set state to given values (True/False)'
@@ -57,8 +58,7 @@ class InductionCoil:
         induction_start_point_meters = distance_between_coordinates - length_to_sides
         induction_end_point_meters = distance_between_coordinates + length_to_sides
         
-        return [induction_start_point_meters, induction_end_point_meters]
-    
+        self.induction_start_point_meters = induction_start_point_meters, self.induction_end_point_meters = induction_end_point_meters
     
     def convert_distance_to_coordinates(self):
         """
