@@ -10,7 +10,13 @@ from preprocess.lane_technical_information import get_dict_lane_info
 from simulation.length_per_laneID import get_length_all_lanes
 from common import open_xml
 
-def run_simulation():
+
+def run_simulation(begin_time, end_time):
+    return
+
+
+def run_simulation_reference():
+    # This is not runnable at the moment, can be used as reference to code `run_simulation`
     filename = "BOS210" #TODO: temp fix
     root = open_xml(filename)
 
@@ -34,7 +40,7 @@ def run_simulation():
             traj_id = id+gekoppelde_egresslane # define the id 
             traj_coordinates = get_coordinates(root, lane_ing, 'trajectory') # get coordinates of trajectory 
             traj_length = calculate_trajectory(traj_coordinates[0][1], traj_coordinates[0][0], traj_coordinates[-1][1], traj_coordinates[-1][0]) # calculate the length 
-            lane_objects[traj_id]= Lane(traj_id, traj_length, traj_coordinates, None, 'trajectory') # define Lane object and add it ti the dict
+            lane_objects[traj_id] = Lane(traj_id, traj_length, traj_coordinates, None, 'trajectory') # define Lane object and add it ti the dict
             
         else: # egress
             lane_objects[id] = Lane(id, length, coordinaten,signal,'egress')
@@ -49,7 +55,7 @@ def run_simulation():
     
 
     #  get n_signals
-    n_signals =[Signal(j['traffic_light'], state='rood') for i, j in  lane_indcoil_signal.items()]
+    n_signals = [Signal(j['traffic_light'], state='rood') for i, j in lane_indcoil_signal.items()]
     #  define a list of InductionCoils objects 
     # loc = Location('1', '13')
     # ind1 = InductionCoil( 1, loc, )
