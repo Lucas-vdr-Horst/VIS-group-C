@@ -10,10 +10,29 @@ from preprocess.lane_technical_information import get_dict_lane_info
 from preprocess.sensor_technical_information import get_dict_sensor_info
 from simulation.length_per_laneID import get_length_all_lanes
 from common import open_xml
+import os
+import csv
 
 
 def run_simulation(begin_time, end_time):
-    run_simulation_reference()
+    # hellow there :)
+
+    with open(os.path.join('cars_movements', 'test_car_on_lane.csv'), 'w') as csvfile:
+        fieldnames = ['time', 'latitude', 'longitude']
+        writer = csv.DictWriter(csvfile, delimiter=';', fieldnames=fieldnames)
+        writer.writeheader()
+
+        nodes = ((51.6828358,5.2942547), (51.6827307,5.2942916), (51.6826643,5.2943031), (51.6825965, 5.2943011), (51.6825186, 5.2942849))
+        test_lane = Lane('13', nodes, "Ingress")
+        test_car = Car(Location(test_lane, test_lane.length-1), 1, 2, False)
+        
+        t = 1604271611700
+        step_size = 100     # miliseconds
+        while 0 < test_car.location.meters_from_intersection < test_lane.length:
+            car_geo = test_car.location.to_geo()
+            writer.writerow({'time': t, 'latitude': car_geo[0], 'longitude': car_geo[1]})
+            test_car.move(step_size)
+            t += step_size
 
 
 def run_simulation_reference():

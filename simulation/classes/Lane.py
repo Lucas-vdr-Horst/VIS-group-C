@@ -1,30 +1,22 @@
 from .Signal import Signal
+from geopy.distance import geodesic
 
 
 class Lane:
     """
     This class contains information of what nodes are pressent on that lane, what connectionpoint there are and if there are signal lights
     """
-    """
-    + id 
-    + Array Nodes [] - list of coordinates(lat, lon) of the lane
-    + Maybe Signal
-    +Array connectpoints()
     
-    + method(type): type
-    """
-
-    def __init__(self, id: str,length: int,  nodes, signal: Signal, type_lane):
-        self.id = id
-        self.nodes = nodes
-        self.signal = signal if signal is not None else None 
-        self.length = length 
-        self.type_lane = type_lane
-        self.inductioncoils = []
+    def __init__(self, id: str, nodes: tuple, type_lane:str, signal: Signal=None):
+        self.id = id                    # Lane identifier
+        self.nodes = nodes              # Geo codes from the lane (lat, lon)
+        self.signal = signal            # Signal lights from tracfic lights
+        self.length = sum([geodesic(nodes[i], nodes[i+1]).meters for i in range(len(nodes)-1)]) # Calculate length of the lane
+        self.type_lane = type_lane      # Ingress, Trajectory, Exgress
         
-    def checkTrafficlight(self):
+    def check_trafficlight(self):
         """
-        Check the state of the traffic light. Signal uit
+        Check the state of the traffic light. If the signal is on red, the car cannot move to the next lane ( Ingress -> trajectory -> Exgress)
         """
         return self.signal.getState()
     

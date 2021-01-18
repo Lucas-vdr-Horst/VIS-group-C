@@ -2,15 +2,11 @@ class Signal:
     """
     This class keeps track of signal traffic lights and it's properties
     """
-    """
-    + field: type
-    
-    + method(type): type
-    """
 
-    def __init__(self, id: int, state:"rood"):
-        self.id = id
-        self.state = state
+
+    def __init__(self, id: int, state:str="red"):
+        self.id = id        # id of the signal/ traficlight
+        self.state = state  # The state of the traficlight
 
     def setState(self, value):
         "Set the current state(colour) of the signal traffic light"
