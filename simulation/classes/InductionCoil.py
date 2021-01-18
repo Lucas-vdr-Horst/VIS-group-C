@@ -13,10 +13,10 @@ class InductionCoil:
     + method(type): type
     """
     def __init__(self, id: int, centerLocation, lengte, state:bool):
-        self.id = id
-        self.centerLocation = centerLocation
-        self.lengte = lengte
-        self.state = state
+        self.id = id                            # the identifier of the induction coil
+        self.centerLocation = centerLocation    # the geo centerlocation of the induction coil
+        self.lengte = lengte                    # the length of the induction coil for activation
+        self.state = state                      # the state of the induction coil, high or low, True or False
 
     def setStartAndEndLocation(self):
         # todo

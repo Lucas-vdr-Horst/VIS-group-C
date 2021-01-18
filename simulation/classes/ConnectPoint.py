@@ -11,9 +11,9 @@ class ConnectPoint:
     """
 
     def __init__(self, id: str, connectLocation1:[[float]], connectLocation2:[[float]]):
-        self.id = id
-        self.connectLocation1 = connectLocation1
-        self.connectLocation2 = connectLocation2
+        self.id = id                                # identifier of the connectionpoint (might be obsolete)
+        self.connectLocation1 = connectLocation1    # connection point 1 (prefered first node ingress lane)
+        self.connectLocation2 = connectLocation2    # connection point 2 (prefered first node exgress lane)
 
     def type(self):
         return self

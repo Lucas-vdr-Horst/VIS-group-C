@@ -9,7 +9,7 @@ class Location():
     """
 
     
-    def __init__(self, id, lane_id: str):
+    def __init__(self, lane: Lane, meters_from_intersection: float):
         """
         Sets the parameters for a location. 
 
@@ -19,12 +19,23 @@ class Location():
         :param lane_id: the lane_id of the lane where the location is located.
         :type str
         """
-        self.id = id
-        self.lane_id = lane_id
-        self.meters_from_intersection = 0
+        self.lane = lane                                            # Lane object
+        self.meters_from_intersection = meters_from_intersection    # Meters from intersecotion
+    
+    def to_geo(self) -> (float, float):
+        distance = 0
+        for i in range(len(self.lane.nodes)-1):
+            current_node = self.lane.nodes[i]
+            next_node = self.lane.nodes[i+1]
+            add_distance = geodesic(current_node, next_node).meters
+            if distance + add_distance > self.meters_from_intersection:
+                weight_shift = (self.meters_from_intersection - distance) / add_distance
+                return np.array(current_node) * (1-weight_shift) + np.array(next_node) * weight_shift
+            distance += add_distance
+        raise Exception('Meters from intersection outside lane')
 
 
-    def to_geo(self):
+    def to_geo_old(self):
         """
         Returns the coordinates of current location of a car.
 

@@ -88,8 +88,3 @@ def create_csv_file(data, path_with_filename):
     if os.path.exists(path_with_filename):
         os.remove(path_with_filename)
     data.to_csv(path_with_filename, index=False, sep=';')
-
-
-if __name__ == "__main__":
-    print(get_csv_paths('BOS210'))
-    print(get_xml_path('BOS210'))
