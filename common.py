@@ -3,12 +3,13 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 from const import intersection_data_location
 
+
 def get_csv_paths(intersection_name) -> list:
     return glob.glob(os.path.join(intersection_data_location, intersection_name, '*.csv'))
 
 
 def get_xml_path(intersection_name):
-    return glob.glob(os.path.join(intersection_data_location, intersection_name, '*.xml'))
+    return glob.glob(os.path.join(intersection_data_location, intersection_name, '*.xml'))[0]
 
 
 def to_datetime(time):
