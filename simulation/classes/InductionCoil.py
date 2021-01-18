@@ -12,12 +12,24 @@ class InductionCoil:
 
     + method(type): type
     """
-    def __init__(self, id: int, start_location, end_location, state:bool):
+    def __init__(self, id: int, centerLocation, lengte, state:bool):
         self.id = id
-        self.start_location = location()
-        self.end_location = location()
+        self.centerLocation = centerLocation
+        self.lengte = lengte
         self.state = state
-    
+
+    def setStartAndEndLocation(self):
+        # todo
+        #centerGeo = get geo # Get from dict from @Freek
+        #length = Get length / 2 #Get length of coil from @Freek
+        #stoplineGeo = lane.getStoplineGeo()
+        #distance_from_stopline = calculateBetween2Points(lat1: centerGeo[0], lon1: centerGeo[1], lat2: stoplineGeo[0],lon1 : stoplineGeo[1])
+        #self.start_location = distance_from_stopline - length
+        #self.end_location = distance_from_stopline + length
+        pass
+
+    #todo make a locationclass
+
     def setState(self, value):
         'Set state to given values (True/False)'
         self.state = value

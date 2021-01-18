@@ -8,7 +8,7 @@ class Signal:
     + method(type): type
     """
 
-    def __init__(self, id: int, state):
+    def __init__(self, id: int, state:"rood"):
         self.id = id
         self.state = state
 
