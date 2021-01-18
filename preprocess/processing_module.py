@@ -136,6 +136,15 @@ def pointRadialDistance(lat1, lon1, bearing, distance):
     lon = rad2deg(rlon)
     return lat, lon
 
+# Function to get the necessary laneID for the simulation 
+def vehicles_laneID(root) -> dict:
+    laneSet = root[2][1][0][6]
+    vehicles = {}
+    for  i in laneSet:
+        if i[3][2].tag == 'vehicle':
+            vehicles[i.find('laneID').text] = i
+    return vehicles
+
 
 # Functies om de lane nodes te halen van een ingres, egress en trajectory
 def get_nodes(nodes):
