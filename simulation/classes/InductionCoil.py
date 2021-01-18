@@ -39,6 +39,14 @@ class InductionCoil:
         return self.state
 
     def calculate_sensor_point(self):
+        """
+        This function calculates the distance between the beginnode of 
+        a lane and the beginpoint of a sensor and the distance between 
+        the beginnode of a lane and the endpoint of a sensor.
+
+        :returns: distance between stopline and beginpoint sensor and distance between stopline and endpoint sensor
+        :type list
+        """
         lane_id = Location.self.lane_id
         
         length_to_sides = self.lengte / 2
@@ -48,12 +56,14 @@ class InductionCoil:
         distance_between_coordinates = np.sqrt((self.centerLocation[0]-begin_node[0])**2 + (self.centerLocation[1]-begin_node[1]))
         induction_start_point_meters = distance_between_coordinates - length_to_sides
         induction_end_point_meters = distance_between_coordinates + length_to_sides
-        self.induction_start_point_meters = 
         
         return [induction_start_point_meters, induction_end_point_meters]
     
     
     def convert_distance_to_coordinates(self):
+        """
+        Convert a specific distance from a coordinateA to a coordinateB to a coordinate.
+        """
         begin_node = Location.Lane.self.nodes[-1]
         end_node = Location.Lane.self.nodes[0]
 
