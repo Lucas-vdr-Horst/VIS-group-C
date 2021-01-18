@@ -56,7 +56,7 @@ def get_length_all_lanes(intersection_name):
                                     #Check whether lane is ingress, egress or an trajectory with element directionaluse (genericlane[3][2])
                                     #Content of directionaluse give a Bit 10( ingresspath)or 01 (egresspath)
                                     #AMa's comment: meer duidelijk dan ingressAproah of egressAproach vind ik , wil delete later
-                                dict_lanes[lane_id] = {'lane':lane_id, 'length':info_lane[1]}
+                                dict_lanes[lane_id] = {'length':info_lane[1]}
     return dict_lanes
 
 
