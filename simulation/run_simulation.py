@@ -5,14 +5,15 @@ from simulation.classes.Signal import Signal
 from simulation.classes.InductionCoil import InductionCoil
 from simulation.classes.Location import Location
 
-from preprocess.processing_module import get_coordinates, calculate_trajectory, get_lane
+from preprocess.processing_module import get_coordinates, calculate_trajectory, get_lane, vehicles_laneID
 from preprocess.lane_technical_information import get_dict_lane_info
+from preprocess.sensor_technical_information import get_dict_sensor_info
 from simulation.length_per_laneID import get_length_all_lanes
 from common import open_xml
 
 
 def run_simulation(begin_time, end_time):
-    return
+    run_simulation_reference()
 
 
 def run_simulation_reference():
@@ -21,18 +22,26 @@ def run_simulation_reference():
     root = open_xml(filename)
 
     # Get dictionary of all vehicle laneID and their lengths
-    lane_indcoil_signal = get_dict_lane_info(filename)
-    lanes = get_length_all_lanes(filename)
+    vehicles_lanes = vehicles_laneID(root) # dict, keys: laneID, value: lanes
+    lane_indcoil_signal = get_dict_lane_info(filename) # dictionary of the induction loops and trafficlights of  all lanes
+    lanes_length = get_length_all_lanes(filename) #  dictionary of the length of all lanes
+
     lane_objects = {}
-    for id in lanes.keys():
+
+    for id in vehicles_lanes.keys():
         #TODO get signalID of lane if exist, els signalID and signal is None
-        signal_id = lane_indcoil_signal[id.zfill(2)] if id.zfill(2) in lane_indcoil_signal.keys()   else '' # check if id in dict
-        signal = Signal(signal_id, 'rood') if signal_id != '' else None
+        if id.zfill(2) in lane_indcoil_signal.keys() and lane_indcoil_signal[id.zfill(2)]['traffic_light'] != '':
+            signal_id = lane_indcoil_signal[id.zfill(2)]   #check if id in dict, and get the value of id
+            signal = Signal(signal_id['traffic_light'], 'rood')
+        else:
+            signal = None
         #id: str,length: int,  nodes, signal: Signal(), type_lane
-        coordinaten = get_coordinates(root, lanes[id]['lane'], 'ingress')
-        length = lanes[id]['length']
-        if lanes[id]['lane'][3][0].text == '10':# ingress
-            gekoppelde_egresslane = lanes[id]['lane'][5][0][0][0].text
+
+        coordinaten = get_coordinates(root, vehicles_lanes[id], 'ingress')
+        length = lanes_length[id.zfill(2)]
+
+        if vehicles_lanes[id][3][0].text == '10':# ingress
+            gekoppelde_egresslane = vehicles_lanes[id][5][0][0][0].text
             lane_objects[id] = Lane(id, length, coordinaten,signal,'ingress') # add to dict
             
             #Define the instance variable for a Lane object of a trajectory
@@ -44,22 +53,36 @@ def run_simulation_reference():
             
         else: # egress
             lane_objects[id] = Lane(id, length, coordinaten,signal,'egress')
-    
-    
+
 
     # # define a list of Cars objects
-    lane1 = lane_objects['13'].getNodes()
-    lane26 = lane_objects['19']
-    car1 = Car("1",1 , 40,  lane1[0], lane26) #self, id: str, length: int, speed:int, start_posistion, destination
+    lane1 = lane_objects['1'].getFirstNodes()
+    lane26 = lane_objects['26']
+    car1 = Car("1",1 , 40,  lane1, lane26) #self, id: str, length: int, speed:int, start_posistion, destination
     cars = [car1]
     
+    
 
-    #  get n_signals
-    n_signals = [Signal(j['traffic_light'], state='rood') for i, j in lane_indcoil_signal.items()]
-    #  define a list of InductionCoils objects 
-    # loc = Location('1', '13')
-    # ind1 = InductionCoil( 1, loc, )
-
-
-    # # define een World
-    # #kruispunt = World(1, cars, lanes.values())#, n_signals:list, n_inductioncoils:list, runtime: float)
+    # Get a list of all the Signals 
+    n_signals = [Signal(j['traffic_light'], state='rood')  for i, j in lane_indcoil_signal.items() if j['traffic_light'] != '']
+    
+    #  define a list of InductionCoils objects
+    n_inductioncoils= []
+    sensors_all_lanes = get_dict_sensor_info(filename)
+    for id in lane_objects.keys():
+        if lane_objects[id].getTypeLane() != 'trajectory':
+            if bool(sensors_all_lanes[id]['sensors']):
+                
+                # iterate through inductionloops
+                for sensorID in sensors_all_lanes[id]['sensors'].keys():
+                    centerposition = sensors_all_lanes[id]['sensors'][sensorID]['position']
+                    sensor_length = sensors_all_lanes[id]['sensors'][sensorID]['length']
+                    induction_coil = InductionCoil(sensorID, centerposition, length, 0)
+        
+                    # Add to n_inductioncoils
+                    n_inductioncoils.append(induction_coil)
+                    #set induction_coil to lane
+                    lane_objects[id].setInductionloop(induction_coil)
+    
+    #define een World
+    kruispunt = World(1, cars, lane_objects.values(), n_signals, n_inductioncoils, 100.0)
