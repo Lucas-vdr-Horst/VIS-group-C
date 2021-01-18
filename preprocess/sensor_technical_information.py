@@ -58,8 +58,11 @@ def get_dict_sensor_info(file_name):
                     sensor_info[sensor].append(sensor_information_dict[sensor])
                 else:
                     sensor_info[sensor] = sensor_information_dict[sensor]
-        new_dict[lane_id] = {'first_node' : nodes[0], 'sensors':sensor_info}
+        new_dict[lane_id] = {'first_node_lane_id' : nodes[0], 'sensors':sensor_info}
     return new_dict
 
 if __name__ == "__main__":
-    get_dict_sensor_info("BOS210")
+    for i, j in get_dict_sensor_info("BOS210").items():
+        print(i)
+        print(j)
+    #print(get_dict_sensor_info("BOS210"))
