@@ -20,6 +20,7 @@ class Lane:
         self.signal = signal if signal is not None else None 
         self.length = length 
         self.type_lane = type_lane
+        self.inductioncoils = []
         
     def checkTrafficlight(self):
         """
@@ -29,6 +30,11 @@ class Lane:
     
     def getNodes(self):
         return self.nodes
+    
+    def getFirstNodes(self):
+        return self.nodes[0]
+    def getTypeLane(self):
+        return self.type_lane
 
     def car_inductioncoil(self):
         "Calculate whether a car is driving over a induction loop"
@@ -36,3 +42,6 @@ class Lane:
 
     def setConnectionPoints(self, connection_points):
         self.connectpoints = connection_points
+    
+    def setInductionloop(self, value):
+        self.inductioncoils.append(value)
