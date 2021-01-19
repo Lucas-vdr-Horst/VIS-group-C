@@ -59,27 +59,3 @@ class InductionCoil:
         induction_end_point_meters = distance_between_coordinates + length_to_sides
         
         self.induction_start_point_meters = induction_start_point_meters, self.induction_end_point_meters = induction_end_point_meters
-    
-    def convert_distance_to_coordinates(self):
-        """
-        Convert a specific distance from a coordinateA to a coordinateB to a coordinate.
-        """
-        coordinate1 = Location.Lane.self.nodes[0]
-        coordinate2 = Location.Lane.self.nodes[-1]
-
-        distance_between_coordinates = np.sqrt((coordinate2[0] - coordinate1[0]) ** 2 + (coordinate2[1] - coordinate1[1]) ** 2)
-    
-        start_node_sensor = self.induction_start_point_meters 
-        end_node_sensor = self.induction_end_point_meters
-    
-        distance_ratio = start_node_sensor / distance_between_coordinates
-        lat = coordinate1[0] + distance_ratio * (coordinate2[0] - coordinate1[0])
-        lon = coordinate1[1] + distance_ratio * (coordinate2[1] - coordinate1[1])
-
-        self.sensor_start_coordinates = [lat, lon]
-        
-        distance_ratio = end_node_sensor / distance_between_coordinates
-        lat = coordinate1[0] + distance_ratio * (coordinate2[0] - coordinate1[0])
-        lon = coordinate1[1] + distance_ratio * (coordinate2[1] - coordinate1[1])
-
-        self.sensor_end_coordinates - [lat, lon]
