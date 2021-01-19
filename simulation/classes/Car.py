@@ -1,5 +1,6 @@
 from .Location import Location
 
+
 class Car:
     """
     This class keeps track of properties of a car.
@@ -13,13 +14,14 @@ class Car:
     + method(type): type
     """
 
-    def __init__(self, location: Location, length: int, speed:int, direction: bool):
+    def __init__(self, car_id: str, location: Location, length: int, speed:int, direction: bool):
+        self.id = car_id
         self.location = location        # Location object of the car (Lane, meters from intersection)
         self.length = length            # Length of the car
         self.speed = speed              # meters per second
         self.direction = direction      # True == forward || False == Backwards
 
-    def move(self, step_size:float):
+    def move(self, step_size:float, world):
         """
         The move function is responsible for checking if the car can move forward and updates it's own posistion
         @step_size is given in miliseconds

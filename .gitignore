@@ -144,3 +144,6 @@ extern_data/*
 cars_movements/*
 !cars_movements/.keep
 
+# output
+preprocess/output/*
+!preprocess/output/.keep

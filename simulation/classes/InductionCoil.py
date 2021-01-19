@@ -1,5 +1,5 @@
 from .Location import Location
-
+import numpy as np
 
 class InductionCoil:
     """
@@ -12,31 +12,24 @@ class InductionCoil:
 
     + method(type): type
     """
-    def __init__(self, id: int, centerLocation, lengte, state:bool):
-        self.id = id                            # the identifier of the induction coil
+    def __init__(self, coil_id: int, centerLocation: Location, length: float):
+        self.id = coil_id                            # the identifier of the induction coil
         self.centerLocation = centerLocation    # the geo centerlocation of the induction coil
-        self.lengte = lengte                    # the length of the induction coil for activation
-        self.state = state                      # the state of the induction coil, high or low, True or False
+        self.length = length                    # the length of the induction coil for activation
+        #self.csvFile = TODO: give csv file to class  , might be a array given from runsimulation.py
 
-    def setStartAndEndLocation(self):
-        # todo
-        #centerGeo = get geo # Get from dict from @Freek
-        #length = Get length / 2 #Get length of coil from @Freek
-        #stoplineGeo = lane.getStoplineGeo()
-        #distance_from_stopline = calculateBetween2Points(lat1: centerGeo[0], lon1: centerGeo[1], lat2: stoplineGeo[0],lon1 : stoplineGeo[1])
-        #self.start_location = distance_from_stopline - length
-        #self.end_location = distance_from_stopline + length
-        pass
+    def get_begin_and_end_locations(self) -> (Location, Location):
+        # TODO: make it directional independant
+        return (
+            Location(self.centerLocation.lane, self.centerLocation.meters_from_intersection - self.length/2),
+            Location(self.centerLocation.lane, self.centerLocation.meters_from_intersection + self.length/2),
+        )
 
     #todo make a locationclass
-
-    def setState(self, value):
-        'Set state to given values (True/False)'
-        self.state = value
-        
     
-    def getState(self):
-        return self.state
+    def get_state(self, time) -> bool:
+        # TODO: Read status from csv file on given time
+        return 
 
     def calculate_sensor_point(self):
         """
@@ -49,7 +42,7 @@ class InductionCoil:
         """
         lane_id = Location.self.lane_id
         
-        length_to_sides = self.lengte / 2
+        length_to_sides = self.length / 2
 
         begin_node = Location.Lane.self.nodes[0]
 
@@ -82,3 +75,6 @@ class InductionCoil:
         lon = coordinate1[1] + distance_ratio * (coordinate2[1] - coordinate1[1])
 
         self.sensor_end_coordinates - [lat, lon]
+    
+    def __repr__(self) -> str:
+        return f"<InductionCoil id:{self.id} center:{self.centerLocation} length:{self.length}>"

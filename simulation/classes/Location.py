@@ -34,6 +34,9 @@ class Location():
             distance += add_distance
         raise Exception('Meters from intersection outside lane')
 
+    def __repr__(self) -> str:
+        return f"<Location lane:{self.lane}, meters:{self.meters_from_intersection}>"
+
 
     def to_geo_old(self):
         """
@@ -50,7 +53,9 @@ class Location():
         for coordinate1, coordinate2 in zip(laneNodes, laneNodes[1:]):
             meters = geodesic(coordinate1, coordinate2)
             distance += meters
-            if distance > self.car_distance:
+            
+            
+            if distance > self.centerinductioncoil:
                 meters_to_far = distance - self.car_distance
                 meters_to_car = meters - meters_to_far
 

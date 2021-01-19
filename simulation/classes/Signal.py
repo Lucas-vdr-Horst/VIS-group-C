@@ -4,13 +4,9 @@ class Signal:
     """
 
 
-    def __init__(self, id: int, state:str="red"):
+    def __init__(self, id: int):
         self.id = id        # id of the signal/ traficlight
-        self.state = state  # The state of the traficlight
-
-    def setState(self, value):
-        "Set the current state(colour) of the signal traffic light"
-        self.state = value
     
-    def getState(self):
-        return self.state
+    def getState(self, time) -> str:
+        # TODO: Read status from csv file on given time
+        return 
