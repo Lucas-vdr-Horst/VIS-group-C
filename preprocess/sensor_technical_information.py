@@ -6,7 +6,7 @@ from common import open_xml
 
 
 def get_lane_nodes(xml_file):
-    dict_nodes_per_lane = {}
+    dict_nodes_lane = {}
     lane_set = xml_file[2][1][0][6] # topology/mapData/intersections/laneset
     for generic_lane in lane_set:
         lane_id = generic_lane.find('laneID').text    
@@ -15,9 +15,9 @@ def get_lane_nodes(xml_file):
             lat = int(nodeXY[0].find('lat').text) / 10000000
             lon = int(nodeXY[0].find('lon').text) / 10000000
             list_with_coordinates.append([lat, lon])
-        dict_nodes_per_lane[lane_id] = list_with_coordinates
+        dict_nodes_lane[lane_id] = list_with_coordinates
 
-    return dict_nodes_per_lane
+    return dict_nodes_lane
 
 
 def get_induction_loop_data(xml_file):

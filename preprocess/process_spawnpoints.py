@@ -8,15 +8,15 @@ from simulation.classes.InductionCoil import InductionCoil
 from simulation.classes.Location import Location
 
 
-def process_certain_positions(induction_coils: list) -> [(int, Location)]:
-    coils_dict = {c.id: c for c in induction_coils}
+def process_certain_positions(induction_coils: dict) -> [(int, Location)]:
+    coils_dict = induction_coils
 
     csv_paths = [os.path.join(intersection_data_location, i, 'compressed', 'compressed.csv') for i in get_available_intersections()]
     last_state = {}  # key=coil_id, value=state
     n_lines = sum([len(open(p).readlines())-1 for p in csv_paths])
 
     with open(os.path.join('preprocess', 'output', 'spawn_points.csv'), 'w') as output_file:
-        writer = csv.writer(output_file, delimiter=';', lineterminator='\n')
+        writer = csv.writer(output_file, delimiter=';')
         writer.writerow(('time', 'lane_id', 'meters'))
         with alive_bar(n_lines, spinner='fishes') as bar:
             for filename in csv_paths:

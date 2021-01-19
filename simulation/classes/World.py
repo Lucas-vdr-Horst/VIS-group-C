@@ -7,7 +7,7 @@ class World:
     """
 
     def __init__(self, cars: list, lanes: list, signals: list, induction_coils: list, runtime: float):
-        self.cars = cars                        # list of cars that are present in the world
+        self.cars = {c.id: c for c in cars}    # list of cars that are present in the world
         self.lanes = lanes                      # list of lanes that are present in the world
         self.signals = signals                   # list of signals that are present in the world
         self.induction_coils = induction_coils    # list of induction coils that are present in the world
@@ -16,11 +16,11 @@ class World:
         # runtime is given in double, but can work with dates object of datetime
 
     def clone(self) -> 'World':
-        cars = [Car(r.id, copy(r.location), r.length, r.speed, r.direction) for r in self.cars]
+        cars = [Car(r.id, copy(r.location), r.length, r.speed) for r in self.cars.values()]
         clone = World(cars, self.lanes, self.signals, self.induction_coils, self.runtime)
         return clone
 
-    def update(self, step_size: float) -> 'World':
+    def next_world(self, step_size: float) -> 'World':
         """
         Updates the flow of intersection for the following tick/step,
         Stepsize can be negative

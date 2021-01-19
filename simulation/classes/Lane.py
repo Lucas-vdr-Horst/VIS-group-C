@@ -13,6 +13,7 @@ class Lane:
         self.signal = signal            # Signal lights from tracfic lights
         self.length = sum([geodesic(nodes[i], nodes[i+1]).meters for i in range(len(nodes)-1)]) # Calculate length of the lane
         self.type_lane = type_lane      # Ingress, Trajectory, Exgress
+        self.direction = False
         
     def check_trafficlight(self):
         """

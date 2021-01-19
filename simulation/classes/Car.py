@@ -14,12 +14,11 @@ class Car:
     + method(type): type
     """
 
-    def __init__(self, car_id: str, location: Location, length: int, speed:int, direction: bool):
+    def __init__(self, car_id: str, location: Location, length: int, speed:int):
         self.id = car_id
         self.location = location        # Location object of the car (Lane, meters from intersection)
         self.length = length            # Length of the car
         self.speed = speed              # meters per second
-        self.direction = direction      # True == forward || False == Backwards
 
     def move(self, step_size:float, world):
         """
@@ -28,7 +27,7 @@ class Car:
         @rtype: object
         """
         # TODO make this function correct
-        if self.direction:
+        if self.location.lane.direction:
             self.location.meters_from_intersection += self.speed * step_size / 1000
         else:
             self.location.meters_from_intersection -= self.speed * step_size / 1000
