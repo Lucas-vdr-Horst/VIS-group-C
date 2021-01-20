@@ -7,14 +7,14 @@ class Lane:
     This class contains information of what nodes are pressent on that lane, what connectionpoint there are and if there are signal lights
     """
     
-    def __init__(self, id: str, nodes: tuple, type_lane:str, signal: Signal=None):
+    def __init__(self, id: str, nodes: tuple, type_lane:str, signal: Signal=None, nextlane:'Lane'=None):
         self.id = id                    # Lane identifier
         self.nodes = nodes              # Geo codes from the lane (lat, lon)
         self.signal = signal            # Signal lights from tracfic lights
         self.length = sum([geodesic(nodes[i], nodes[i+1]).meters for i in range(len(nodes)-1)]) # Calculate length of the lane
         self.type_lane = type_lane      # Ingress, Trajectory, Exgress
-        self.direction = False
-        
+        self.nextlane = nextlane
+    
     def check_trafficlight(self):
         """
         Check the state of the traffic light. If the signal is on red, the car cannot move to the next lane ( Ingress -> trajectory -> Exgress)
@@ -38,8 +38,8 @@ class Lane:
     def setConnectionPoints(self, connection_points):
         self.connectpoints = connection_points
     
-    def setInductionloop(self, value):
-        self.inductioncoils.append(value)
+    # def setInductionloop(self, value):
+    #     self.inductioncoils.append(value)
 
     def coordinate_to_meters(self, coordinate: (float, float)) -> float:
         distance = 0
@@ -52,6 +52,11 @@ class Lane:
                 return distance + cor_distance
             distance += add_distance
         raise Exception("Coordinate out of range of lane")
+
+
+    def connectedlane(self, lane: 'Lane'):
+        self.nextlane = lane
+        
 
     def __repr__(self) -> str:
         return f"<Lane id:{self.id}>"

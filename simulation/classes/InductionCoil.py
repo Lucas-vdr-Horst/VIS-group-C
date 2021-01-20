@@ -1,4 +1,5 @@
 from .Location import Location
+from .SignalManager import SignalManager
 import numpy as np
 
 class InductionCoil:
@@ -12,12 +13,12 @@ class InductionCoil:
 
     + method(type): type
     """
-    def __init__(self, coil_id: int, centerLocation: Location, length: float):
+    def __init__(self, coil_id: int, centerLocation: Location, length: float, signalManager : SignalManager = None):
         self.id = coil_id                            # the identifier of the induction coil
         self.centerLocation = centerLocation    # the geo centerlocation of the induction coil
         self.length = length                    # the length of the induction coil for activation
-        #self.csvFile = TODO: give csv file to class  , might be a array given from runsimulation.py
-
+        self.signalManager = None
+        
     def get_begin_and_end_locations(self) -> (Location, Location):
         # TODO: make it directional independant
         return (
@@ -76,5 +77,11 @@ class InductionCoil:
 
         self.sensor_end_coordinates - [lat, lon]
     
+    def setSignalManager(self, signalMan : SignalManager):
+        self.signalManager = signalMan
+
+    def getState(self, time) -> str:
+        return self.signalManager.getState(self.id, time) 
+
     def __repr__(self) -> str:
         return f"<InductionCoil id:{self.id} center:{self.centerLocation} length:{self.length}>"

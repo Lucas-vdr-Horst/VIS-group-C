@@ -16,7 +16,7 @@ class World:
         # runtime is given in double, but can work with dates object of datetime
 
     def clone(self) -> 'World':
-        cars = [Car(r.id, copy(r.location), r.length, r.speed) for r in self.cars.values()]
+        cars = [r.clone() for r in self.cars.values() if r.location is not None]
         clone = World(cars, self.lanes, self.signals, self.induction_coils, self.runtime)
         return clone
 
@@ -26,12 +26,30 @@ class World:
         Stepsize can be negative
         """
         new_world = self.clone()
-        for car in new_world.cars:
+        for car in new_world.cars.values():
             car.move(step_size, new_world)
+        new_world.runtime += step_size
         return new_world
+    
+    def get_car_by_multiple_ids(self, ids: list) -> Car:
+        cars = [self.cars.get(i) for i in ids if self.cars.get(i) is not None]
+        return cars[0] if len(cars)>0 else None
 
     def get_carlocations(self) -> dict:
         return {car.id : car.to_geo() for car in self.cars}
 
     def get_induction_coil_states(self) -> dict:
         return {induction_coil.id: induction_coil.get_state(self.runtime) for induction_coil in self.induction_coils}
+    
+    def __repr__(self) -> str:
+        return f"<World time:{self.runtime}>"
+
+    def __eq__(self, other) -> bool:
+        if type(other) is World:
+            return self.runtime == other.runtime
+        else:
+            return False
+
+    def merge_world_into(self, other_world: 'World') -> None:
+        self.cars.update(other_world.cars)
+        # TODO: if cars are really close: merge them

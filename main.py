@@ -73,3 +73,6 @@ if __name__ == '__main__':
             run_simulation(int(args.begin), int(args.end))
     else:
         menu.show()
+        #from simulation.run_simulation import run_simulation
+        #run_simulation(1610189996000, 1610190056000)
+        #webserver_local()

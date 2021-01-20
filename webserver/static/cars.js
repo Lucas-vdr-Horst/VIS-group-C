@@ -30,7 +30,7 @@ function loadCar(carname, doneFunc) {
                 map: map,
                 title: carname,
                 icon: {
-                    url: "./static/images/redcar_purple_marker_32.png"
+                    url: "./static/images/beancar.png"
                 }
             });
             let car = {
@@ -115,8 +115,8 @@ function interpolateMovementTime(movement, targetTime) {
     const timeDiffBegin = (targetTime - movement[beginId].time) / timegap;
 
     return new google.maps.LatLng(
-        movement[beginId].latitude * (1-timeDiffBegin) + movement[endId].latitude * timeDiffBegin,
-        movement[beginId].longitude * (1-timeDiffBegin) + movement[endId].longitude * timeDiffBegin
+        movement[beginId].latitude * (1-timeDiffBegin) + movement[endId].latitude * timeDiffBegin + drawOffset[0],
+        movement[beginId].longitude * (1-timeDiffBegin) + movement[endId].longitude * timeDiffBegin + drawOffset[1]
     );
 }
 
