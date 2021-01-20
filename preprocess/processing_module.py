@@ -3,7 +3,7 @@ import numpy as np
 from pathlib import Path
 import xml.etree.ElementTree as ET
 import os
-#os.chdir("..")
+
 from math import *
 # from lane_technical_information import get_dict_lane_info
 import re
@@ -62,33 +62,6 @@ def get_car_spawn_times(path_to_csv: str, list_of_start_induction_loops: list) -
         os.remove(tempfile)
 
     return return_dict
-
-
-def calculate_markers_points(lat1: float, lon1: float, lat2: float, lon2: float, marker_count: int) -> [[float, float]]:
-    """
-    Deze functie heeft 2 geo locaties nodig en geeft een lijst met geo locaties ertussen terug
-    @param marker_count: Aantal markers over de conflict zone
-    @param lat1: Latitude van geo 1
-    @param lon1: longitude van geo 1
-    @param lat2: Latitude van geo 2
-    @param lon2: longitude van geo 2
-    @return: list van geo locations tussen 2 geolocaties
-    """
-    # Todo deze functie maakt nu alleen nog maar een rechtelijn, moet veranderd worden naar iets met een curve
-    lat = np.linspace(lat1, lat2, num=marker_count)
-    lon = np.linspace(lon1, lon2, num=marker_count)
-    # coordinates = list(zip(lat, lon))
-    coordinates = list(map(list, zip(lat, lon)))
-    distance, bearing = calculate_trajectory(lon1, lat1, lon2, lat2)
-
-    angle = bearing - 90
-    if angle < 0:
-        angle += 360
-    elif angle > 360:
-        angle -= 360
-    # print(angle)
-
-    return coordinates
 
 
 def calculate_trajectory(lon1, lat1, lon2, lat2):
@@ -229,11 +202,11 @@ def get_coordinates_lane(genericlane):
     return coordinaten
 
 
-def get_all_lanes_coordinates(tree):
+def get_all_lanes_coordinates(root):
     """
     Returns a CSV file with the coordinates of all lanes.
 
-    :param tree: info about the intersections
+    :param root: info about the intersections
     :type xml
 
     :returns: file with all coordinates from all lanes
@@ -241,8 +214,6 @@ def get_all_lanes_coordinates(tree):
     """
     paden_auto = pd.DataFrame(columns=['Rijbaan',
                                        'coordinaten'])  # 'ingress_coordinaten', 'trajectory_coordinaten', 'egress_coordinaten']) # create dataframe that wil contains the coordinates from all lanes
-
-    root = tree.getroot()
 
     laneSet = root[2][1][0][6]
     for genericlane in laneSet:  # iterate through laneset
