@@ -1,6 +1,7 @@
 from consolemenu import *
 from consolemenu.items import *
 import argparse
+import os
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-O", "--option", help="Select a menu option")
@@ -33,6 +34,10 @@ def webserver_open():
     app.run(host='0.0.0.0')
 
 
+def start_test():
+    os.system('python -m unittest discover ./tests')
+
+
 menu = ConsoleMenu("Start Menu")
 
 menu.append_item(FunctionItem("Preprocess", preprocess))
@@ -42,6 +47,7 @@ selection_webserver = ConsoleMenu('Webserver mode')
 selection_webserver.append_item(FunctionItem("Local (only accessible for you)", webserver_local))
 selection_webserver.append_item(FunctionItem("Open (accessible for everyone on the network)", webserver_open))
 menu.append_item(SubmenuItem("Start Webserver", selection_webserver, menu))
+menu.append_item(FunctionItem("Unittest python function", start_test))
 
 if __name__ == '__main__':
     args = parser.parse_args()
