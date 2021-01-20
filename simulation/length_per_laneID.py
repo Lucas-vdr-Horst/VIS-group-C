@@ -61,4 +61,6 @@ def get_length_all_lanes(intersection_name):
 
 
 if __name__ == "__main__":
-    [print(i, j) for i, j in get_length_all_lanes('BOS210').items()]
+    #[print(i, j) for i, j in get_length_all_lanes('BOS210').items()]
+    #print(get_length_per_lane(open_xml('210')[3][0][7][0][4][0][4][0][0]))
+    print(get_length_all_lanes("BOS210"))
