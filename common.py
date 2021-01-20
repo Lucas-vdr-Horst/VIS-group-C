@@ -88,3 +88,11 @@ def create_csv_file(data, path_with_filename):
     if os.path.exists(path_with_filename):
         os.remove(path_with_filename)
     data.to_csv(path_with_filename, index=False, sep=';')
+
+
+def clear_cars_movements():
+    """Clears the cars_movemenets folder from all csv's"""
+    all_files = glob.glob(os.path.join("cars_movements", '*.csv'))
+    for file in all_files:
+        os.remove(file)
+
