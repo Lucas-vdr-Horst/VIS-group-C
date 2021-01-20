@@ -6,8 +6,9 @@ import glob
 import pandas as pd
 
 sys.path.append('./')
+from processing_module import get_car_spawn_times
 from common import *
-from preprocess.lane_technical_information import get_dict_lane_info
+from lane_technical_information import get_dict_lane_info
 
 def extract_info_csv(intersection, dict_avg_time_per_lane):
     df = pd.read_csv('./intersections/{}/compressed/compressed.csv'.format(intersection), delimiter=';')
@@ -37,7 +38,10 @@ def calculate_avg_waitingtime():
     for intersection in intersection_list:
         if intersection == ".keep":
             continue
-        dict_avg_time_per_lane = extract_info_csv(intersection, dict_avg_time_per_lane)
+        files = get_csv_paths(intersection)
+        for file_name in files:
+            dict_avg_time_per_lane = extract_info_csv(intersection, dict_avg_time_per_lane)
+    print(dict_avg_time_per_lane)
     dict_avg_time_per_lane_calculated = {}
     for key in dict_avg_time_per_lane:
         dict_avg_time_per_lane_calculated[key] = np.mean(dict_avg_time_per_lane[key])
