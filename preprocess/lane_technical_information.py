@@ -1,4 +1,8 @@
 import xml.etree.ElementTree as ET
+
+import sys
+sys.path.append('./')
+
 from common import open_xml
 
 
