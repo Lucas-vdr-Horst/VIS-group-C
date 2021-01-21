@@ -90,6 +90,9 @@ def create_csv_file(data, path_with_filename):
     data.to_csv(path_with_filename, index=False, sep=';')
 
 
-if __name__ == "__main__":
-    print(get_csv_paths('BOS210'))
-    print(get_xml_path('BOS210'))
+def clear_cars_movements():
+    """Clears the cars_movemenets folder from all csv's"""
+    all_files = glob.glob(os.path.join("cars_movements", '*.csv'))
+    for file in all_files:
+        if file.endswith(glob.glob(os.path.join("cars_movements","ext_*.csv"))[0]) == False:
+            os.remove(file)

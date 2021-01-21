@@ -54,7 +54,7 @@ def read_extern_data():
 
     for csv in csvs:
         filename = os.path.basename(csv)
-        new_filename = f'new_{filename}'
+        new_filename = f'ext_{filename}'
         new_file = os.path.join('cars_movements',new_filename)
         try: # if the file doesn't have the right separator
             df = pd.read_csv(csv, sep=';')

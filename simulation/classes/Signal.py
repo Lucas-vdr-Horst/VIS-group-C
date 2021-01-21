@@ -1,20 +1,18 @@
+from .SignalManager import SignalManager
+
 class Signal:
     """
     This class keeps track of signal traffic lights and it's properties
     """
-    """
-    + field: type
-    
-    + method(type): type
-    """
 
-    def __init__(self, id: int, state:"rood"):
-        self.id = id
-        self.state = state
 
-    def setState(self, value):
-        "Set the current state(colour) of the signal traffic light"
-        self.state = value
+    def __init__(self, id: int, signalManager : SignalManager = None):
+        self.id = id        # id of the signal/ traficlight
+        self.signalManager = None
     
-    def getState(self):
-        return self.state
+
+    def setSignalManager(self, signalMan : SignalManager):
+        self.signalManager = signalMan
+
+    def getState(self, time) -> str:
+        return self.signalManager.getState(self.id, time) 
