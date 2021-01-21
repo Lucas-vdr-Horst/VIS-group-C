@@ -1,15 +1,19 @@
-import xml.etree.ElementTree as ET
 import sys
 import numpy as np
-import os
-import glob
 import pandas as pd
 
 sys.path.append('./')
 from common import *
 from preprocess.lane_technical_information import get_dict_lane_info
 
-def extract_info_csv(intersection, dict_avg_time_per_lane):
+def extract_info_csv(intersection, dict_avg_time_per_lane) -> dict:
+    """
+    This function takes in a intersectionname and a dict with info from before defined average waiting times of lanes
+    and adds the current intersection lane average waiting times to the dictionary.
+    @param intersection: string intersection name
+    @param dict_avg_time_per_lane: a dictionary with average times of all lanes
+    @return: Dictionary of average waiting time per lane.
+    """
     df = pd.read_csv('./intersections/{}/compressed/compressed.csv'.format(intersection), delimiter=';')
     dict_with_lane_info = get_dict_lane_info(intersection)
     
@@ -29,18 +33,22 @@ def extract_info_csv(intersection, dict_avg_time_per_lane):
     
     return dict_avg_time_per_lane
 
-def calculate_avg_waitingtime():
-    """Calculates avg time of trafficlight waiting time"""
+def calculate_avg_waitingtime() -> dict:
+    """
+    Calculates average waitingtime of cars that has to wait by the trafficlight.
+    @:return dict_avg_time_per_lane_calculated: a dictionary with average waiting time for a red trafficlight per lane
+    """
 
     dict_avg_time_per_lane = {}
+    dict_avg_time_per_lane_calculated = {}
+
     intersection_list = os.listdir('./intersections')
     for intersection in intersection_list:
         if intersection == ".keep":
             continue
         dict_avg_time_per_lane = extract_info_csv(intersection, dict_avg_time_per_lane)
-    dict_avg_time_per_lane_calculated = {}
-    for key in dict_avg_time_per_lane:
-        dict_avg_time_per_lane_calculated[key] = np.mean(dict_avg_time_per_lane[key])
+        for key in dict_avg_time_per_lane:
+            dict_avg_time_per_lane_calculated[key] = np.mean(dict_avg_time_per_lane[key])
                     
     return dict_avg_time_per_lane_calculated   
 
