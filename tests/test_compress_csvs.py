@@ -5,12 +5,12 @@ from unittest import TestCase
 import pandas as pd
 sys.path.append('./')
 from preprocess.compress_csvs import compress_csvs
-import os
 
 
 class Test(TestCase):
 
     def test_extract_info_csv(self):
+        compress_csvs()
         test_csv_path = os.path.join("tests", "filetest", "test_compressed.csv")
 
         expected_output = pd.read_csv(test_csv_path, sep=';', nrows=9)
