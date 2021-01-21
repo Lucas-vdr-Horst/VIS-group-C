@@ -9,6 +9,9 @@ def get_csv_paths(intersection_name) -> list:
 
 
 def get_xml_path(intersection_name):
+    """
+    Gives the path to xml file of
+    """
     return glob.glob(os.path.join(intersection_data_location, intersection_name, '*.xml'))[0]
 
 
@@ -36,7 +39,10 @@ def timeframe_csv(filename: str):
 
 
 def get_available_intersections() -> list:
-    return [i.replace(intersection_data_location, '') for i in sorted(glob.glob(os.path.join(intersection_data_location, '*')))]
+    """
+    Returns a list of all the folder names in the map 'intersections'
+    """
+    return [i.replace(intersection_data_location, '') for i in glob.glob(os.path.join(intersection_data_location, '*'))]
 
 
 def get_header(csv_filepath: str) -> str:
@@ -58,9 +64,6 @@ def open_xml(file_name):
     :returns: an xml readable in python
     :type xml.Element
     """
-    path = os.getcwd()
-    # if not(path.endswith("VIS-group-C")):
-    #     os.chdir("..")
     file = get_xml_path(file_name)
     
     tree = ET.parse(file)
@@ -94,5 +97,8 @@ def clear_cars_movements():
     """Clears the cars_movemenets folder from all csv's"""
     all_files = glob.glob(os.path.join("cars_movements", '*.csv'))
     for file in all_files:
-        if not file.endswith('_ext.csv'):
+        try:
+            if file == glob.glob(os.path.join("cars_movements","ext_*.csv"))[0]:
+                continue
+        except:
             os.remove(file)
