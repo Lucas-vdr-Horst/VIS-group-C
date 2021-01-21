@@ -94,5 +94,7 @@ def clear_cars_movements():
     """Clears the cars_movemenets folder from all csv's"""
     all_files = glob.glob(os.path.join("cars_movements", '*.csv'))
     for file in all_files:
-        os.remove(file)
+        if file.endswith(glob.glob(os.path.join("cars_movements","new_*"))[0]) == False:
+            os.remove(file)
 
+clear_cars_movements()
