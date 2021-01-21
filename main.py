@@ -79,11 +79,11 @@ if __name__ == '__main__':
         open_menu = False
         if args.preprocess == 'compress':
             compress_csvs()
-        elif args.option == 'extern':
+        elif args.preprocess == 'extern':
             process_extern_data()
-        elif args.option == 'spawnpoints':
+        elif args.preprocess == 'spawnpoints':
             process_spawnpoints()
-        elif args.option == 'all':
+        elif args.preprocess == 'all':
             all_preprocess()
         else:
             raise Exception("For argument 'preprocess' choose between: 'compress', 'extern', 'spawnpoints' or 'all'")
