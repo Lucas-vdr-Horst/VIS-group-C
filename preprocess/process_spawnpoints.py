@@ -16,7 +16,7 @@ def process_certain_positions(induction_coils: dict) -> [(int, Location)]:
     n_lines = sum([len(open(p).readlines())-1 for p in csv_paths])
 
     with open(os.path.join('preprocess', 'output', 'spawn_points.csv'), 'w') as output_file:
-        writer = csv.writer(output_file, delimiter=';')
+        writer = csv.writer(output_file, delimiter=';', lineterminator='\n')
         writer.writerow(('time', 'lane_id', 'meters'))
         with alive_bar(n_lines, spinner='fishes') as bar:
             for filename in csv_paths:
