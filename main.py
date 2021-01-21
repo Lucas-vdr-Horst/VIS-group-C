@@ -34,8 +34,8 @@ def all_preprocess():
 def process_simulation():
     from simulation.run_simulation import run_simulation
     print("What timeframe should be simulated?")
-    begin_time = input('Begin datetime in milliseconds: ')
-    end_time = input('End datetime in milliseconds: ')
+    begin_time = int(input('Begin datetime in milliseconds: '))
+    end_time = int(input('End datetime in milliseconds: '))
     run_simulation(begin_time, end_time)
 
 
