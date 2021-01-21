@@ -7,14 +7,13 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-O", "--option", help="Select a menu option")
 parser.add_argument("-b", "--begin", help="Begin time in milliseconds")
 parser.add_argument("-e", "--end", help="End time in milliseconds")
-parser.add_argument("-pA", "--preprocessAll", help="Preprocess everything")
-parser.add_argument("-pC", "--preprocessCompressed", help="Preprocess compressed.csv")
-parser.add_argument("-pE", "--preprocessExternData", help="Preprocess the extern data")
-parser.add_argument("-pS", "--preprocessSpawnpoints", help="Preprocess the spawnpoints")
+parser.add_argument("-pA", "--preprocess_all", help="Preprocess everything")
+parser.add_argument("-pC", "--preprocess_compressed", help="Preprocess compressed.csv")
+parser.add_argument("-pE", "--preprocess_externData", help="Preprocess the extern data")
+parser.add_argument("-pS", "--preprocess_spawnpoints", help="Preprocess the spawnpoints")
 parser.add_argument("-wL", "--webserver_local", help="Starts the webserver local")
 parser.add_argument("-wO", "--webserver_open", help="Starts the open webserver")
 parser.add_argument("-u", "--unit_test", help="Starts the unit test")
-
 
 
 def compress_csvs():
