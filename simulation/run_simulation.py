@@ -11,7 +11,7 @@ from preprocess.lane_technical_information import get_dict_lane_info
 from preprocess.sensor_technical_information import get_dict_sensor_info
 from simulation.length_per_laneID import get_length_all_lanes
 from common import open_xml, get_available_intersections, clear_cars_movements
-from const import cars_data_location
+from const import cars_data_location, intersection_data_location
 import os
 import csv
 import glob
@@ -219,13 +219,17 @@ def load_lanes_signals_and_inductioncoils() -> (dict, dict, dict):
         signals.update(signals)
         inductioncoils.update(inductioncoils)
 
-    #TODO: Create Signalmanager class and add to all induction coils and signals
-    signalMg = SignalManager("Path//To//CSV") # TODO: Add correct path
-    # for signal in signals:
-    #     signals.get(Signal).setSignalManager(signalMg)  # Cant check if this works yet
+    pathlst = []
+    for intersection in get_available_intersections():
+        path = os.path.join(intersection_data_location, intersection,"compressed","compressed.csv")
+        pathlst.append(path)
 
-    # for inductioncoil in inductioncoils:
-    #     inductioncoils.get(inductioncoil).setSignalManager(signalMg)   # Cant check if this works yet
+    signalMg = SignalManager(pathlst)
+    for signal in signals:
+        signals.get(signal).setSignalManager(signalMg)  # Cant check if this works yet
+
+    for inductioncoil in inductioncoils:
+        inductioncoils.get(inductioncoil).setSignalManager(signalMg)   # Cant check if this works yet
 
     return (lanes, signals, inductioncoils)
 

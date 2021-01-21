@@ -1,7 +1,7 @@
 class SignalManager:
 
 
-    def __init__(self, csv_path: str):
+    def __init__(self, csv_path: [str]):
         self.csv_path = csv_path
 
 

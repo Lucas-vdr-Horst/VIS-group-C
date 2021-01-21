@@ -54,8 +54,8 @@ def read_extern_data():
 
     for csv in csvs:
         filename = os.path.basename(csv)
-        new_filename = f'ext_{filename}'
-        new_file = os.path.join('cars_movements',new_filename)
+        new_filename = filename.replace('.csv', '_ext.csv')
+        new_file = os.path.join('cars_movements', new_filename)
         try: # if the file doesn't have the right separator
             df = pd.read_csv(csv, sep=';')
             df['Longitude'].head()
@@ -74,9 +74,3 @@ def read_extern_data():
         df['Speed (km/h)'] = df['Speed (km/h)'].apply(convert_to_float)
         df2 = df[['time', 'latitude', 'longitude']]
         create_csv_file(df2, new_file)
-        
-
-
-if __name__ == "__main__":
-    # test("extern_data")
-    read_extern_data()
