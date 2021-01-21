@@ -10,6 +10,8 @@ from preprocess.compress_csvs import compress_csvs
 class Test(TestCase):
 
     def test_extract_info_csv(self):
+        #self.skipTest('module not tested')
+
         compress_csvs()
         test_csv_path = os.path.join("tests", "filetest", "test_compressed.csv")
 
