@@ -36,7 +36,7 @@ def timeframe_csv(filename: str):
 
 
 def get_available_intersections() -> list:
-    return [i.replace(intersection_data_location, '') for i in glob.glob(os.path.join(intersection_data_location, '*'))]
+    return [i.replace(intersection_data_location, '') for i in sorted(glob.glob(os.path.join(intersection_data_location, '*')))]
 
 
 def get_header(csv_filepath: str) -> str:
