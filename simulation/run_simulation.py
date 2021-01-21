@@ -233,7 +233,7 @@ def load_lanes_signals_and_inductioncoils() -> (dict, dict, dict):
     signalMg = SignalManager(pathlst)
     for signal in signals:
         signals.get(signal).setSignalManager(signalMg)  # Cant check if this works yet
-        #print(signals.get(signal).getState(3))
+        #print(signals.get(signal).getState(1610492290820))
         #print("the signal id's are: ",signals.get(signal).id)
 
     for inductioncoil in inductioncoils:

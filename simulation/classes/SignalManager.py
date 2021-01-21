@@ -32,8 +32,9 @@ class SignalManager:
         path = self.reader[intersectionPlace]
         df = pd.read_csv(path,delimiter=";", dtype=str)
         # df.set_index('start_time')
-        # x = df.iloc[(df[time]>= df.start_time) & (df[time]>= df.end_time)][columnName] 
-        return df
+        # x = df.iloc[(df[time]>= df.start_time) & (df[time]>= df.end_time)][columnName]
+        df[['start_time', 'end_time']] = df[['start_time', 'end_time']].astype('int64')#.apply(lambda x: float(x))
+        return df[columnName][(df['start_time'] >= time) and (df['end_time'] <= time)]
     
     def test(self, intersection):
         inputs_blocks = []
