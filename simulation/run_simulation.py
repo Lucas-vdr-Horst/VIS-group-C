@@ -19,26 +19,28 @@ import names
 from alive_progress import alive_bar
 
 
-def run_simulation(begin_time:int, end_time:int) -> None:
+def run_simulation(begin_time: int, end_time: int) -> None:
     clear_cars_movements()
-    
+
     lanes, signals, inductioncoils = load_lanes_signals_and_inductioncoils()
     worlds_array = []
     worlds_dict = {}
     car_merges = []
     to_update = []
 
-    def add_world(addworld: World, index=None) -> None:
+    def add_world(addworld: World, index=None) -> World:
         """
         Adds the world to the worlds_array and worlds_dict,
         if there is already world at that runtime, it merges them
         """
         if addworld.runtime in worlds_dict:
-            existing_world:World = worlds_dict[addworld.runtime]
+            existing_world: World = worlds_dict[addworld.runtime]
             existing_world.merge_world_into(addworld)
+            return existing_world
         else:
             worlds_array.insert(index if index is not None else len(worlds_array), addworld)
             worlds_dict[addworld.runtime] = addworld
+            return addworld
 
     # Initialize worlds with car spawn points
     with open(os.path.join('preprocess', 'output', 'spawn_points.csv')) as csvfile:
@@ -54,28 +56,24 @@ def run_simulation(begin_time:int, end_time:int) -> None:
                     merge = {'ids': [car.id], 'first_time': time, 'last_time': time}
                     car.declare_merge(merge)
                     car_merges.append(merge)
-                    to_update.append(world)
+                    # to_update.append(world)
                 else:
                     break
-    print('Loaded spawn points')
-            
-    
+    print('Loaded spawn points, now simulating')
+
     # Main simulation loop
+    to_update.append(worlds_array[0])
     while to_update:
         update_world = to_update.pop(0)
         next_world = update_world.next_world(100)
-        add_world(next_world)
+        next_world = add_world(next_world, worlds_array.index(update_world)+1)
         if begin_time < next_world.runtime < end_time:
             to_update.append(next_world)
-    
-    # test_world = worlds_array[0]
-    # for _ in range(1000):
-    #     prev_world_index = worlds_array.index(test_world)
-    #     test_world = test_world.next_world(100)
-    #     add_world(test_world, prev_world_index+1)
+    print('Simulation done, now exporting')
 
-    # Write to csv's
-    claimed_names = set(map(lambda x: x.replace(cars_data_location, '').replace('.csv', ''), glob.glob(os.path.join(cars_data_location, '*.csv'))))
+    # Export to csv's
+    claimed_names = set(map(lambda x: x.replace(cars_data_location, '').replace('.csv', ''),
+                            glob.glob(os.path.join(cars_data_location, '*.csv'))))
     for i, merge in enumerate(car_merges):
         car_name = names.get_full_name().replace(' ', '')
         while car_name in claimed_names:
@@ -83,7 +81,7 @@ def run_simulation(begin_time:int, end_time:int) -> None:
         claimed_names.add(car_name)
         print(merge, car_name)
 
-        with open(os.path.join(cars_data_location, f"{car_name}.csv"), 'w') as file:
+        with open(os.path.join(cars_data_location, f"{car_name}_sim.csv"), 'w') as file:
             writer = csv.writer(file, delimiter=';', lineterminator='\n')
             writer.writerow(('time', 'latitude', 'longitude'))
             for world in worlds_array:
@@ -94,6 +92,7 @@ def run_simulation(begin_time:int, end_time:int) -> None:
                             writer.writerow((world.runtime, *car.location.to_geo()))
                     else:
                         break
+    print('Exported, done!')
 
 
 def get_lane_objects(vehicles_lanes, lane_indcoil_signal, root) -> dict:
