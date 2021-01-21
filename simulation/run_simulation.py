@@ -95,7 +95,7 @@ def run_simulation(begin_time: int, end_time: int) -> None:
     print('Exported, done!')
 
 
-def get_lane_objects(vehicles_lanes, lane_indcoil_signal, root) -> dict:
+def get_lane_objects(vehicles_lanes, lane_indcoil_signal, root, filename) -> dict:
     """
     Return a list containing defined Lane objects of all the vehicle lanes in specified filename
 
@@ -120,18 +120,22 @@ def get_lane_objects(vehicles_lanes, lane_indcoil_signal, root) -> dict:
         # We can directly define an trajectory Lane object and an ingress Lane object. 
         if vehicles_lanes[id][3][0].text == '10':  # ingress
             linked_egresslane = vehicles_lanes[id][5][0][0][0].text
-            
-            lane_objects[id] = Lane(id, coordinaten[::-1], 'ingress', signal)  # add to dict
+            laneid = filename + "_" +id
+            #laneid = id
+            lane_objects[laneid] = Lane(laneid, coordinaten[::-1], 'ingress', signal)  # add to dict
 
             # Define the instance variable for a Lane object of a trajectory
             lane_ing = get_lane(root, id)
-            traj_id = id + '-' + linked_egresslane  # define the id
+            traj_id = filename + "_"+id + '-' + linked_egresslane  # define the id
+            #traj_id = id + '-' + linked_egresslane  # define the id
             traj_coordinates = get_coordinates(root, lane_ing, 'trajectory')  # get coordinates of trajectory
             
             lane_objects[traj_id] = Lane(traj_id, traj_coordinates,'trajectory')  # define Lane object and add it to lane_objects
 
         else:  # egress
-            lane_objects[id] = Lane(id, coordinaten, 'egress', signal)
+            laneid = filename + "_" +id
+            #laneid = id
+            lane_objects[laneid] = Lane(laneid, coordinaten, 'egress', signal)
     
     #TODO: Connected lane            ingress = temp[0] --> lane_object
     # ingress.connectedlane(traject) traject = lane
@@ -140,11 +144,11 @@ def get_lane_objects(vehicles_lanes, lane_indcoil_signal, root) -> dict:
     #print(lane_objects)
     for lane in lane_objects:
         if "-" in lane: 
-            temp = lane.split('-')
+            temp = lane.split('-') # bos210_1-26 -> bos210_1, 26->bos210_26
             
             ingress_lane = lane_objects.get(temp[0])
             traject_lane = lane_objects.get(lane)
-            egress_lane = lane_objects.get(temp[1])
+            egress_lane = lane_objects.get(filename+'_'+temp[1])
             
             ingress_lane.connectedlane(traject_lane)
             traject_lane.connectedlane(egress_lane)
@@ -167,7 +171,7 @@ def get_inductioncoils(sensors_all_lanes, lane_objects) -> dict:
 
     for lane in lane_objects.values(): # iterate through each lane
         if lane.getTypeLane() != 'trajectory':
-            id = lane.getID()
+            id = lane.getID().split('_')[1] #bos210_1 -> get 1
             if bool(sensors_all_lanes[id]['sensors']): # check if lane contains inductionscoils
 
                 # iterate through inductionloops
@@ -206,13 +210,16 @@ def load_lanes_signals_and_inductioncoils() -> (dict, dict, dict):
         #return lane objects, signals inductioncoils
 
         # Define the Lane objects
-        lanes = get_lane_objects(vehicles_lanes, lane_indcoil_signal, root)
+        lanes = get_lane_objects(vehicles_lanes, lane_indcoil_signal, root, filename)
 
         #Define the Signal objects
         signals = get_signal_objects(lane_indcoil_signal)
-
+        for signal in signals:
+            signals[signal].setIntersection(filename)
         #Define the InductionCoil objects
         inductioncoils = get_inductioncoils(sensors_all_lanes, lanes)
+        for inductioncoil in inductioncoils:
+            inductioncoils[inductioncoil].setIntersection(filename)
     
         lanes.update(lanes)
         signals.update(signals)
@@ -222,13 +229,17 @@ def load_lanes_signals_and_inductioncoils() -> (dict, dict, dict):
     for intersection in get_available_intersections():
         path = os.path.join(intersection_data_location, intersection,"compressed","compressed.csv")
         pathlst.append(path)
-
+    #print(pathlst)
     signalMg = SignalManager(pathlst)
     for signal in signals:
         signals.get(signal).setSignalManager(signalMg)  # Cant check if this works yet
+        #print(signals.get(signal).getState(3))
 
     for inductioncoil in inductioncoils:
         inductioncoils.get(inductioncoil).setSignalManager(signalMg)   # Cant check if this works yet
+
+    for lane in lanes:
+        print(lanes.get(lane).id)
 
     return (lanes, signals, inductioncoils)
 

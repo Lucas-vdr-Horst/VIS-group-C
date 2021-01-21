@@ -15,11 +15,12 @@ class InductionCoil:
 
     + method(type): type
     """
-    def __init__(self, coil_id: int, centerLocation: Location, length: float, signalManager : SignalManager = None):
+    def __init__(self, coil_id: int, centerLocation: Location, length: float, signalManager : SignalManager = None, intersection : str = None):
         self.id = coil_id                            # the identifier of the induction coil
         self.centerLocation = centerLocation    # the geo centerlocation of the induction coil
         self.length = length                    # the length of the induction coil for activation
         self.signalManager = None
+        self.intersection = None
         
     def get_begin_and_end_locations(self) -> (Location, Location):
         # TODO: make it directional independant
@@ -27,10 +28,10 @@ class InductionCoil:
             Location(self.centerLocation.lane, self.centerLocation.meters_from_intersection - self.length/2),
             Location(self.centerLocation.lane, self.centerLocation.meters_from_intersection + self.length/2),
         )
+    
+    def setIntersection(self, filename : str):
+        self.intersection = filename
 
-    def get_state(self, time) -> bool:
-        # TODO: Read status from csv file on given time
-        return 
       
     def calculate_sensor_point(self):
         """
@@ -82,7 +83,7 @@ class InductionCoil:
         self.signalManager = signalMan
 
     def getState(self, time) -> str:
-        return self.signalManager.getState(self.id, time) 
+        return self.signalManager.getState(self.id, time, self.intersection) 
 
     def __repr__(self) -> str:
         return f"<InductionCoil id:{self.id} center:{self.centerLocation} length:{self.length}>"
