@@ -37,7 +37,17 @@ class Test(TestCase):
         self.assertEqual(output, expected_output)
 
 
+    def test_insert_row(self):
+        path = os.path.join("intersections", "BOS210", "BOS210.csv")
+        df = pd.read_csv(path, sep=";")
+        output = insert_row(df, 556, df.loc[556])
+        print(output)
+        expected_output = '2'
+        self.assertEqual(output, expected_output)
 
+
+    def test_read_extern_data(self):
+        self.assertEqual(1,2)
 
 
 
