@@ -7,6 +7,14 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-O", "--option", help="Select a menu option")
 parser.add_argument("-b", "--begin", help="Begin time in milliseconds")
 parser.add_argument("-e", "--end", help="End time in milliseconds")
+parser.add_argument("-pA", "--preprocessAll", help="Preprocess everything")
+parser.add_argument("-pC", "--preprocessCompressed", help="Preprocess compressed.csv")
+parser.add_argument("-pE", "--preprocessExternData", help="Preprocess the extern data")
+parser.add_argument("-pS", "--preprocessSpawnpoints", help="Preprocess the spawnpoints")
+parser.add_argument("-wL", "--webserver_local", help="Starts the webserver local")
+parser.add_argument("-wO", "--webserver_open", help="Starts the open webserver")
+parser.add_argument("-u", "--unit_test", help="Starts the unit test")
+
 
 
 def compress_csvs():
@@ -24,7 +32,6 @@ def process_spawnpoints():
     from preprocess.process_spawnpoints import process_certain_positions
     lanes, signals, inductioncoils = load_lanes_signals_and_inductioncoils()
     process_certain_positions(inductioncoils)
-
 
 def all_preprocess():
     compress_csvs()
@@ -74,9 +81,23 @@ menu.append_item(FunctionItem("Unittest python function", start_test))
 if __name__ == '__main__':
     args = parser.parse_args()
     if args.option is not None:
-        if args.option == 'run_simulation':
+        if args.option == 'preprocessAll':
+            all_preprocess()
+        elif args.option == 'preprocessCompressed':
+            compress_csvs()
+        elif args.option == 'preprocessExternData':
+            process_extern_data()
+        elif args.option == 'preprocessSpawnpoints':
+            process_spawnpoints()
+        elif args.option == 'run_simulation':
             from simulation.run_simulation import run_simulation
-            run_simulation(int(args.begin), int(args.end))
+            run_simulation(args.begin, args.end)
+        elif args.option == 'webserver_local':
+            webserver_local()
+        elif args.option == 'webserver_open':
+            webserver_open()
+        elif args.option == 'unit_test':
+            start_test()
     else:
         menu.show()
         #from simulation.run_simulation import run_simulation
