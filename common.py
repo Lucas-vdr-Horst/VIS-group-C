@@ -96,5 +96,3 @@ def clear_cars_movements():
     for file in all_files:
         if file.endswith(glob.glob(os.path.join("cars_movements","ext_*.csv"))[0]) == False:
             os.remove(file)
-
-clear_cars_movements()
