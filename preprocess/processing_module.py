@@ -3,7 +3,7 @@ import numpy as np
 from pathlib import Path
 import xml.etree.ElementTree as ET
 import os
-#os.chdir("..")
+
 from math import *
 # from lane_technical_information import get_dict_lane_info
 import re
@@ -64,34 +64,15 @@ def get_car_spawn_times(path_to_csv: str, list_of_start_induction_loops: list) -
     return return_dict
 
 
-def calculate_markers_points(lat1: float, lon1: float, lat2: float, lon2: float, marker_count: int) -> [[float, float]]:
-    """
-    Deze functie heeft 2 geo locaties nodig en geeft een lijst met geo locaties ertussen terug
-    @param marker_count: Aantal markers over de conflict zone
-    @param lat1: Latitude van geo 1
-    @param lon1: longitude van geo 1
-    @param lat2: Latitude van geo 2
-    @param lon2: longitude van geo 2
-    @return: list van geo locations tussen 2 geolocaties
-    """
-    # Todo deze functie maakt nu alleen nog maar een rechtelijn, moet veranderd worden naar iets met een curve
-    lat = np.linspace(lat1, lat2, num=marker_count)
-    lon = np.linspace(lon1, lon2, num=marker_count)
-    # coordinates = list(zip(lat, lon))
-    coordinates = list(map(list, zip(lat, lon)))
-    distance, bearing = calculate_trajectory(lon1, lat1, lon2, lat2)
-
-    angle = bearing - 90
-    if angle < 0:
-        angle += 360
-    elif angle > 360:
-        angle -= 360
-    # print(angle)
-
-    return coordinates
-
-
 def calculate_trajectory(lon1, lat1, lon2, lat2):
+    """
+    Calculate the great circle distance of a trajectory based on 2 coordinates.
+
+    @params lon1, lat1: Coordinate  1
+    @params lon2, lat2: Coordinate  2
+    @return distance between coordinate 1 and 2 
+
+    """
     # zet de coordinaten om naar radialen
     lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
     # haversine formula 
@@ -104,15 +85,15 @@ def calculate_trajectory(lon1, lat1, lon2, lat2):
 
     return distance
 
-
+#TODO delete function 
 def deg2rad(angle):
     return angle * pi / 180
 
-
+#TODO  delete function 
 def rad2deg(angle):
     return angle * 180 / pi
 
-
+#TODO delete function 
 def pointRadialDistance(lat1, lon1, bearing, distance):
     """
     Return final coordinates (lat2,lon2) [in degrees] given initial coordinates
@@ -138,6 +119,10 @@ def pointRadialDistance(lat1, lon1, bearing, distance):
 
 # Function to get the necessary laneID for the simulation 
 def vehicles_laneID(root) -> dict:
+    """Get all laneID of all lanes specifically to vehicles and update the to a dictionary.
+        @params root
+        @returns: Dictionary of laneID's of all vehicle lanes from XML file 
+    """
     laneSet = root[2][1][0][6]
     vehicles = {}
     for  i in laneSet:
@@ -146,9 +131,12 @@ def vehicles_laneID(root) -> dict:
     return vehicles
 
 
-# Functies om de lane nodes te halen van een ingres, egress en trajectory
 def get_nodes(nodes):
-    "get the coordinates fo a nodes element"
+    """
+    Get the coordinates in a nodes  of a lane.
+    @params nodes : Element from XML file containing the coordinates in (long, lat)
+    @returns: Nested list of all the converted coordinates [lat,lon] of lane
+    """
     coordinates = []
     for node in nodes:
         for n in node.iter('node-LatLon'):  # node.iter('node-LatLon') == node-latlon # iterating through node-LatLon
@@ -160,9 +148,15 @@ def get_nodes(nodes):
 
 
 def get_lane(root, laneID):
+    """
+    Get the genericlane Element of a specific laneID from the XML file.
+    
+    @params root
+    @params LaneID: String of the given laneID
+    """
     laneSet = root[2][1][0][6]
-    for lane in laneSet:
-        if lane[0].text == laneID:
+    for lane in laneSet: 
+        if lane[0].text == laneID: # check if laneID from lane is equal to our input laneID
             lane = lane
             break
     return lane
@@ -170,10 +164,12 @@ def get_lane(root, laneID):
 
 def get_coordinates(root, lane, type_lane):
     """
-    Return the coordinates of an lanes/trajectory
+    Get the coordinates of a lanes/trajectory.
 
-    :params laneID: laneID of an ingress or egresslane
-
+    @params root
+    @params laneID: laneID of an ingress or egresslane
+    @params type_lane: A string where is given whether lane is an ingress, egress or a trajectory.
+    @returns: Nested list with the coordinates of a lanes/trajectory.
     """
     # lane = get_lane(root, laneID)
     # In order to get the coordinates of the trajectory,
@@ -184,7 +180,7 @@ def get_coordinates(root, lane, type_lane):
         coordinates = get_nodes(lane[4])
     return coordinates
 
-
+# TODO : delete function 
 def load_sensor_data(begin_time, end_time, intersection_name):
     # df_sensor = pd.read_csv(os.path.join(intersection_data_location, intersection_name, '*.csv'), delimiter=";", low_memory=False)
     os.chdir("..")
@@ -193,7 +189,7 @@ def load_sensor_data(begin_time, end_time, intersection_name):
     data_sensor_specific_time = df_sensor.loc[begin_time:end_time]  # filter to begin and end time
     return data_sensor_specific_time
 
-
+# TODO delete function 
 def get_coordinates_lane(genericlane):
     """
     Extract all longitude en latitude of a specific lane
@@ -228,12 +224,12 @@ def get_coordinates_lane(genericlane):
         coordinaten = lane_coord
     return coordinaten
 
-
-def get_all_lanes_coordinates(tree):
+# TODO delete function 
+def get_all_lanes_coordinates(root):
     """
     Returns a CSV file with the coordinates of all lanes.
 
-    :param tree: info about the intersections
+    :param root: info about the intersections
     :type xml
 
     :returns: file with all coordinates from all lanes
@@ -241,8 +237,6 @@ def get_all_lanes_coordinates(tree):
     """
     paden_auto = pd.DataFrame(columns=['Rijbaan',
                                        'coordinaten'])  # 'ingress_coordinaten', 'trajectory_coordinaten', 'egress_coordinaten']) # create dataframe that wil contains the coordinates from all lanes
-
-    root = tree.getroot()
 
     laneSet = root[2][1][0][6]
     for genericlane in laneSet:  # iterate through laneset
@@ -266,7 +260,7 @@ def get_all_lanes_coordinates(tree):
 
     return paden_auto
 
-
+# TODO delete function 
 def process(file_name):
     """
     Returns a csv file with the coordinates of riding track for a vehicle
@@ -282,7 +276,7 @@ def process(file_name):
 
     return paden
 
-
+#TODO delete function 
 def runtime_csv(paden, rijbaan):
     """
     CSV bestand genereren per rijbaan met de runtime, geoposities, lussen en stoplichten
@@ -305,7 +299,7 @@ def runtime_csv(paden, rijbaan):
     df = pd.DataFrame(data)
     return df
 
-
+#TODO delete function
 def extract_lane_id(combined_lane_name):
     """
     Returns the ingress and egress laneID.
@@ -320,7 +314,7 @@ def extract_lane_id(combined_lane_name):
     lane1, lane2 = lanes[0], lanes[1]
     return lane1, lane2
 
-
+# TODO delete function 
 def get_geoposities(df, rijbaan):
     """
     Returns the coordinaten of a 'rijbaan' in df 
@@ -341,12 +335,11 @@ def get_geoposities(df, rijbaan):
 if __name__ == "__main__":
     # process("02-11-2020 00:00:00.0", "02-11-2020 00:00:00.6")
     file_name = 'BOS210'
-    process(file_name)
-    os.chdir("..")
-    tree = ET.parse(get_xml_path(file_name)[0])  # parse given XML file
+    tree = ET.parse(get_xml_path(file_name))  # parse given XML file
     root = tree.getroot()
 
     # print all vehicle lanes
     for i in root[2][1][0][6]:
-        if i[3][2].tag == "vehicle":
-            print(i[0].text, i[3][0].text, i[2].tag)
+        if i[3][2].tag == "vehicle" and i[3][0].text == '10':
+            print(i[0].text, get_coordinates(root, i,'ingress'))
+

@@ -1,4 +1,8 @@
 import xml.etree.ElementTree as ET
+
+import sys
+sys.path.append('./')
+
 from common import open_xml
 
 
@@ -16,9 +20,9 @@ def get_signalGroup_from_lane(laneID, root):
 
 
 def get_trafficsignal_name(signalgroupnumber, root):
-    signalgroups = root[3][0][7][0][4][0][7]  # topology/controlData/controller/controlUnits/controlUnit/controlledIntersections/controlledIntersection/sensors
+    signalgroups = root[3][0][7][0][4][0][6]  # topology/controlData/controller/controlUnits/controlUnit/controlledIntersections/controlledIntersection/sensors
     for signalgroup in signalgroups:
-        if signalgroup[0].text == signalgroupnumber:
+        if signalgroup[1].text == str(signalgroupnumber):
             return signalgroup[0].text
 
 

@@ -1,6 +1,8 @@
 from .Location import Location
+
 from .SignalManager import SignalManager
 import numpy as np
+
 
 class InductionCoil:
     """
@@ -26,12 +28,10 @@ class InductionCoil:
             Location(self.centerLocation.lane, self.centerLocation.meters_from_intersection + self.length/2),
         )
 
-    #todo make a locationclass
-    
     def get_state(self, time) -> bool:
         # TODO: Read status from csv file on given time
         return 
-
+      
     def calculate_sensor_point(self):
         """
         This function calculates the distance between the beginnode of 
@@ -51,6 +51,7 @@ class InductionCoil:
         induction_start_point_meters = distance_between_coordinates - length_to_sides
         induction_end_point_meters = distance_between_coordinates + length_to_sides
         
+
         return [induction_start_point_meters, induction_end_point_meters]
     
     
@@ -85,3 +86,4 @@ class InductionCoil:
 
     def __repr__(self) -> str:
         return f"<InductionCoil id:{self.id} center:{self.centerLocation} length:{self.length}>"
+
