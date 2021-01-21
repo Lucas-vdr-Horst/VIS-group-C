@@ -5,7 +5,12 @@ sys.path.append('./')
 from common import open_xml
 
 
-def get_lane_nodes(xml_file):
+def get_lane_nodes(xml_file) -> dict:
+    """
+    This function returns all nodes af a single lane.
+    @param xml_file: the whole xml_file of all intersections
+    @return: a dictionary with all the nodes per lane
+    """
     dict_nodes_lane = {}
     lane_set = xml_file[2][1][0][6] # topology/mapData/intersections/laneset
     for generic_lane in lane_set:
@@ -20,7 +25,12 @@ def get_lane_nodes(xml_file):
     return dict_nodes_lane
 
 
-def get_induction_loop_data(xml_file):
+def get_induction_loop_data(xml_file) -> dict:
+    """
+    Get per lane information about the inductioncoil names, the centerpositions, the lengths.
+    @param xml_file: the whole xml file
+    @return: Dictionary with info about all sensors per lane
+    """
     sensors = xml_file[3][0][7][0][4][0][5] #topology/controlData/controller/controlUnits/controlUnit/controlledIntersections/controlledIntersection/sensors
     sensor_dict = {}
     
@@ -35,15 +45,11 @@ def get_induction_loop_data(xml_file):
             continue
     return sensor_dict
 
-def get_dict_sensor_info(file_name):
+def get_dict_sensor_info(file_name) -> dict:
     """
     Makes a dict with the induction loops and trafficlights of a lane. Keys are presented in string.
-    
-    :param file_name: the locationname of the CSV put in like this -> 'BOS210'
-    :type str
-
-    :returns: all technical info of sensors per lane
-    :type dict
+    @param file_name: the locationname of the CSV put in like this -> 'BOS210'
+    @returns: all technical info of sensors per lane in a dictionary
     """
 
     xml_file = open_xml(file_name)
