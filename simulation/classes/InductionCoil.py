@@ -50,3 +50,6 @@ class InductionCoil:
     # Setters and Getters
     def setIntersection(self, filename : str):
         self.intersection = filename
+
+    def setSignalManager(self, signalMan : SignalManager):
+        self.signalManager = signalMan
