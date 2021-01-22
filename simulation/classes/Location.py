@@ -1,5 +1,5 @@
 import numpy as np
-from geopy.distance import geodesic
+from geopy.distance import geodesic, great_circle
 from .Lane import Lane
 
 
@@ -26,7 +26,8 @@ class Location:
         for i in range(len(self.lane.nodes)-1):
             current_node = self.lane.nodes[i]
             next_node = self.lane.nodes[i+1]
-            add_distance = geodesic(current_node, next_node).meters
+            #add_distance = geodesic(current_node, next_node).meters
+            add_distance = great_circle(current_node, next_node).meters
             if distance + add_distance > self.meters_from_intersection:
                 weight_shift = (self.meters_from_intersection - distance) / add_distance
                 return np.array(current_node) * (1-weight_shift) + np.array(next_node) * weight_shift

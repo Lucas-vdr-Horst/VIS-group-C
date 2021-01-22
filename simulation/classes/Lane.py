@@ -1,5 +1,5 @@
 from .Signal import Signal
-from geopy.distance import geodesic
+from geopy.distance import geodesic, great_circle
 
 
 class Lane:
@@ -11,7 +11,7 @@ class Lane:
         self.id = id                    # Lane identifier
         self.nodes = nodes              # Geo codes from the lane (lat, lon)
         self.signal = signal            # Signal lights from tracfic lights
-        self.length = sum([geodesic(nodes[i], nodes[i+1]).meters for i in range(len(nodes)-1)]) # Calculate length of the lane
+        self.length = sum([great_circle(nodes[i], nodes[i+1]).meters for i in range(len(nodes)-1)]) # Calculate length of the lane
         self.type_lane = type_lane      # Ingress, Trajectory, Exgress
         self.nextlane = nextlane
     
