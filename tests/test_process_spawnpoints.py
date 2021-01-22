@@ -12,8 +12,6 @@ from simulation.run_simulation import load_lanes_signals_and_inductioncoils
 class Test(TestCase):
 
     def test_process_certain_positions(self):
-        self.skipTest('module not tested')
-
         dict_induction_coils = load_lanes_signals_and_inductioncoils()
         process_certain_positions(dict_induction_coils)
 
