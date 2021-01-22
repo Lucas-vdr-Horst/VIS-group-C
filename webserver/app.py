@@ -8,7 +8,7 @@ sys.path.append('../')
 import common
 from const import *
 from .binary_search_load import get_inputs_block
-from .car_timeframe_load import get_cars_around_block
+from .car_timeframe_load import get_cars_around_block, first_time
 
 parent_path = os.path.join(os.path.dirname(__file__), '..')
 app = Flask(__name__)
@@ -98,3 +98,8 @@ def cars_around_time(block):
 @app.route('/car/<path:path>')
 def send_car(path):
     return send_from_directory(os.path.join(parent_path, cars_data_location), path+'.csv')
+
+
+@app.route('/interesting_time')
+def get_interesting_time():
+    return str(first_time()+100)

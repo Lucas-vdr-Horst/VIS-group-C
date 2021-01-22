@@ -24,4 +24,8 @@ def get_cars_around_block(block: int, block_size: int) -> list:
     return [t['name'] for t in timeframes if t['begin']-block_size <= block*block_size <= t['end']]
 
 
+def first_time() -> int:
+    return min([f['begin'] for f in timeframes])
+
+
 load_car_timeframes()

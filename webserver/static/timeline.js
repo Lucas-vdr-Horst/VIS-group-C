@@ -77,9 +77,6 @@ function loadAvailableTimes() {
             url: '/available_times/'+intersection,
             dataType: 'json',
             success: (data) => {
-                const date = new Date((new Date(data[0][0]).getTime() + new Date(data[0][1]).getTime())/2)
-                camera.center = date.getTime();
-                datepicker.valueAsDate = date;
                 for (let line of data) {
                     let availableLine = document.createElement('div');
                     availableLine.setAttribute('beginTime', new Date(line[0]).getTime()+'');
@@ -94,6 +91,15 @@ function loadAvailableTimes() {
             }
         })
     }
+    $.ajax({
+            type: 'GET',
+            url: '/interesting_time',
+            success: (data) => {
+                const time = parseInt(data)
+                camera.center = time;
+                datepicker.valueAsDate = new Date(time);
+            }
+        })
 }
 
 function setCenter(time) {
