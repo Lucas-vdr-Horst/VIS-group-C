@@ -3,15 +3,20 @@ import os
 import csv
 import math
 from common import get_available_intersections
+import pandas as pd
 
 class SignalManager:
 
 
     def __init__(self, csv_path: [str]):
-        self.csv_path = csv_path
+        self.csv_path = csv_path 
         #Read csv's
-        self.reader = self.make_reader()
-        #self.reader = None
+        #self.reader = self.make_reader()
+        self.reader= {
+            'BOS210': csv_path[0],
+            'BOS211': csv_path[1]
+        }
+    
         # self.reader = {
         #     'BOS210': csv.reader(csv_path[0]),
         #     'BOS211': csv.reader(csv_path[1])
@@ -24,8 +29,12 @@ class SignalManager:
 
     def getState(self, columnName, time, intersectionPlace):
         #path = os.path.join(intersection_data_location, intersectionPlace, "compressed", "compressed.csv")
-        reader_csv = self.reader[intersectionPlace]
-        return reader_csv
+        path = self.reader[intersectionPlace]
+        df = pd.read_csv(path,delimiter=";", dtype=str)
+        # df.set_index('start_time')
+        # x = df.iloc[(df[time]>= df.start_time) & (df[time]>= df.end_time)][columnName]
+        df[['start_time', 'end_time']] = df[['start_time', 'end_time']].astype('int64')#.apply(lambda x: float(x))
+        return df[columnName][(df['start_time'] >= time) and (df['end_time'] <= time)]
     
     def test(self, intersection):
         inputs_blocks = []

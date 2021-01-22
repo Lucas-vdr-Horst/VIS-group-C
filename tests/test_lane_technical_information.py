@@ -1,7 +1,4 @@
 from unittest import TestCase
-import xml.etree.ElementTree as ET
-import sys
-#sys.path.append('./')
 
 from common import open_xml
 from preprocess.lane_technical_information import get_dict_lane_info, get_trafficsignal_name, get_signalGroup_from_lane

@@ -1,7 +1,7 @@
 # VIS-group-C
 __Vialis Intersection Simulation__ 
 
-![](https://media1.tenor.com/images/68ea836c384a0effcae1afc8719e53c0/tenor.gif?itemid=16437355)
+![](https://www.vrsrail.nl/dynamics/modules/SFIL0200/view.php?fil_Id=5534&thumb_nr=108)
 
 
 ## Setup
