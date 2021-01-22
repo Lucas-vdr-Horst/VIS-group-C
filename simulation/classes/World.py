@@ -1,5 +1,7 @@
-from copy import copy
 from .Car import Car
+
+merge_distance = 3
+
 
 class World:
     """
@@ -50,6 +52,18 @@ class World:
         else:
             return False
 
-    def merge_world_into(self, other_world: 'World') -> None:
-        self.cars.update(other_world.cars)
-        # TODO: if cars are really close: merge them
+    def merge_world_into(self, other_world: 'World', car_merges: dict) -> None:
+        new_cars_dict = {}
+        for car_a in self.cars.values():
+            for car_b in other_world.cars.values():
+                if car_a.location.lane.id == car_b.location.lane.id \
+                        and abs(car_a.location.meters_from_intersection - car_b.location.meters_from_intersection) < merge_distance:
+                    for k in car_merges:
+                        if car_merges[k] == car_merges[car_b.id]:
+                            car_merges[k] = car_a.id
+                    del car_b
+                else:
+                    new_cars_dict[car_b.id] = car_b
+                new_cars_dict[car_a.id] = car_a
+
+        self.cars = new_cars_dict

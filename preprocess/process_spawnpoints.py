@@ -3,7 +3,7 @@ import os
 import csv
 from alive_progress import alive_bar
 from common import get_available_intersections
-from const import intersection_data_location
+from const import intersection_data_location, car_length
 from simulation.classes.InductionCoil import InductionCoil
 
 
@@ -18,7 +18,7 @@ def process_certain_positions(induction_coils: dict) -> None:
         writer = csv.writer(output_file, delimiter=';', lineterminator='\n')
         writer.writerow(('time', 'lane_id', 'meters'))
         with alive_bar(n_lines, spinner='fishes') as bar:
-            for filename in csv_paths:
+            for filename in csv_paths[::-1]:
                 with open(filename) as csv_file:
                     reader = csv.DictReader(csv_file, delimiter=';')
                     for row in reader:
@@ -30,7 +30,7 @@ def process_certain_positions(induction_coils: dict) -> None:
                                 if last_state[coil_id] != value:
                                     coil_object: InductionCoil = coils_dict[coil_id]
                                     begin_pos, end_pos = coil_object.get_begin_and_end_locations()
-                                    output_pos = begin_pos if value == '|' else end_pos
+                                    output_pos = begin_pos-car_length/2 if value == '|' else end_pos+car_length/2
                                     writer.writerow((row_start_time, output_pos.lane.id, output_pos.meters_from_intersection))
 
                                 last_state[coil_id] = value

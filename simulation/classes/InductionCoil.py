@@ -23,7 +23,6 @@ class InductionCoil:
         self.intersection = None
         
     def get_begin_and_end_locations(self) -> (Location, Location):
-        # TODO: make it directional independant
         return (
             Location(self.centerLocation.lane, self.centerLocation.meters_from_intersection - self.length/2),
             Location(self.centerLocation.lane, self.centerLocation.meters_from_intersection + self.length/2),
