@@ -5,6 +5,11 @@ from alive_progress import alive_bar
 
 
 def compress_csvs() -> None:
+    """
+    Get a compressed csv with information about the traffic lights and inductionloops.
+
+    @returns: a csv file compressed
+    """
     for intersection in get_available_intersections():
         compressed_directory = os.path.join(intersection_data_location, intersection, 'compressed')
         if not os.path.exists(compressed_directory):

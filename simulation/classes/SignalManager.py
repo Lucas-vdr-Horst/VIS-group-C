@@ -1,3 +1,8 @@
+'''
+!!!This class file is not finished!!!
+'''
+
+
 from const import intersection_data_location
 import os
 import csv

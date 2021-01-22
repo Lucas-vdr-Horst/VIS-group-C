@@ -13,33 +13,16 @@ class Lane:
         self.signal = signal            # Signal lights from tracfic lights
         self.length = sum([great_circle(nodes[i], nodes[i+1]).meters for i in range(len(nodes)-1)]) # Calculate length of the lane
         self.type_lane = type_lane      # Ingress, Trajectory, Exgress
-        self.nextlane = nextlane
+        self.nextlane = nextlane        # The connected lane as object to this lane, used for transition
     
     def check_trafficlight(self):
         """
         Check the state of the traffic light. If the signal is on red, the car cannot move to the next lane ( Ingress -> trajectory -> Exgress)
         """
         return self.signal.getState()
-    
-    def getID(self): #TODO weet niet of dit klopt
-        return self.id
-    def getNodes(self):
-        return self.nodes
-    
-    def getFirstNodes(self):
-        return self.nodes[0]
-    def getTypeLane(self):
-        return self.type_lane
-    
-    def car_inductioncoil(self):
-        "Calculate whether a car is driving over a induction loop"
-        pass
 
     def setConnectionPoints(self, connection_points):
         self.connectpoints = connection_points
-    
-    # def setInductionloop(self, value):
-    #     self.inductioncoils.append(value)
 
     def coordinate_to_meters(self, coordinate: (float, float)) -> float:
         distance = 0
@@ -53,10 +36,23 @@ class Lane:
             distance += add_distance
         raise Exception("Coordinate out of range of lane")
 
-
     def connectedlane(self, lane: 'Lane'):
         self.nextlane = lane
-        
 
     def __repr__(self) -> str:
         return f"<Lane id:{self.id}>"
+
+    def getID(self): 
+        return self.id
+
+    def getNodes(self):
+        return self.nodes
+    
+    def getFirstNodes(self):
+        return self.nodes[0]
+
+    def getTypeLane(self):
+        return self.type_lane
+
+    def setConnectionPoints(self, connection_points):
+        self.connectpoints = connection_points

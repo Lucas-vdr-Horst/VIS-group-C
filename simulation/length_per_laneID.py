@@ -14,11 +14,8 @@ def get_length_per_lane(single_lane):
     """
     Get the info of a single lane.
 
-    :param file_name: piece of xml data from a single lane
-    :type xml
-
-    :returns: the ID and length of a lane
-    :type tuple
+    @params file_name: piece of xml data from a single lane
+    @returns: the ID and length of a lane as integer
     """
     lane_id = single_lane[0].text.zfill(2)
     lane_length = single_lane.find('length').text
@@ -29,11 +26,8 @@ def get_length_all_lanes(intersection_name):
     """
     Dictionary with length of every lane.
 
-    :param file_name: the name of the xml put in like this -> 'BOS210/79190154_BOS210_ITF_COMPLETE.xml'
-    :type str
-
-    :returns: an dictionary with all length of a lane by laneID
-    :type dict
+    @param file_name: the name of the xml put in like this -> 'BOS210/79190154_BOS210_ITF_COMPLETE.xml'
+    @returns: an dictionary with all length of a lane by laneID
     """
 
     dict_lanes = {}
@@ -51,16 +45,7 @@ def get_length_all_lanes(intersection_name):
                                 info_lane = get_length_per_lane(approach_lane)
                                 lane_id = info_lane[0]
                                 lane = get_lane(xml_file, lane_id)
-
-                                #if lane[3][2].tag == 'vehicle' :
-                                    #Check whether lane is ingress, egress or an trajectory with element directionaluse (genericlane[3][2])
-                                    #Content of directionaluse give a Bit 10( ingresspath)or 01 (egresspath)
-                                    #AMa's comment: meer duidelijk dan ingressAproah of egressAproach vind ik , wil delete later
+                                
                                 dict_lanes[lane_id] = {'length':info_lane[1]}
     return dict_lanes
 
-
-if __name__ == "__main__":
-    #[print(i, j) for i, j in get_length_all_lanes('BOS210').items()]
-    #print(get_length_per_lane(open_xml('210')[3][0][7][0][4][0][4][0][0]))
-    print(get_length_all_lanes("BOS210"))

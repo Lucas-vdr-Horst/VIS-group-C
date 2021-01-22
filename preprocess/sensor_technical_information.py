@@ -34,13 +34,13 @@ def get_induction_loop_data(xml_file) -> dict:
     sensors = xml_file[3][0][7][0][4][0][5] #topology/controlData/controller/controlUnits/controlUnit/controlledIntersections/controlledIntersection/sensors
     sensor_dict = {}
     
-    for sensor in sensors:
+    for sensor in sensors: #iterate through sensors
         try:
-            sensor_length = sensor.find('length').text
-            sensor_name = sensor.find('name').text
-            sensor_position = [sensor[5].find('lat').text, sensor[5].find('long').text]
-            lane_id_sensor = sensor[8][0].find('laneID').text
-            sensor_dict[sensor_name] = {'position': sensor_position, 'length': sensor_length, 'located_on_laneID': lane_id_sensor}
+            sensor_length = sensor.find('length').text # find length  of an inductioncoil
+            sensor_name = sensor.find('name').text # find name of an inductioncoil
+            sensor_position = [sensor[5].find('lat').text, sensor[5].find('long').text] # find the coordinates of the sensorPosition of sensor
+            lane_id_sensor = sensor[8][0].find('laneID').text # find the laneID where inductioncoil is located at in sensorAllocation 
+            sensor_dict[sensor_name] = {'position': sensor_position, 'length': sensor_length, 'located_on_laneID': lane_id_sensor} # add attributes of sensor in dict  
         except:
             continue
     return sensor_dict
@@ -48,14 +48,17 @@ def get_induction_loop_data(xml_file) -> dict:
 def get_dict_sensor_info(file_name) -> dict:
     """
     Makes a dict with the induction loops and trafficlights of a lane. Keys are presented in string.
+    
     @param file_name: the locationname of the CSV put in like this -> 'BOS210'
     @returns: all technical info of sensors per lane in a dictionary
     """
 
-    xml_file = open_xml(file_name)
-    sensor_information_dict = get_induction_loop_data(xml_file)
+    xml_file = open_xml(file_name) # get root 
+    sensor_information_dict = get_induction_loop_data(xml_file) # dictionary of the iductioncoils and there attributus
     new_dict = {}
     nodes_lanes_info = get_lane_nodes(xml_file)
+    # Create new dict where key is laneID and values are the startcoordinate of lane and the information about all the inductioncoils of that lane
+
     for lane_id, nodes in nodes_lanes_info.items():
         sensor_info = {}
         for sensor in sensor_information_dict:
@@ -64,11 +67,5 @@ def get_dict_sensor_info(file_name) -> dict:
                     sensor_info[sensor].append(sensor_information_dict[sensor])
                 else:
                     sensor_info[sensor] = sensor_information_dict[sensor]
-        new_dict[lane_id] = {'first_node_lane_id' : nodes[0], 'sensors':sensor_info}
+        new_dict[lane_id] = {'first_node_lane_id' : nodes[0], 'sensors':sensor_info} 
     return new_dict
-
-if __name__ == "__main__":
-    for i, j in get_dict_sensor_info("BOS210").items():
-        print(i)
-        print(j)
-    #print(get_dict_sensor_info("BOS210"))

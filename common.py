@@ -5,6 +5,9 @@ from const import intersection_data_location
 
 
 def get_csv_paths(intersection_name) -> list:
+    """
+    Get a list of alle the csv in the given intersection folder
+    """
     return glob.glob(os.path.join(intersection_data_location, intersection_name, '*.csv'))
 
 
@@ -16,6 +19,9 @@ def get_xml_path(intersection_name):
 
 
 def to_datetime(time):
+    """
+    Gives time back in datetime object
+    """
     return datetime.strptime(time, '%d-%m-%Y %H:%M:%S.%f')
 
 
@@ -32,6 +38,9 @@ def read_lines(filename: str, lines: list) -> dict:
 
 
 def timeframe_csv(filename: str):
+    """"
+    Gives the timeframe back of a file
+    """
     return (
         read_lines(filename, [1])[1].split(';')[0],
         len(open(filename).readlines())-1

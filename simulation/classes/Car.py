@@ -6,13 +6,6 @@ class Car:
     This class keeps track of properties of a car.
     it has Location as child
     """
-    # """
-    # + Location
-    # + Length
-    # + Speed
-    #
-    # + method(type): type
-    # """
 
     def __init__(self, car_id: str, location: Location, length: float, speed: float):
         self.id = car_id
@@ -26,7 +19,7 @@ class Car:
         @step_size is given in miliseconds
         @rtype: object
         """
-        # TODO make this function correct
+        # TODO make this function correct \/
         # als locatie meer/minder is dan lane, dan switch (connectie class maken)
         new_meters = self.location.meters_from_intersection + self.speed * step_size / 1000
         if (new_meters > self.location.lane.length) and self.location.lane is not None:

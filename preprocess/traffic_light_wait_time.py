@@ -10,6 +10,7 @@ def extract_info_csv(intersection, dict_avg_time_per_lane) -> dict:
     """
     This function takes in a intersectionname and a dict with info from before defined average waiting times of lanes
     and adds the current intersection lane average waiting times to the dictionary.
+    
     @param intersection: string intersection name
     @param dict_avg_time_per_lane: a dictionary with average times of all lanes
     @return: Dictionary of average waiting time per lane.
@@ -36,6 +37,7 @@ def extract_info_csv(intersection, dict_avg_time_per_lane) -> dict:
 def calculate_avg_waitingtime() -> dict:
     """
     Calculates average waitingtime of cars that has to wait by the trafficlight.
+    
     @:return dict_avg_time_per_lane_calculated: a dictionary with average waiting time for a red trafficlight per lane
     """
 
@@ -51,6 +53,3 @@ def calculate_avg_waitingtime() -> dict:
             dict_avg_time_per_lane_calculated[key] = np.mean(dict_avg_time_per_lane[key])
                     
     return dict_avg_time_per_lane_calculated   
-
-if __name__ == "__main__":
-    print(calculate_avg_waitingtime())

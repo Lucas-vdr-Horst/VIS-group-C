@@ -3,11 +3,12 @@ import pandas as pd
 from common import datetime_string_to_milli, move_file, get_csv_paths, create_csv_file
 
 
-def convert_to_coordinates(item):
+def convert_to_coordinates(item) -> int:
     """
-    If item is a string
-        removes the multiple dots in the number to convert it to an int. Afterwords the numbers
-        are divided by 1 million to transform the numbers into coordinates.
+    If item is a string removes the multiple dots in the number to convert it to an int. Afterwords the numbers are divided by 1 million to transform the numbers into coordinates.
+
+    @params item: a string or int with a coordinate
+    @returns: an int coordinate
     """
     if isinstance(item, str):
         item = int(item.replace('.', ''))
@@ -15,26 +16,40 @@ def convert_to_coordinates(item):
     return item
 
 
-def convert_to_float(item):
+def convert_to_float(item) -> float:
     """
-    If item is a string
-        Replaces the ',' with a dot to convert it to a float
+    If item is a string replaces the ',' with a dot to convert it to a float.
+    
+    @params item: a string or int with a coordinate
+    @returns: an float coordinate
     """
     if isinstance(item, str):
         item = float(item.replace(',', '.'))
     return item
 
 
-def add_sec(item, starter_sec):
+def add_sec(item, starter_sec) -> int:
+    """
+    Adds second to datetime. the first second that is added is the module(starter sec). The function starts a counter
+    that increances every time. The module is taken from starter sec to prevent an insert of an higher number then 59.
+    At the end the string with seconds and 0 millsec add to it will be convert to the datetime from 1970 format which is 
+    returned from this function.
+    """
     if isinstance(item, str):
         item = f"{item}:{starter_sec[0] % 60}.0"
         starter_sec[0] += 1
     return datetime_string_to_milli(item)
 
 
-def insert_row(dataframe, row, value):
+def insert_row(dataframe, row, value) -> pd.DataFrame:
     """
+    Inserts a row into the dataframe.
     https://www.geeksforgeeks.org/insert-row-at-given-position-in-pandas-dataframe/
+
+    @params dataframe: a dataframe
+    @params row: specific row index where it have to be inserted
+    @params value: the value that have to be inserted
+    @returns: dataframe with the specific row inserted d
     """
     df1 = dataframe[0:row]
     df2 = dataframe[row:]

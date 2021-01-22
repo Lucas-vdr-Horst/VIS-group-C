@@ -7,11 +7,11 @@ class Signal:
 
 
     def __init__(self, id: int, signalManager : SignalManager = None, intersection : str = None):
-        self.id = id        # id of the signal/ traficlight
-        self.signalManager = None
-        self.intersection = None
+        self.id = id                    # id of the signal/ traficlight
+        self.signalManager = None       # the signal manager of this class
+        self.intersection = None        # The intersaction of this signal
     
-
+    #Setters and Getters
     def setSignalManager(self, signalMan : SignalManager):
         self.signalManager = signalMan
     

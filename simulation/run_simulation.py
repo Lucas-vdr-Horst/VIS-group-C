@@ -132,11 +132,7 @@ def get_lane_objects(vehicles_lanes, lane_indcoil_signal, root, filename) -> dic
             # laneid = id
             lane_objects[laneid] = Lane(laneid, coordinaten, 'egress', signal)
 
-    # TODO: Connected lane            ingress = temp[0] --> lane_object
-    # ingress.connectedlane(traject) traject = lane
-    # traject.connectedlane(exgress) egress = temp[1]
-    # lane_objects.get("lane").value
-    # print(lane_objects)
+  
     for lane in lane_objects:
         if "-" in lane:
             temp = lane.split('-')  # bos210_1-26 -> bos210_1, 26->bos210_26
@@ -184,8 +180,7 @@ def get_inductioncoils(sensors_all_lanes, lane_objects) -> dict:
 
                     # Add to list inductioncoils
                     inductioncoils[sensorID] = induction_coil
-                    # set induction_coil to lane
-                    # lane_objects[id].setInductionloop(induction_coil) #TODO add induction coils properly
+ 
 
     return inductioncoils
 
@@ -244,23 +239,3 @@ def load_lanes_signals_and_inductioncoils() -> (dict, dict, dict):
 
     return (lanes, signals, inductioncoils)
 
-    # define een World
-    # kruispunt = World(1, cars, lane_objects.values(), n_signals, n_inductioncoils, 100.0)
-    # for car in cars:
-    #     savefile = 'testCar' + car.location.lane.id  # TODO add world time
-    #     with open(os.path.join('cars_movements', savefile), 'w') as csvfile:
-    #         fieldnames = ['time', 'latitude', 'longitude']
-    #         writer = csv.DictWriter(csvfile, delimiter=';', fieldnames=fieldnames)
-    #         writer.writeheader()
-
-    #         test_lane = lane_objects.get('1')
-    #         test_car = cars[0]
-
-    #         t = 1604271611700
-    #         step_size = 100  # miliseconds
-
-    #         while 0 < car.location.meters_from_intersection < car.location.lane.length:
-    #             car_geo = car.location.to_geo()
-    #             writer.writerow({'time': t, 'latitude': car_geo[0], 'longitude': car_geo[1]})
-    #             car.move(step_size)
-    #             t += step_size

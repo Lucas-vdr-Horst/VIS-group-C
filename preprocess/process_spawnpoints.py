@@ -8,6 +8,12 @@ from simulation.classes.InductionCoil import InductionCoil
 
 
 def process_certain_positions(induction_coils: dict) -> None:
+    """
+    Uses the induction coil data from the `compressed.csv`'s to create a new `spawn_points.csv`.
+    When a induction coil is activated or deactivate you know a car is at the beginning or end of the coil,
+    these are the only positions of cars on times you know for certain so these are the "spawn points".
+    A dictionary of induction-coils objects are needed to determen the location.
+    """
     coils_dict = induction_coils
 
     csv_paths = [os.path.join(intersection_data_location, i, 'compressed', 'compressed.csv') for i in get_available_intersections()]

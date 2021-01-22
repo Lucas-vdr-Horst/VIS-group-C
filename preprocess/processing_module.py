@@ -14,6 +14,7 @@ def get_car_spawn_times(path_to_csv: str, list_of_start_induction_loops: list) -
     """
     This function takes in a csv runtime file and a list of start induction loops to return a dictionary of start
     detection on that loop
+    
     @param path_to_csv: file path to csv file
     @param list_of_start_induction_loops: list of induction loops, must be column names in the csv files; example ["02", "12"]
     @return: Dictionary of spawn times from csv file
@@ -24,12 +25,13 @@ def get_car_spawn_times(path_to_csv: str, list_of_start_induction_loops: list) -
 
     tempfile = path_to_csv + ".temp"
 
+    # Create temp dataframe from selected induction loops and save to temp file
     tempdf = df[list_of_start_induction_loops]
     tempdf = tempdf.set_index('time')
     tempdf.to_csv(tempfile, sep=';')
 
+    # Read though temp csv file and compress file the line to only return lines to list where there are changes
     lst_data = []
-
     for i, line in enumerate(open(tempfile)):
         if i == 1:
             working_state = line[22:]
@@ -48,16 +50,19 @@ def get_car_spawn_times(path_to_csv: str, list_of_start_induction_loops: list) -
         lst_data.append(test_string.split(";"))
 
     tempdf = tempdf.reset_index()
-
+    
+    # Create new df with the compresed lines and filter out uninterested rows
     df_new = pd.DataFrame(lst_data, columns=tempdf.columns)
     df_new = df_new[list_of_start_induction_loops]
     df_new = df_new.replace("", np.nan)
     df_new = df_new.dropna(thresh=2)
 
+    # Formate to dict for structure
     return_dict = {}
     for c in list_of_start_induction_loops[1:]:
         return_dict[c] = df_new[[list_of_start_induction_loops[0], c]].loc[df_new[c] == "|"]['time'].values.tolist()
 
+    # Delete temporary file
     if os.path.exists(tempfile):
         os.remove(tempfile)
 
@@ -85,55 +90,27 @@ def calculate_trajectory(lon1, lat1, lon2, lat2):
 
     return distance
 
-#TODO delete function 
-def deg2rad(angle):
-    return angle * pi / 180
-
-#TODO  delete function 
-def rad2deg(angle):
-    return angle * 180 / pi
-
-#TODO delete function 
-def pointRadialDistance(lat1, lon1, bearing, distance):
-    """
-    Return final coordinates (lat2,lon2) [in degrees] given initial coordinates
-    (lat1,lon1) [in degrees] and a bearing [in degrees] and distance [in km]
-    """
-    rEarth = 6371.01  # Earth's average radius in km
-    epsilon = 0.000001  # threshold for floating-point equality
-    rlat1 = deg2rad(lat1)
-    rlon1 = deg2rad(lon1)
-    rbearing = deg2rad(bearing)
-    rdistance = distance / rEarth  # normalize linear distance to radian angle
-
-    rlat = asin(sin(rlat1) * cos(rdistance) + cos(rlat1) * sin(rdistance) * cos(rbearing))
-
-    if cos(rlat) == 0 or abs(cos(rlat)) < epsilon:  # Endpoint a pole
-        rlon = rlon1
-    else:
-        rlon = ((rlon1 - asin(sin(rbearing) * sin(rdistance) / cos(rlat)) + pi) % (2 * pi)) - pi
-
-    lat = rad2deg(rlat)
-    lon = rad2deg(rlon)
-    return lat, lon
 
 # Function to get the necessary laneID for the simulation 
 def vehicles_laneID(root) -> dict:
-    """Get all laneID of all lanes specifically to vehicles and update the to a dictionary.
-        @params root
-        @returns: Dictionary of laneID's of all vehicle lanes from XML file 
+    """
+    Get all laneID of all lanes specifically to vehicles and update the to a dictionary.
+    
+    @params root
+    @returns: Dictionary of laneID's of all vehicle lanes from XML file 
     """
     laneSet = root[2][1][0][6]
     vehicles = {}
-    for  i in laneSet:
-        if i[3][2].tag == 'vehicle':
-            vehicles[i.find('laneID').text] = i
+    for  i in laneSet: # iterate through LaneSet
+        if i[3][2].tag == 'vehicle': # check if lane is for vehicles
+            vehicles[i.find('laneID').text] = i # add laneID and lane to dict
     return vehicles
 
 
 def get_nodes(nodes):
     """
     Get the coordinates in a nodes  of a lane.
+
     @params nodes : Element from XML file containing the coordinates in (long, lat)
     @returns: Nested list of all the converted coordinates [lat,lon] of lane
     """
@@ -179,167 +156,4 @@ def get_coordinates(root, lane, type_lane):
     else:  # type_lane == ingress or egress
         coordinates = get_nodes(lane[4])
     return coordinates
-
-# TODO : delete function 
-def load_sensor_data(begin_time, end_time, intersection_name):
-    # df_sensor = pd.read_csv(os.path.join(intersection_data_location, intersection_name, '*.csv'), delimiter=";", low_memory=False)
-    os.chdir("..")
-    df_sensor = pd.read_csv(get_csv_paths(intersection_name)[0], delimiter=";", dtype=str)
-    df_sensor = df_sensor.set_index('time')  # set index to time
-    data_sensor_specific_time = df_sensor.loc[begin_time:end_time]  # filter to begin and end time
-    return data_sensor_specific_time
-
-# TODO delete function 
-def get_coordinates_lane(genericlane):
-    """
-    Extract all longitude en latitude of a specific lane
-    
-    :param genericlane: a variable what contains 1 lane
-    :type xml
-
-    :returns coordinates: all coordinates of a lane - [[lat, lon],..]
-    :type list
-    """
-    lane_coord = []
-    lane_nodes = genericlane[4]
-    for node in lane_nodes:  # Iterate through nodes of genericlane
-        for n in node.iter('node-LatLon'):  # node.iter('node-LatLon') == node-latlon # iterating through node-LatLon
-            # Convert the longitude and latitude to an integer and divided by 10000000 (deciml degrees) 
-            lon = int(n.findall('lon')[0].text) / 10000000
-            lat = int(n.findall('lat')[0].text) / 10000000
-            lane_coord.append([lat, lon])  # add coordinates to list
-
-    if genericlane[2].tag == 'ingressApproach':  # check if lane is ingress or egress
-        trajectory_coord = []
-        regional = genericlane[6][0][0]
-        for node in regional:  # iterate through nodes in regional
-            for n in node.iter('node-LatLon'):  # node.iter('node-LatLon') == node-latlon
-                lon = int(n.findall('lon')[0].text) / 10000000
-                lat = int(n.findall('lat')[0].text) / 10000000
-                trajectory_coord.append([lat, lon])
-        # If lane is ingress, the list lane_coord has to be reversed
-        lane_coord = lane_coord[::-1]
-        coordinaten = lane_coord + trajectory_coord  # concatenate lane_coord and trajectory_coord
-    else:
-        coordinaten = lane_coord
-    return coordinaten
-
-# TODO delete function 
-def get_all_lanes_coordinates(root):
-    """
-    Returns a CSV file with the coordinates of all lanes.
-
-    :param root: info about the intersections
-    :type xml
-
-    :returns: file with all coordinates from all lanes
-    :type csv
-    """
-    paden_auto = pd.DataFrame(columns=['Rijbaan',
-                                       'coordinaten'])  # 'ingress_coordinaten', 'trajectory_coordinaten', 'egress_coordinaten']) # create dataframe that wil contains the coordinates from all lanes
-
-    laneSet = root[2][1][0][6]
-    for genericlane in laneSet:  # iterate through laneset
-        if genericlane[3][2].tag == 'vehicle' and genericlane[
-            2].tag == 'ingressApproach':  # pak de ingress lanes van  auto's
-            laneId = genericlane.find('laneID').text.zfill(2)  # haal uit laneID van de ingresslane
-            connected_to = genericlane[5][0][0][0].text  # haal uit de laneID van de gekoppelde egresslane
-
-            # Haal uit de genericlane element van de egresslane
-            for lane in laneSet:
-                if lane[0].text == connected_to:
-                    connected_to_lane = lane
-
-            coordinaten_lane_in = get_coordinates_lane(genericlane)  # coordinaten van de ingresslane
-            coordinaten_lane_out = get_coordinates_lane(connected_to_lane)  # coordinaten van de egresslane
-
-            # Voeg coordinaten toe in dataframe
-            rijbaan = 'RI{}E{}'.format(laneId, connected_to)
-            paden_auto = paden_auto.append(
-                {'Rijbaan': rijbaan, 'coordinaten': coordinaten_lane_in + coordinaten_lane_out}, ignore_index=True)
-
-    return paden_auto
-
-# TODO delete function 
-def process(file_name):
-    """
-    Returns a csv file with the coordinates of riding track for a vehicle
-    """
-    os.chdir("..")
-    tree = ET.parse(get_xml_path(file_name)[0])  # parse given XML file
-    paden = get_all_lanes_coordinates(tree)  # get dataframe with the coordinates of all lanes
-    # for rijbaan in paden['Rijbaan']: # iterate through the Rijbaan
-    # runtime(paden, rijbaan)
-
-    csv_paden = paden.to_csv('paden_autos.csv', index=False)  # convert dataframe to csv
-    # print(extract_lane_id(paden['Rijbaan'][0]))
-
-    return paden
-
-#TODO delete function 
-def runtime_csv(paden, rijbaan):
-    """
-    CSV bestand genereren per rijbaan met de runtime, geoposities, lussen en stoplichten
-    """
-    rijbaan_coord = get_geoposities(paden, rijbaan)  # pakt de coordinaten uit paden
-    runtime = [i for i in range(len(rijbaan_coord))]  # bepaal de runtime
-    # ingID, egID = extract_lane_id(rijbaan)
-    # lanes = get_dict_lane_info('BOS210/79190154_BOS210_ITF_COMPLETE.xml')
-    # #print(lanes.keys())
-    # try:
-    #     data_ingress_lane = lanes[ingID]
-    #     data_egress_lane = lanes[egID]
-    # except:
-    #     print("{} has no sensors/traffic ligths".format(egID))
-
-    # print(data_ingress_lane['induction_loops'])
-    # print(data_ingress_lane['traffic_light'])
-    data = {'Runtime': runtime, 'Geopositie': rijbaan_coord}  #
-
-    df = pd.DataFrame(data)
-    return df
-
-#TODO delete function
-def extract_lane_id(combined_lane_name):
-    """
-    Returns the ingress and egress laneID.
-
-    :param combined_lane_name: combination of 2 laneID name in 1
-    :type pandas DataFrame
-
-    :returns: 2 separate laneID
-    :type string
-    """
-    lanes = re.findall(r'\d{2}', combined_lane_name)
-    lane1, lane2 = lanes[0], lanes[1]
-    return lane1, lane2
-
-# TODO delete function 
-def get_geoposities(df, rijbaan):
-    """
-    Returns the coordinaten of a 'rijbaan' in df 
-
-    :params df:  DataFrame containing the coordinates of all paths in an intersection 
-    :params rijbaan: path in an intersection    
-    """
-    return df['coordinaten'][df['Rijbaan'] == rijbaan][0]
-
-
-# CSV bestand per rijbaan met de volgende gegegeven :
-# Dit zal de gegevens die we nodig zal hebben om een auto te laten rijden 
-# - Runtime: dit is de state van de auto. for i in rnage(coordinaten)
-# - Geopositie: positie/coordinaat(lat, lon) van dat state - coordinaat[runtime/i]
-# - Lus a t/m ..: genereer lussen 
-
-
-if __name__ == "__main__":
-    # process("02-11-2020 00:00:00.0", "02-11-2020 00:00:00.6")
-    file_name = 'BOS210'
-    tree = ET.parse(get_xml_path(file_name))  # parse given XML file
-    root = tree.getroot()
-
-    # print all vehicle lanes
-    for i in root[2][1][0][6]:
-        if i[3][2].tag == "vehicle" and i[3][0].text == '10':
-            print(i[0].text, get_coordinates(root, i,'ingress'))
 
