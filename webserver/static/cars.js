@@ -27,7 +27,7 @@ function loadCar(carname, doneFunc) {
             const first = csv.data[0];
             let icon_url;
             if (carname.endsWith('_ext')) {
-                icon_url = "./static/images/redcar_purple_marker_32.png";
+                icon_url = "./static/images/fishcar.png";
             } else {
                 icon_url = "./static/images/beancar.png";
             }
