@@ -10,10 +10,10 @@ from preprocess.preprocess_extern_data import convert_to_coordinates, convert_to
 
 class Test(TestCase):
     def test_convert_to_coordinates(self):
-        coordinate ='51.673.774.6'
+        coordinate ='51.6.835.3.09'
 
         output = convert_to_coordinates(coordinate)
-        expected_output = 51.6737746
+        expected_output = 51.6835309
 
         self.assertEqual(output, expected_output)
 
