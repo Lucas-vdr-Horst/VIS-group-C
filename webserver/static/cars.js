@@ -25,12 +25,18 @@ function loadCar(carname, doneFunc) {
         success: (data) => {
             const csv = Papa.parse(data, {delimiter: ';', header: true, skipEmptyLines: true});
             const first = csv.data[0];
+            let icon_url;
+            if (carname.endsWith('_ext')) {
+                icon_url = "./static/images/redcar_purple_marker_32.png";
+            } else {
+                icon_url = "./static/images/beancar.png";
+            }
             const marker = new google.maps.Marker({
                 position: {lat: parseFloat(first.latitude), lng: parseFloat(first.longitude)},
                 map: map,
                 title: carname,
                 icon: {
-                    url: "./static/images/beancar.png"
+                    url: icon_url
                 }
             });
             let car = {
