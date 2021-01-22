@@ -62,6 +62,7 @@ def run_simulation(begin_time: int, end_time: int) -> None:
     to_update.append(worlds_array[0])
     while to_update:
         update_world = to_update.pop(0)
+        print(f"{begin_time} - {update_world.runtime} - {end_time}", end='\r')
         next_world = update_world.next_world(100)
         next_world = add_world(next_world, worlds_array.index(update_world) + 1)
         if begin_time < next_world.runtime < end_time:
@@ -74,18 +75,16 @@ def run_simulation(begin_time: int, end_time: int) -> None:
     for fix_key, fix_value in [(k, car_merges[v]) for k, v in car_merges.items() if car_merges[v] != v]:
         car_merges[fix_key] = fix_value
     unique_cars = tuple(set(car_merges.values()))
-    writers = {
-        i: csv.writer(
-            open(os.path.join(cars_data_location, f'sim_car_{i}.csv'), 'w'),
-            delimiter=';', lineterminator='\n') for i in unique_cars
-    }
-    for w in writers.values():
-        w.writerow(('time', 'latitude', 'longitude'))
+    export_paths = {i: os.path.join(cars_data_location, f'sim_car_{i}.csv') for i in unique_cars}
+    for filepath in export_paths.values():
+        with open(filepath, 'w') as file:
+            writer = csv.writer(file, delimiter=';', lineterminator='\n')
+            writer.writerow(('time', 'latitude', 'longitude'))
     for world in worlds_array:
         print(f"{world.runtime} / {worlds_array[-1].runtime}", end='\r')
         for car in world.cars.values():
-            w = writers[car_merges[car.id]]
-            w.writerow((world.runtime, *car.location.to_geo()))
+            with open(export_paths[car_merges[car.id]], 'a') as file:
+                file.write(';'.join(map(str, (world.runtime, *car.location.to_geo())))+'\n')
     print('Exported, done!')
 
 
